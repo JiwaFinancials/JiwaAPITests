@@ -1,5 +1,4 @@
 # JiwaAPITests
-ScottTest
 This is a Visual Studio project using .NET 9 to run automated tests against the Jiwa API.
 
 The Configuration.cs class should be edited to provide:
