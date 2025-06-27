@@ -9,4 +9,3 @@ The Configuration.cs class should be edited to provide:
 
 Tests will create their own test data - for instance, when testing Inventory operations the test will create it's own Part with a randomly generated PartNo and use that.
 Tests will also remove data created where possible - but note that if a test fails it may not have been able to return the database to it's original state, so a restore or re-create of the database between test runs may be needed.
-ScottTest2
