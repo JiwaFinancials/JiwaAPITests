@@ -294,8 +294,130 @@ namespace JiwaAPITests.Inventory
         }
         #endregion
 
-        #region ""
-        #endregion
+        #region "Attribute Groups"
+        [Test]
+        public async Task InventoryItem_AttributeGroups_CRUD()
+        {
+            // Create an inventory attribute group template with 3 attributes
+            InventoryAttributeGroupTemplatePOSTRequest attributeGroupTemplateCreateReq = new InventoryAttributeGroupTemplatePOSTRequest()
+            {
+                Name = RandomString(5),
+                TemplateAttributes = new List<InventoryAttributeGroupTemplateAttribute>()
+                {
+                    new InventoryAttributeGroupTemplateAttribute() { Name = RandomString(5), AttributeType = 0, ItemNo = 1 },
+                    new InventoryAttributeGroupTemplateAttribute() { Name = RandomString(5), AttributeType = 1 },
+                    new InventoryAttributeGroupTemplateAttribute() { Name = RandomString(5), AttributeType = 2 },
+                }
+            };
+
+            InventoryAttributeGroupTemplate attributeGroupTemplateCreateRes = await Client.PostAsync(attributeGroupTemplateCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(attributeGroupTemplateCreateRes.Name, Is.EqualTo(attributeGroupTemplateCreateReq.Name));
+            Assert.That(attributeGroupTemplateCreateRes.AttributeGroupTemplateID, !Is.Null);
+            Assert.That(attributeGroupTemplateCreateRes.TemplateAttributes.Count, Is.EqualTo(attributeGroupTemplateCreateReq.TemplateAttributes.Count));
+
+            // Create an inventory item we can operate on with the attribute group template included
+            InventoryPOSTRequest itemCreateReq = new InventoryPOSTRequest()
+            {
+                PartNo = RandomString(5),
+                Description = "Item Test",
+                DefaultPrice = 125.67M,
+                AttributeGroups = new List<InventoryAttributeGroup>() { new InventoryAttributeGroup() { Template = attributeGroupTemplateCreateRes } }
+            };
+
+            InventoryItem itemCreateRes = await Client.PostAsync(itemCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(itemCreateRes.PartNo, Is.EqualTo(itemCreateReq.PartNo));
+            Assert.That(itemCreateRes.InventoryID, !Is.Null);
+            Assert.That(itemCreateRes.AttributeGroups, !Is.Null);
+            Assert.That(itemCreateRes.AttributeGroups.Count, Is.EqualTo(1));
+
+            // Get all the attribute groups for the item
+            InventoryAttributeGroupsGETManyRequest inventoryAttributeGroupsGETManyReq = new InventoryAttributeGroupsGETManyRequest() { InventoryID = itemCreateRes.InventoryID };
+            List<InventoryAttributeGroup> inventoryAttributeGroupsGETManyRes = await Client.GetAsync(inventoryAttributeGroupsGETManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(inventoryAttributeGroupsGETManyRes, !Is.Null);
+            Assert.That(inventoryAttributeGroupsGETManyRes.Count, Is.EqualTo(1));
+
+            // Get a single attribute group from the item
+            InventoryAttributeGroupGETRequest inventoryAttributeGroupGETReq = new InventoryAttributeGroupGETRequest() { InventoryID = itemCreateRes.InventoryID, AttributeGroupID = itemCreateRes.AttributeGroups[0].AttributeGroupID };
+            InventoryAttributeGroup inventoryAttributeGroupGETRes = await Client.GetAsync(inventoryAttributeGroupGETReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(inventoryAttributeGroupGETRes, !Is.Null);
+            Assert.That(inventoryAttributeGroupGETRes.AttributeGroupID, Is.EqualTo(itemCreateRes.AttributeGroups[0].AttributeGroupID));
+            Assert.That(inventoryAttributeGroupGETRes.Template.AttributeGroupTemplateID, Is.EqualTo(itemCreateRes.AttributeGroups[0].Template.AttributeGroupTemplateID));
+
+            // Try patching the item
+            InventoryAttributeGroupPATCHRequest inventoryAttributeGroupPATCHReq = new InventoryAttributeGroupPATCHRequest()
+            {
+                InventoryID = itemCreateRes.InventoryID,
+                AttributeGroupID = itemCreateRes.AttributeGroups[0].AttributeGroupID,
+                Description = "Test Description"
+            };
+            InventoryAttributeGroup InventoryAlternateChildPATCHRes = await Client.PatchAsync(inventoryAttributeGroupPATCHReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(inventoryAttributeGroupPATCHReq.Description, Is.EqualTo(inventoryAttributeGroupPATCHReq.Description));
+
+            // Get the patched item and ensure it matches what we just patched            
+            inventoryAttributeGroupGETRes = await Client.GetAsync(inventoryAttributeGroupGETReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(inventoryAttributeGroupGETRes.Description, Is.EqualTo(inventoryAttributeGroupPATCHReq.Description));
+
+            // Remove the attribute group we added
+            InventoryAttributeGroupDELETERequest InventoryAttributeGroupDELETEReq = new InventoryAttributeGroupDELETERequest()
+            {
+                InventoryID = itemCreateRes.InventoryID,
+                AttributeGroupID = itemCreateRes.AttributeGroups[0].AttributeGroupID
+            };
+            await Client.DeleteAsync(InventoryAttributeGroupDELETEReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+
+            // Ensure the child is no longer present in the list of children for the item
+            inventoryAttributeGroupsGETManyRes = await Client.GetAsync(inventoryAttributeGroupsGETManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(inventoryAttributeGroupsGETManyRes.Count, Is.EqualTo(0));
+
+            // Ensure explicitly requesting the attribute group 404's
+            WebServiceException ex = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
+            {
+                inventoryAttributeGroupGETRes = await Client.GetAsync(inventoryAttributeGroupGETReq);
+            });
+            Assert.That(ex.StatusCode, Is.EqualTo(404));
+
+            // Add the group again using the explicit route, instead of bundling it in with the item create 
+            InventoryAttributeGroupPOSTRequest inventoryAttributeGroupPOSTReq = new InventoryAttributeGroupPOSTRequest()
+            {
+                InventoryID = itemCreateRes.InventoryID,
+                Template = new InventoryAttributeGroupTemplate() { AttributeGroupTemplateID = attributeGroupTemplateCreateRes.AttributeGroupTemplateID }
+            };
+            InventoryAttributeGroup inventoryAttributeGroupPOSTRes = await Client.PostAsync(inventoryAttributeGroupPOSTReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(inventoryAttributeGroupPOSTRes, !Is.Null);
+
+            // Check that the group is indeed in the list of attribute groups
+            inventoryAttributeGroupsGETManyRes = await Client.GetAsync(inventoryAttributeGroupsGETManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(inventoryAttributeGroupsGETManyRes, !Is.Null);
+            Assert.That(inventoryAttributeGroupsGETManyRes.Count, Is.EqualTo(1));
+            Assert.That(inventoryAttributeGroupsGETManyRes[0].Template.AttributeGroupTemplateID, Is.EqualTo(attributeGroupTemplateCreateRes.AttributeGroupTemplateID));
+
+            // Remove the test attribute group template item we created
+            InventoryAttributeGroupTemplateDELETERequest inventoryAttributeGroupTemplateDELETEReq = new InventoryAttributeGroupTemplateDELETERequest()
+            {                
+                 AttributeGroupTemplateID = attributeGroupTemplateCreateRes.AttributeGroupTemplateID
+            };
+            await Client.DeleteAsync(inventoryAttributeGroupTemplateDELETEReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+
+            // Remove the test inventory item we created
+            InventoryDELETERequest itemDeleteReq = new InventoryDELETERequest()
+            {
+                InventoryID = itemCreateRes.InventoryID
+            };
+            await Client.DeleteAsync(itemDeleteReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+        }
+        #endregion        
 
         #region "Queries"
         [Test]
