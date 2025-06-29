@@ -64,7 +64,7 @@ namespace JiwaAPITests.Inventory
             Assert.That(ex.StatusCode, Is.EqualTo(404));
 
             // Try to GET non-existent item to make sure we get a 404
-            itemGetReq.InventoryID = "Test404";
+            itemGetReq.InventoryID = Guid.NewGuid().ToString();
             ex = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
             {
                 InventoryItem itemGetRes = await Client.GetAsync(itemGetReq);
@@ -292,6 +292,9 @@ namespace JiwaAPITests.Inventory
             await Client.DeleteAsync(itemDeleteReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
         }
+        #endregion
+
+        #region ""
         #endregion
 
         #region "Queries"
