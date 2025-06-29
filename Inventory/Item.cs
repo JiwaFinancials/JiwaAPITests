@@ -304,8 +304,8 @@ namespace JiwaAPITests.Inventory
                 Name = RandomString(5),
                 TemplateAttributes = new List<InventoryAttributeGroupTemplateAttribute>()
                 {
-                    new InventoryAttributeGroupTemplateAttribute() { Name = RandomString(5), AttributeType = 0, ItemNo = 1 },
-                    new InventoryAttributeGroupTemplateAttribute() { Name = RandomString(5), AttributeType = 1 },
+                    new InventoryAttributeGroupTemplateAttribute() { Name = RandomString(5), AttributeType = 1, ItemNo = 1 },
+                    new InventoryAttributeGroupTemplateAttribute() { Name = RandomString(5), AttributeType = 0 },
                     new InventoryAttributeGroupTemplateAttribute() { Name = RandomString(5), AttributeType = 2 },
                 }
             };
@@ -352,8 +352,10 @@ namespace JiwaAPITests.Inventory
             {
                 InventoryID = itemCreateRes.InventoryID,
                 AttributeGroupID = itemCreateRes.AttributeGroups[0].AttributeGroupID,
-                Description = "Test Description"
+                Description = "Test Description"                
             };
+            // And set the contents of the first attribute group field
+            inventoryAttributeGroupPATCHReq.Attributes.Add(new InventoryAttributeGroupAttribute() { AttributeID = inventoryAttributeGroupGETRes.Attributes[0].AttributeID, Contents = "Test" });
             InventoryAttributeGroup InventoryAlternateChildPATCHRes = await Client.PatchAsync(inventoryAttributeGroupPATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
             Assert.That(inventoryAttributeGroupPATCHReq.Description, Is.EqualTo(inventoryAttributeGroupPATCHReq.Description));
@@ -361,7 +363,8 @@ namespace JiwaAPITests.Inventory
             // Get the patched item and ensure it matches what we just patched            
             inventoryAttributeGroupGETRes = await Client.GetAsync(inventoryAttributeGroupGETReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
-            Assert.That(inventoryAttributeGroupGETRes.Description, Is.EqualTo(inventoryAttributeGroupPATCHReq.Description));
+            Assert.That(inventoryAttributeGroupGETRes.Description, Is.EqualTo(inventoryAttributeGroupPATCHReq.Description));            
+            Assert.That(inventoryAttributeGroupGETRes.Attributes[0].Contents, Is.EqualTo(inventoryAttributeGroupPATCHReq.Attributes[0].Contents));
 
             // Remove the attribute group we added
             InventoryAttributeGroupDELETERequest InventoryAttributeGroupDELETEReq = new InventoryAttributeGroupDELETERequest()
