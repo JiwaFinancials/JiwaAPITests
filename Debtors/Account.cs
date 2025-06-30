@@ -77,7 +77,7 @@ namespace JiwaAPITests.Debtors
         [Test]
         public async Task Debtor_ContactNames_CRUD()
         {
-            // Create an item we can operate on
+            // Create an account we can operate on
             DebtorPOSTRequest debtorCreateReq = new DebtorPOSTRequest()
             {
                 AccountNo = RandomString(5),
@@ -90,7 +90,7 @@ namespace JiwaAPITests.Debtors
             Assert.That(debtorCreateRes.AccountNo, Is.EqualTo(debtorCreateReq.AccountNo));
             Assert.That(debtorCreateRes.DebtorID, !Is.Null);
 
-            // Add an contact name to the item
+            // Add an contact name to the account
             DebtorContactNamePOSTRequest debtorContactNamePOSTReq = new DebtorContactNamePOSTRequest()
             {
                 DebtorID = debtorCreateRes.DebtorID,
@@ -119,7 +119,7 @@ namespace JiwaAPITests.Debtors
             Assert.That(debtorContactNameGETRes.FirstName, Is.EqualTo(debtorContactNamePOSTRes.FirstName));
             Assert.That(debtorContactNameGETRes.Surname, Is.EqualTo(debtorContactNamePOSTRes.Surname));
 
-            // Try also the GET Many - should return the single item we added
+            // Try also the GET Many - should return the single account we added
             DebtorContactNamesGETManyRequest debtorContactNameGETManyReq = new DebtorContactNamesGETManyRequest()
             {
                 DebtorID = debtorCreateRes.DebtorID
@@ -129,7 +129,7 @@ namespace JiwaAPITests.Debtors
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
             Assert.That(debtorContactNameGETManyRes.Count, Is.GreaterThan(0));
 
-            // Try patching the item
+            // Try patching the account
             DebtorContactNamePATCHRequest debtorContactNamePATCHReq = new DebtorContactNamePATCHRequest()
             {
                 DebtorID = debtorCreateRes.DebtorID,
@@ -140,12 +140,12 @@ namespace JiwaAPITests.Debtors
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
             Assert.That(debtorContactNamePATCHRes.EmailAddress, Is.EqualTo(debtorContactNamePATCHReq.EmailAddress));
 
-            // Get the patched item and ensure it matches what we patched
+            // Get the patched account and ensure it matches what we patched
             debtorContactNameGETRes = await Client.GetAsync(debtorContactNameGETReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
             Assert.That(debtorContactNameGETRes.EmailAddress, Is.EqualTo(debtorContactNamePATCHReq.EmailAddress));
 
-            // Remove the alternate child we added
+            // Remove the debtor contact name we added
             DebtorContactNameDELETERequest debtorContactNameDELETEReq = new DebtorContactNameDELETERequest()
             {
                 DebtorID = debtorCreateRes.DebtorID,
@@ -154,12 +154,12 @@ namespace JiwaAPITests.Debtors
             await Client.DeleteAsync(debtorContactNameDELETEReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
 
-            // Ensure the child is no longer present in the list of children for the item
+            // Ensure the debtor contact name is no longer present in the list of debtor contact names for the account
             debtorContactNameGETManyRes = await Client.GetAsync(debtorContactNameGETManyReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
             Assert.That(debtorContactNameGETManyRes.Count, Is.EqualTo(0));
 
-            // Ensure explicitly requesting the child 404's
+            // Ensure explicitly requesting the debtor contact name 404's
             WebServiceException ex = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
             {
                 debtorContactNameGETRes = await Client.GetAsync(debtorContactNameGETReq);
