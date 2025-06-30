@@ -370,5 +370,60 @@ namespace JiwaAPITests.Debtors
             Assert.That(ex.StatusCode, Is.EqualTo(404));
         }
         #endregion
+
+        #region "Queries"
+        [Test]
+        public async Task DB_MainQuery()
+        {
+            DB_MainQuery DB_MainQueryRequest = new DB_MainQuery();
+            ServiceStack.QueryResponse<DB_Main> DB_MainQueryResponse;
+
+            //Read all debtor accounts            
+            DB_MainQueryResponse = await Client.GetAsync(DB_MainQueryRequest);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+
+            // Let's assume we expect to get at least one debtor account back - demo data has many debtor accounts.
+            Assert.That(DB_MainQueryResponse.Results.Count > 0);
+
+            // Try with an invalid APIKey on to make sure we get a 401
+            // Need to use a new client for this, as existing session Id's cookied will bind us to the session from
+            // previous requests
+            using (ServiceStack.JsonApiClient tempClient = new ServiceStack.JsonApiClient(Configuration.Hostname))
+            {
+                tempClient.BearerToken = "InvalidAPIKey";
+                var ex = Assert.Throws<ServiceStack.WebServiceException>(() => DB_MainQueryResponse = tempClient.Get(DB_MainQueryRequest));
+                Assert.That(ex.StatusCode, Is.EqualTo(401));
+            }
+        }
+
+        [Test]
+        public async Task v_Jiwa_Debtor_ListQuery()
+        {
+            // get first 10 parts
+            v_Jiwa_Debtor_ListQuery  v_Jiwa_Inventory_Item_ListQueryRequest = new v_Jiwa_Debtor_ListQuery()
+            {
+                Take = 10,
+                OrderBy = "AccountNo"
+            };
+            ServiceStack.QueryResponse<v_Jiwa_Debtor_List> v_Jiwa_Debtor_ListQueryResponse;
+
+            v_Jiwa_Debtor_ListQueryResponse = await Client.GetAsync(v_Jiwa_Inventory_Item_ListQueryRequest);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+
+            // Ensure we got only the 10 we asked for
+            Assert.That(v_Jiwa_Debtor_ListQueryResponse.Results.Count == 10);
+
+            // Try with an invalid APIKey on to make sure we get a 401
+            // Need to use a new client for this, as existing session Id's cookied will bind us to the session from
+            // previous requests
+            using (ServiceStack.JsonApiClient tempClient = new ServiceStack.JsonApiClient(Configuration.Hostname))
+            {
+                tempClient.BearerToken = "InvalidAPIKey";
+                var ex = Assert.Throws<ServiceStack.WebServiceException>(() => v_Jiwa_Debtor_ListQueryResponse = tempClient.Get(v_Jiwa_Inventory_Item_ListQueryRequest));
+                Assert.That(ex.StatusCode, Is.EqualTo(401));
+            }
+        }
+
+        #endregion
     }
 }
