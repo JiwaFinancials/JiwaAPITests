@@ -16,7 +16,7 @@ namespace JiwaAPITests.Debtors
         [Test]
         public async Task DebtorClassification_CRUD()
         {
-            // Create an debtor classification
+            // Create a debtor classification
             DebtorClassificationPOSTRequest classificationCreateReq = new DebtorClassificationPOSTRequest()
             {
                 Description = RandomString(5)
