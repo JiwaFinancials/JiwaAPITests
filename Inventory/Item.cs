@@ -73,7 +73,7 @@ namespace JiwaAPITests.Inventory
         }
         #endregion
 
-        #region "Alternate Childen"
+        #region "Alternate Children"
         [Test]
         public async Task InventoryItem_AlternateChildren_CRUD()
         {
@@ -153,7 +153,7 @@ namespace JiwaAPITests.Inventory
             // Get the patched item and ensure it matches what we patched
             InventoryAlternateChildGETRes = await Client.GetAsync(alternateChildGETReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
-            Assert.That(InventoryAlternateChildPATCHRes.Notes, Is.EqualTo(InventoryAlternateChildPATCHReq.Notes));
+            Assert.That(InventoryAlternateChildGETRes.Notes, Is.EqualTo(InventoryAlternateChildPATCHReq.Notes));
 
             // Remove the alternate child we added
             InventoryAlternateChildDELETERequest alternateChildDELETEReq = new InventoryAlternateChildDELETERequest()
