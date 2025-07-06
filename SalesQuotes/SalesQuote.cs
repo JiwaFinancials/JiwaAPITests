@@ -133,6 +133,33 @@ namespace JiwaAPITests.SalesQuotes
             });
             Assert.That(ex.StatusCode, Is.EqualTo(404));// ensure the deleted item is not there anymore            
 
+            // Add a sales quote line
+            SalesQuoteLinePOSTRequest salesQuoteLineCreateReq = new SalesQuoteLinePOSTRequest()
+            {
+                QuoteID = salesQuoteCreateRes.QuoteID,
+                QuoteHistoryID = salesQuoteCreateRes.Histories[0].QuoteHistoryID,
+                PartNo = itemCreateRes.PartNo,
+                QuantityOrdered = 18,
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuoteLine salesQuoteLineCreateRes = await Client.PostAsync(salesQuoteLineCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(salesQuoteLineCreateRes.QuantityOrdered, Is.EqualTo(salesQuoteLineCreateReq.QuantityOrdered));
+            Assert.That(salesQuoteLineCreateRes.DiscountedPrice, Is.EqualTo(itemCreateReq.DefaultPrice));
+
+            // Get the line we just created
+            salesQuoteLineGetReq = new SalesQuoteLineGETRequest()
+            {
+                QuoteID = salesQuoteCreateRes.QuoteID,
+                QuoteHistoryID = salesQuoteCreateRes.Histories[0].QuoteHistoryID,
+                QuoteLineID = salesQuoteLineCreateRes.QuoteLineID
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuoteLine salesQuoteLineGetRes = await Client.GetAsync(salesQuoteLineGetReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(salesQuoteLineGetRes.InventoryID, Is.EqualTo(salesQuoteLineCreateRes.InventoryID));
+            Assert.That(salesQuoteLineGetRes.PartNo, Is.EqualTo(salesQuoteLineCreateRes.PartNo));
+            Assert.That(salesQuoteLineGetRes.DiscountedPrice, Is.EqualTo(salesQuoteLineCreateRes.DiscountedPrice));
+            Assert.That(salesQuoteLineGetRes.QuantityOrdered, Is.EqualTo(salesQuoteLineCreateRes.QuantityOrdered));
+
             // Try to GET non-existent sales quote to make sure we get a 404
             salesQuoteGetReq.QuoteID = Guid.NewGuid().ToString();
             ex = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
