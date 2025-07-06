@@ -203,9 +203,7 @@ namespace JiwaAPITests.SalesOrders
 
             // Transfer in some stock of the serialised item - 4 serial numbers
             StockTransferPOSTRequest transferCreateReq = new StockTransferPOSTRequest()
-            {
-                Status = Statuses.Activated,
-
+            {                
                 Lines = new List<JiwaFinancials.Jiwa.JiwaServiceModel.StockTransfers.StockTransferLine>()
                 {
                     new JiwaFinancials.Jiwa.JiwaServiceModel.StockTransfers.StockTransferLine()
