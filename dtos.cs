@@ -17221,6 +17221,17 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     {
     }
 
+    [Route("/StockTransfers/Activate/{TransferID}", "POST")]
+    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No Stock Transfer with the TransferID provided was found", StatusCode = 404)]
+    public partial class StockTransferACTIVATERequest
+        : IReturn<StockTransfer>
+    {
+        public virtual string TransferID { get; set; }
+    }
+
     [Route("/StockTransfers/Cache/{TransferID}", "DELETE")]
     [Route("/StockTransfers/Cache/{TransferID}", "DELETE")]
     public partial class StockTransferCACHEDELETERequest
