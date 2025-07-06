@@ -103,7 +103,7 @@ namespace JiwaAPITests.SalesOrders
             };
             JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine salesOrderLinePatchRes = await Client.PatchAsync(salesOrderLinePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
-            Assert.That(salesOrderLinePatchRes.DiscountedPrice, Is.EqualTo(salesOrderLinePatchReq.DiscountedPrice));
+            Assert.That(salesOrderLinePatchRes.DiscountedPrice, Is.EqualTo(salesOrderLinePatchReq.DiscountedPrice));            
 
             // Remove the second sales order line
             SalesOrderLineDELETERequest salesOrderLineDeleteReq = new SalesOrderLineDELETERequest() 
@@ -134,6 +134,33 @@ namespace JiwaAPITests.SalesOrders
                 JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine salesOrderLineGetRes = await Client.GetAsync(salesOrderLineGetReq);
             });
             Assert.That(ex.StatusCode, Is.EqualTo(404));// ensure the deleted item is not there anymore            
+
+            // Add a sales order line
+            SalesOrderLinePOSTRequest salesOrderLineCreateReq = new SalesOrderLinePOSTRequest()
+            {
+                InvoiceID = salesOrderCreateRes.InvoiceID,
+                InvoiceHistoryID = salesOrderCreateRes.Histories[0].InvoiceHistoryID,
+                PartNo = itemCreateRes.PartNo,
+                QuantityOrdered = 18,                
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine salesOrderLineCreateRes = await Client.PostAsync(salesOrderLineCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(salesOrderLineCreateRes.QuantityOrdered, Is.EqualTo(salesOrderLineCreateReq.QuantityOrdered));
+            Assert.That(salesOrderLineCreateRes.DiscountedPrice, Is.EqualTo(itemCreateReq.DefaultPrice));
+
+            // Get the line we just created
+            salesOrderLineGetReq = new SalesOrderLineGETRequest()
+            {
+                InvoiceID = salesOrderCreateRes.InvoiceID,
+                InvoiceHistoryID = salesOrderCreateRes.Histories[0].InvoiceHistoryID,
+                InvoiceLineID = salesOrderLineCreateRes.InvoiceLineID
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine salesOrderLineGetRes = await Client.GetAsync(salesOrderLineGetReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(salesOrderLineGetRes.InventoryID, Is.EqualTo(salesOrderLineCreateRes.InventoryID));
+            Assert.That(salesOrderLineGetRes.PartNo, Is.EqualTo(salesOrderLineCreateRes.PartNo));
+            Assert.That(salesOrderLineGetRes.DiscountedPrice, Is.EqualTo(salesOrderLineCreateRes.DiscountedPrice));
+            Assert.That(salesOrderLineGetRes.QuantityOrdered, Is.EqualTo(salesOrderLineCreateRes.QuantityOrdered));
 
             // Try to GET non-existent sales order to make sure we get a 404
             salesOrderGetReq.InvoiceID = Guid.NewGuid().ToString();
