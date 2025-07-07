@@ -10,7 +10,7 @@ using static ServiceStack.Diagnostics.Events;
 namespace JiwaAPITests
 {
     // This is a base class our tests inherit from, to reduce some boiler plate code.    
-    [TestFixture]
+    [TestFixture]    
     public class JiwaAPITest
     {
         private Random random;
@@ -60,6 +60,6 @@ namespace JiwaAPITests
         {            
             const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(characters, length).Select(x => x[random.Next(x.Length)]).ToArray());
-        }
+        }        
     }
 }

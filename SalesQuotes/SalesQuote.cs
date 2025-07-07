@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace JiwaAPITests.SalesQuotes
 {
-    [TestFixture]
     class SalesQuote : JiwaAPITest
     {
         #region "{Main}"

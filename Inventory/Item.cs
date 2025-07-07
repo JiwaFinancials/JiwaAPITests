@@ -11,8 +11,7 @@ using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
 using ServiceStack;
 
 namespace JiwaAPITests.Inventory
-{
-    [TestFixture]
+{    
     class Item : JiwaAPITest
     {
         #region "{Main}"

@@ -10,7 +10,6 @@ using JiwaFinancials.Jiwa.JiwaServiceModel.Tables;
 
 namespace JiwaAPITests.Inventory
 {
- 
     public class AttributeGroupTemplate : JiwaAPITest
     {
         #region "{Main}"

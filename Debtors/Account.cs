@@ -15,8 +15,7 @@ using System.Net.Mail;
 using System.Numerics;
 
 namespace JiwaAPITests.Debtors
-{
-    [TestFixture]
+{    
     class Account : JiwaAPITest
     {
         #region "{Main}"
