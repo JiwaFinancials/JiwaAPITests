@@ -15,3 +15,4 @@ Tests will also remove data created where possible - but note that if a test fai
 In Visual Studio
 ================
 Run the tests by loading the solution with Visual Studio 2022 and from the Test menu, choose Run All Tests - the Test Explorer will load and show the tests and their outcomes.
+<img width="937" height="883" alt="image" src="https://github.com/user-attachments/assets/5104b0af-9300-4509-83cd-cca96ca9df55" />
