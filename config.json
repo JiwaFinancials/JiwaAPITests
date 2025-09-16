@@ -1,5 +1,5 @@
 {
-  "Hostname": "http://192.168.1.179",
+  "Hostname": "http://localhost",
   "UseAPIKeyAuth": true,
   "APIKey": "dOmYbQy_Oivw94cWd3wB7dszVf0ru6JGcI81qKJ04FA",
   "Credentials_Username": "Admin",
