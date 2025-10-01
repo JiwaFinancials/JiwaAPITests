@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using ServiceStack;
 
 namespace JiwaAPITests.Manufacturing
-{    
-    class WorkOrder : JiwaAPITest
+{
+    public class WorkOrder : JiwaAPITest
     {
         #region "{Main}"
         [Test]

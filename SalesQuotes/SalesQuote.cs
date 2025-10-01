@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace JiwaAPITests.SalesQuotes
 {
-    class SalesQuote : JiwaAPITest
+    public class SalesQuote : JiwaAPITest
     {
         #region "{Main}"
         [Test]

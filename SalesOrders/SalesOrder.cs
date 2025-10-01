@@ -13,8 +13,8 @@ using JiwaFinancials.Jiwa.JiwaServiceModel.Debtors;
 using JiwaFinancials.Jiwa.JiwaServiceModel.StockTransfers;
 
 namespace JiwaAPITests.SalesOrders
-{    
-    class SalesOrder : JiwaAPITest
+{
+    public class SalesOrder : JiwaAPITest
     {
         #region "{Main}"
         [Test]       

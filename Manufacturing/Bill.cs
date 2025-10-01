@@ -11,7 +11,7 @@ using JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or;
 
 namespace JiwaAPITests.Manufacturing
 {
-    class Bill : JiwaAPITest
+    public class Bill : JiwaAPITest
     {
         #region "{Main}"
         [Test]

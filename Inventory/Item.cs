@@ -11,8 +11,8 @@ using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
 using ServiceStack;
 
 namespace JiwaAPITests.Inventory
-{    
-    class Item : JiwaAPITest
+{
+    public class Item : JiwaAPITest
     {
         #region "{Main}"
         [Test]       
@@ -419,7 +419,134 @@ namespace JiwaAPITests.Inventory
             await Client.DeleteAsync(itemDeleteReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
         }
-        #endregion        
+        #endregion
+
+        #region "Tag Memberships"
+        [Test]
+        public async Task InventoryItem_TagMembership_CRUD()
+        {
+            // Create an item we can operate on
+            InventoryPOSTRequest itemCreateReq = new InventoryPOSTRequest()
+            {
+                PartNo = RandomString(5),
+                Description = "Item Test",
+                DefaultPrice = 125.67M
+            };
+
+            InventoryItem itemCreateRes = await Client.PostAsync(itemCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(itemCreateRes.PartNo, Is.EqualTo(itemCreateReq.PartNo));
+            Assert.That(itemCreateRes.InventoryID, !Is.Null);
+
+            // Create a tag
+            InventoryTagPOSTRequest tagCreateReq = new InventoryTagPOSTRequest()
+            {
+                Text = RandomString(5)
+            };
+
+            InventoryTag tagCreateRes = await Client.PostAsync(tagCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(tagCreateRes.Text, Is.EqualTo(tagCreateReq.Text));
+            Assert.That(tagCreateRes.RecID, !Is.Null);
+
+            // Add a tag membership to the item
+            InventoryTagMembershipPOSTRequest tagMembershipPOSTRequest = new InventoryTagMembershipPOSTRequest()
+            {
+                InventoryID  = itemCreateRes.InventoryID,
+                TagID = tagCreateRes.RecID
+            };
+
+            JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag tagMembershipCreateRes = await Client.PostAsync(tagMembershipPOSTRequest);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(tagMembershipCreateRes.Text, Is.EqualTo(tagCreateReq.Text));
+            Assert.That(tagMembershipCreateRes.RecID, Is.EqualTo(tagCreateRes.RecID));
+
+            // Get the tag memberships for the item
+            InventoryTagMembershipGETManyRequest tagMembershipGetManyReq = new InventoryTagMembershipGETManyRequest()
+            {
+                InventoryID = itemCreateRes.InventoryID
+            };
+
+            List<JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag> tagMembershipGetManyRes = await Client.GetAsync(tagMembershipGetManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagMembershipGetManyRes, !Is.Null);
+            Assert.That(tagMembershipGetManyRes.Count, Is.EqualTo(1));
+            Assert.That(tagMembershipGetManyRes[0].RecID, Is.EqualTo(tagCreateRes.RecID));
+
+            // Replace all the tag memberships with an empty list
+            InventoryTagMembershipPUTRequest tagMembershipPutReq = new InventoryTagMembershipPUTRequest()
+            {
+                InventoryID = itemCreateRes.InventoryID,
+                Tags = new List<JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag>()
+            };
+
+            List<JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag> tagMembershipPutRes = await Client.PutAsync(tagMembershipPutReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagMembershipPutRes, !Is.Null);
+            Assert.That(tagMembershipPutRes.Count, Is.EqualTo(0));
+
+            InventoryTag firstTagCreateRes = tagCreateRes.CreateCopy();
+
+            // Create a second tag so we can add it with a PUT later
+            tagCreateReq = new InventoryTagPOSTRequest()
+            {
+                Text = RandomString(5)
+            };
+
+            tagCreateRes = await Client.PostAsync(tagCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(tagCreateRes.Text, Is.EqualTo(tagCreateReq.Text));
+            Assert.That(tagCreateRes.RecID, !Is.Null);
+
+            // Replace all the tag memberships with the two tags we created
+            tagMembershipPutReq = new InventoryTagMembershipPUTRequest()
+            {
+                InventoryID = itemCreateRes.InventoryID,
+                Tags = new List<JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag>()
+                {
+                    new JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag()
+                    {
+                        RecID = firstTagCreateRes.RecID
+                    },
+                    new JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag()
+                    {
+                        RecID = tagCreateRes.RecID
+                    }
+                }
+            };
+
+            tagMembershipPutRes = await Client.PutAsync(tagMembershipPutReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagMembershipPutRes, !Is.Null);
+            Assert.That(tagMembershipPutRes.Count, Is.EqualTo(2));
+            Assert.That(tagMembershipPutRes[0].RecID, Is.EqualTo(firstTagCreateRes.RecID));
+            Assert.That(tagMembershipPutRes[1].RecID, Is.EqualTo(tagCreateRes.RecID));
+
+            // Remove a tag membership
+            InventoryTagMembershipDELETERequest tagMembershipDeleteReq = new InventoryTagMembershipDELETERequest() { InventoryID = itemCreateRes.InventoryID,  TagID = tagCreateRes.RecID };
+            await Client.DeleteAsync(tagMembershipDeleteReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+
+            // ensure the deleted tag membership is not there anymore            
+            // Get the tag memberships for the item
+            tagMembershipGetManyReq = new InventoryTagMembershipGETManyRequest()
+            {
+                InventoryID = itemCreateRes.InventoryID
+            };
+
+            tagMembershipGetManyRes = await Client.GetAsync(tagMembershipGetManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagMembershipGetManyRes, !Is.Null);
+            Assert.That(tagMembershipGetManyRes.Count, Is.EqualTo(1));
+            Assert.That(tagMembershipGetManyRes[0].RecID, Is.EqualTo(firstTagCreateRes.RecID));
+
+            // Remove the test item we created
+            InventoryDELETERequest itemDeleteReq = new InventoryDELETERequest() { InventoryID = itemCreateRes.InventoryID };
+            await Client.DeleteAsync(itemDeleteReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+
+        }
+        #endregion
 
         #region "Queries"
         [Test]
