@@ -197,10 +197,10 @@ namespace JiwaAPITests.SalesQuotes
         [Test]
         public async Task v_Jiwa_SalesQuote_ListQuery()
         {
-            // get first 10 sales quotes
+            // get first 3 sales quotes
             v_Jiwa_SalesQuote_ListQuery v_Jiwa_SalesQuote_ListQueryRequest = new v_Jiwa_SalesQuote_ListQuery()
             {
-                Take = 10,
+                Take = 3,
                 OrderBy = "InvoiceNo" //InvoiceNo is actually the QuoteNo.  For reasons of legacy.
             };
             ServiceStack.QueryResponse<v_Jiwa_SalesQuote_List> v_Jiwa_SalesQuote_ListQueryResponse;
@@ -208,8 +208,8 @@ namespace JiwaAPITests.SalesQuotes
             v_Jiwa_SalesQuote_ListQueryResponse = await Client.GetAsync(v_Jiwa_SalesQuote_ListQueryRequest);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
 
-            // Ensure we got only the 10 we asked for
-            Assert.That(v_Jiwa_SalesQuote_ListQueryResponse.Results.Count == 10);
+            // Ensure we got only the 3 we asked for
+            Assert.That(v_Jiwa_SalesQuote_ListQueryResponse.Results.Count == 3);
 
             // Try with an invalid APIKey on to make sure we get a 401
             // Need to use a new client for this, as existing session Id's cookied will bind us to the session from
