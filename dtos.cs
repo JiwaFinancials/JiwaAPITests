@@ -48935,9 +48935,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string LedgerIDDebtorDebitAdjustment { get; set; }
 
         [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
-
-        [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
 
         [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
@@ -49190,13 +49187,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string LedgerIDDebtorDebitAdjustmentLike { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentBetween { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentIn { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsStartsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsEndsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsContains { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsLike { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsBetween { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsIn { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentStartsWith { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentEndsWith { get; set; }
@@ -51535,9 +51525,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string LedgerIDDebtorDebitAdjustment { get; set; }
 
         [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
-
-        [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
 
         [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
@@ -51923,13 +51910,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string LedgerIDDebtorDebitAdjustmentLike { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentBetween { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentIn { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsStartsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsEndsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsContains { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsLike { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsBetween { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsIn { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentStartsWith { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentEndsWith { get; set; }
@@ -119042,8 +119022,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string LedgerIDDebtorSales { get; set; }
         public virtual string LedgerIDDebtorDiscounts { get; set; }
         public virtual string LedgerIDDebtorSourcedInvoices { get; set; }
-        public virtual string LedgerIDDebtorDebitAdjustment { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
+        public virtual string LedgerIDDebtorDebitAdjustment { get; set; }        
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorFreight { get; set; }
         public virtual string LedgerIDDebtorInsurance { get; set; }
@@ -119400,13 +119379,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string LedgerIDDebtorDebitAdjustmentLike { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentBetween { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentIn { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsStartsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsEndsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsContains { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsLike { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsBetween { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsIn { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentStartsWith { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentEndsWith { get; set; }
@@ -119692,8 +119664,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string LedgerIDDebtorSales { get; set; }
         public virtual string LedgerIDDebtorDiscounts { get; set; }
         public virtual string LedgerIDDebtorSourcedInvoices { get; set; }
-        public virtual string LedgerIDDebtorDebitAdjustment { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
+        public virtual string LedgerIDDebtorDebitAdjustment { get; set; }        
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorFreight { get; set; }
         public virtual string LedgerIDDebtorInsurance { get; set; }
@@ -120050,13 +120021,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string LedgerIDDebtorDebitAdjustmentLike { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentBetween { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentIn { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsStartsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsEndsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsContains { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsLike { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsBetween { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsIn { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentStartsWith { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentEndsWith { get; set; }
@@ -151249,9 +151213,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string LedgerIDDebtorDebitAdjustment { get; set; }
 
         [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
-
-        [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
 
         [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
@@ -151339,13 +151300,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string LedgerIDDebtorDebitAdjustmentLike { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentBetween { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentIn { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsStartsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsEndsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsContains { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsLike { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsBetween { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsIn { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentStartsWith { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentEndsWith { get; set; }
@@ -153683,8 +153637,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
         public virtual string LedgerIDDebtorDebitAdjustment { get; set; }
 
-        [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
 
         [References(typeof(JiwaFinancials.Jiwa.JiwaServiceModel.Tables.GL_Ledger))]
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
@@ -154072,13 +154024,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string LedgerIDDebtorDebitAdjustmentLike { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentBetween { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentIn { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsStartsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsEndsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsContains { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsLike { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsBetween { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsIn { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentStartsWith { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentEndsWith { get; set; }
@@ -221183,8 +221128,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string LedgerIDDebtorSales { get; set; }
         public virtual string LedgerIDDebtorDiscounts { get; set; }
         public virtual string LedgerIDDebtorSourcedInvoices { get; set; }
-        public virtual string LedgerIDDebtorDebitAdjustment { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
+        public virtual string LedgerIDDebtorDebitAdjustment { get; set; }        
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorFreight { get; set; }
         public virtual string LedgerIDDebtorInsurance { get; set; }
@@ -221541,13 +221485,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string LedgerIDDebtorDebitAdjustmentLike { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentBetween { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentIn { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsStartsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsEndsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsContains { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsLike { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsBetween { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsIn { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentStartsWith { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentEndsWith { get; set; }
@@ -221833,8 +221770,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string LedgerIDDebtorSales { get; set; }
         public virtual string LedgerIDDebtorDiscounts { get; set; }
         public virtual string LedgerIDDebtorSourcedInvoices { get; set; }
-        public virtual string LedgerIDDebtorDebitAdjustment { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
+        public virtual string LedgerIDDebtorDebitAdjustment { get; set; }        
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorFreight { get; set; }
         public virtual string LedgerIDDebtorInsurance { get; set; }
@@ -222191,13 +222127,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string LedgerIDDebtorDebitAdjustmentLike { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentBetween { get; set; }
         public virtual string[] LedgerIDDebtorDebitAdjustmentIn { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceipts { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsStartsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsEndsWith { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsContains { get; set; }
-        public virtual string LedgerIDDebtorSourcedReceiptsLike { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsBetween { get; set; }
-        public virtual string[] LedgerIDDebtorSourcedReceiptsIn { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustment { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentStartsWith { get; set; }
         public virtual string LedgerIDDebtorCreditAdjustmentEndsWith { get; set; }
