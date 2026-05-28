@@ -1,7 +1,7 @@
 {
   "Hostname": "http://localhost",
   "UseAPIKeyAuth": true,
-  "APIKey": "dOmYbQy_Oivw94cWd3wB7dszVf0ru6JGcI81qKJ04FA",
+  "APIKey": "{Your Jiwa API Key}",
   "Credentials_Username": "Admin",
   "Credentials_Password": "password"
 }
