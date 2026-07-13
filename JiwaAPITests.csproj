@@ -28,4 +28,12 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Creditors\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include=".github\copilot-instructions.md" />
+  </ItemGroup>
+
 </Project>

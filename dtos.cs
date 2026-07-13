@@ -1,5 +1,5 @@
 /* Options:
-Date: 2026-05-28 16:34:54
+Date: 2026-07-13 14:36:12
 Version: 6.10
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: http://localhost
@@ -36,6 +36,7 @@ using JiwaFinancials.Jiwa.JiwaServiceModel;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Creditors;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Creditors.Classification;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Banking;
+using JiwaFinancials.Jiwa.JiwaServiceModel.CRBatchTX;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Debtors;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Debtors.Classification;
 using JiwaFinancials.Jiwa.JiwaServiceModel.DebtorSystemTemplates;
@@ -1963,6 +1964,645 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
 
         [IgnoreDataMember]
         public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+    }
+
+    [Route("/CreditorPurchases/Activate/{CreditorPurchaseID}", "POST")]
+    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseACTIVATERequest
+        : IReturn<CreditorBatchTrans>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/Cache/{CreditorPurchaseID}", "DELETE")]
+    public partial class CreditorPurchaseCACHEDELETERequest
+        : IReturnVoid, IJiwaInternalRequest
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/CustomFields", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class CreditorPurchaseCustomFieldsGETManyRequest
+        : IReturn<List<CustomField>>
+    {
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/CustomFieldValues/{SettingID}", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase custom field value with the CreditorPurchaseID or SettingID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseCustomFieldValueGETRequest
+        : IReturn<CustomFieldValue>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string SettingID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/CustomFieldValues/{SettingID}", "PATCH")]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase custom field value with the CreditorPurchaseID or SettingID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseCustomFieldValuePATCHRequest
+        : CustomFieldValue, IReturn<CustomFieldValue>
+    {
+        [IgnoreDataMember]
+        public virtual string SettingName { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string PluginID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string PluginName { get; set; }
+
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string SettingID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/CustomFieldValues", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase item with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseCustomFieldValuesGETManyRequest
+        : IReturn<List<CustomFieldValue>>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}", "DELETE")]
+    [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseDELETERequest
+        : IReturnVoid
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Documents/{DocumentID}", "DELETE")]
+    [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseDocumentDELETERequest
+        : IReturnVoid
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string DocumentID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Documents/{DocumentID}", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase document with the CreditorPurchaseID or DocumentID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseDocumentGETRequest
+        : IReturn<Document>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string DocumentID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Documents/{DocumentID}", "PATCH")]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseDocumentPATCHRequest
+        : Document, IReturn<Document>
+    {
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string FileID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string FullPhysicalFileName { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffUsername { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffTitle { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffFirstName { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffSurname { get; set; }
+
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string DocumentID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Documents", "POST")]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseDocumentPOSTRequest
+        : Document, IReturn<Document>
+    {
+        [IgnoreDataMember]
+        public virtual string DocumentID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string FileID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string FullPhysicalFileName { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffUsername { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffTitle { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffFirstName { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffSurname { get; set; }
+
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Documents", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseDocumentsGETManyRequest
+        : IReturn<List<Document>>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/DocumentTypes/{DocumentTypeID}", "DELETE")]
+    [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase document type with the DocumentTypeID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseDocumentTypeDELETERequest
+        : IReturnVoid
+    {
+        public virtual string DocumentTypeID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/DocumentTypes/{DocumentTypeID}", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase document type with the DocumentTypeID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseDocumentTypeGETRequest
+        : IReturn<DocumentType>
+    {
+        public virtual string DocumentTypeID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/DocumentTypes/{DocumentTypeID}", "PATCH")]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase document type with the DocumentTypeID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseDocumentTypePATCHRequest
+        : DocumentType, IReturn<DocumentType>
+    {
+        public CreditorPurchaseDocumentTypePATCHRequest()
+        {
+            RowHash = new byte[] { };
+        }
+
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual byte[] RowHash { get; set; }
+
+        public virtual string DocumentTypeID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/DocumentTypes", "POST")]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class CreditorPurchaseDocumentTypePOSTRequest
+        : DocumentType, IReturn<DocumentType>
+    {
+        public CreditorPurchaseDocumentTypePOSTRequest()
+        {
+            RowHash = new byte[] { };
+        }
+
+        [IgnoreDataMember]
+        public virtual string DocumentTypeID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual byte[] RowHash { get; set; }
+    }
+
+    [Route("/CreditorPurchases/DocumentTypes", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class CreditorPurchaseDocumentTypesGETManyRequest
+        : IReturn<List<DocumentType>>
+    {
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseGETRequest
+        : IReturn<CreditorBatchTrans>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/Lines/CustomFields", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class CreditorPurchaseLineCustomFieldsGETManyRequest
+        : IReturn<List<CustomField>>
+    {
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Lines/{CreditorPurchaseLineID}/CustomFieldValues/{SettingID}", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase line custom field value with the CreditorPurchaseID, CreditorPurchaseLineID or SettingID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseLineCustomFieldValueGETRequest
+        : IReturn<CustomFieldValue>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string CreditorPurchaseLineID { get; set; }
+        public virtual string SettingID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Lines/{CreditorPurchaseLineID}/CustomFieldValues/{SettingID}", "PATCH")]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase line custom field value with the CreditorPurchaseID, CreditorPurchaseLineID or SettingID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseLineCustomFieldValuePATCHRequest
+        : CustomFieldValue, IReturn<CustomFieldValue>
+    {
+        [IgnoreDataMember]
+        public virtual string SettingName { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string PluginID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string PluginName { get; set; }
+
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string CreditorPurchaseLineID { get; set; }
+        public virtual string SettingID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Lines/{CreditorPurchaseLineID}/CustomFieldValues", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase line with the CreditorPurchaseID or CreditorPurchaseLineID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseLineCustomFieldValuesGETManyRequest
+        : IReturn<List<CustomFieldValue>>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string CreditorPurchaseLineID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Lines/{LineID}", "DELETE")]
+    [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No line with the CreditorPurchaseID or LineID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseLineDELETERequest
+        : IReturnVoid
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string LineID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Lines/{LineID}", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No line with the CreditorPurchaseID or LineID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseLineGETRequest
+        : IReturn<CRBatchTranLine>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string LineID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Lines/{LineID}", "PATCH")]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No line with the CreditorPurchaseID or LineID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseLinePATCHRequest
+        : CRBatchTranLine, IReturn<CRBatchTranLine>
+    {
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual int? ItemNo { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string CreditorName { get; set; }
+
+        [IgnoreDataMember]
+        public virtual decimal? SumOfDispersals { get; set; }
+
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string LineID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Lines", "POST")]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseLinePOSTRequest
+        : CRBatchTranLine, IReturn<CRBatchTranLine>
+    {
+        [IgnoreDataMember]
+        public virtual string CRBatchTranLineID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual int? ItemNo { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string CreditorName { get; set; }
+
+        [IgnoreDataMember]
+        public virtual decimal? SumOfDispersals { get; set; }
+
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Lines", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No line with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseLinesGETManyRequest
+        : IReturn<List<CRBatchTranLine>>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Notes/{NoteID}", "DELETE")]
+    [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID or NoteID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseNoteDELETERequest
+        : IReturnVoid
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string NoteID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Notes/{NoteID}", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase note with the CreditorPurchaseID or NoteID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseNoteGETRequest
+        : IReturn<Note>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string NoteID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Notes/{NoteID}", "PATCH")]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseNotePATCHRequest
+        : Note, IReturn<Note>
+    {
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffUsername { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffTitle { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffFirstName { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffSurname { get; set; }
+
+        public virtual string CreditorPurchaseID { get; set; }
+        public virtual string NoteID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Notes", "POST")]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseNotePOSTRequest
+        : Note, IReturn<Note>
+    {
+        [IgnoreDataMember]
+        public virtual string NoteID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffUsername { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffTitle { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffFirstName { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string LastModifiedByStaffSurname { get; set; }
+
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}/Notes", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseNotesGETManyRequest
+        : IReturn<List<Note>>
+    {
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/NoteTypes/{NoteTypeID}", "DELETE")]
+    [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase note type with the NoteTypeID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseNoteTypeDELETERequest
+        : IReturnVoid
+    {
+        public virtual string NoteTypeID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/NoteTypes/{NoteTypeID}", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase note type with the NoteTypeID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseNoteTypeGETRequest
+        : IReturn<NoteType>
+    {
+        public virtual string NoteTypeID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/NoteTypes/{NoteTypeID}", "PATCH")]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase note type with the NoteTypeID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchaseNoteTypePATCHRequest
+        : NoteType, IReturn<NoteType>
+    {
+        public CreditorPurchaseNoteTypePATCHRequest()
+        {
+            RowHash = new byte[] { };
+        }
+
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual byte[] RowHash { get; set; }
+
+        public virtual string NoteTypeID { get; set; }
+    }
+
+    [Route("/CreditorPurchases/NoteTypes", "POST")]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class CreditorPurchaseNoteTypePOSTRequest
+        : NoteType, IReturn<NoteType>
+    {
+        public CreditorPurchaseNoteTypePOSTRequest()
+        {
+            RowHash = new byte[] { };
+        }
+
+        [IgnoreDataMember]
+        public virtual string NoteTypeID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual byte[] RowHash { get; set; }
+    }
+
+    [Route("/CreditorPurchases/NoteTypes", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class CreditorPurchaseNoteTypesGETManyRequest
+        : IReturn<List<NoteType>>
+    {
+    }
+
+    [Route("/CreditorPurchases/{CreditorPurchaseID}", "PATCH")]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
+    public partial class CreditorPurchasePATCHRequest
+        : CreditorBatchTrans, IReturn<CreditorBatchTrans>
+    {
+        [IgnoreDataMember]
+        public virtual CreditorBatchType? BatchType { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string BatchNumber { get; set; }
+
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string JiwaUser { get; set; }
+
+        [IgnoreDataMember]
+        public virtual BatchStatusType? BatchStatus { get; set; }
+
+        public virtual string CreditorPurchaseID { get; set; }
+    }
+
+    [Route("/CreditorPurchases", "POST")]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class CreditorPurchasePOSTRequest
+        : CreditorBatchTrans, IReturn<CreditorBatchTrans>
+    {
+        [IgnoreDataMember]
+        public virtual string BatchID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string BatchNumber { get; set; }
+
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        [IgnoreDataMember]
+        public virtual string JiwaUser { get; set; }
+
+        [IgnoreDataMember]
+        public virtual BatchStatusType? BatchStatus { get; set; }
     }
 
     [Route("/Creditor/Tags/Cache", "DELETE")]
@@ -12134,6 +12774,8 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual DateTime? ReceivedDate { get; set; }
     }
 
+    [Route("/Logs", "GET")]
+    [Route("/Logs/{Date}", "GET")]
     public partial class QueryRequestLogsGETManyRequest
         : QueryData<RequestLogEntry>, IReturn<QueryResponse<RequestLogEntry>>
     {
@@ -17425,11 +18067,13 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     {
     }
 
+    [Route("/Logs/Today/Errors", "GET")]
     public partial class TodayErrorLogsGETManyRequest
         : QueryData<RequestLogEntry>, IReturn<QueryResponse<RequestLogEntry>>
     {
     }
 
+    [Route("/Logs/Today", "GET")]
     public partial class TodayLogsGETManyRequest
         : QueryData<RequestLogEntry>, IReturn<QueryResponse<RequestLogEntry>>
     {
@@ -20558,11 +21202,13 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual string WorkOrderID { get; set; }
     }
 
+    [Route("/Logs/Yesterday/Errors", "GET")]
     public partial class YesterdayErrorLogsGETManyRequest
         : QueryData<RequestLogEntry>, IReturn<QueryResponse<RequestLogEntry>>
     {
     }
 
+    [Route("/Logs/Yesterday", "GET")]
     public partial class YesterdayLogsGETManyRequest
         : QueryData<RequestLogEntry>, IReturn<QueryResponse<RequestLogEntry>>
     {
@@ -20821,6 +21467,115 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Carriers
 
 }
 
+namespace JiwaFinancials.Jiwa.JiwaServiceModel.CRBatchTX
+{
+    public enum BatchStatusType
+    {
+        Entered,
+        Activated,
+    }
+
+    public partial class CRBatchDispersal
+    {
+        public CRBatchDispersal()
+        {
+            CustomFieldValues = new List<CustomFieldValue> { };
+        }
+
+        public virtual string CRBatchDispersalID { get; set; }
+        public virtual int? ItemNo { get; set; }
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+        public virtual string LineReference { get; set; }
+        public virtual string Remark { get; set; }
+        public virtual string LedgerAccountRecID { get; set; }
+        public virtual string LedgerAccountNo { get; set; }
+        public virtual string LedgerAccountDescription { get; set; }
+        public virtual decimal? HomeDispersedAmount { get; set; }
+        public virtual decimal? HomeDispersedAmountIncGST { get; set; }
+        public virtual decimal? SupplierDispersedAmount { get; set; }
+        public virtual string TaxRateRecID { get; set; }
+        public virtual string TaxRateDescription { get; set; }
+        public virtual decimal? TaxRatePercentage { get; set; }
+        public virtual decimal? TaxAmount { get; set; }
+        public virtual string JobCostingStageRecID { get; set; }
+        public virtual string JobCostingStageNo { get; set; }
+        public virtual string JobCostingStageName { get; set; }
+        public virtual decimal? JobChargeAmount { get; set; }
+        public virtual decimal? JobMarkUp { get; set; }
+        public virtual List<CustomFieldValue> CustomFieldValues { get; set; }
+    }
+
+    public partial class CRBatchTranLine
+    {
+        public CRBatchTranLine()
+        {
+            Dispersals = new List<CRBatchDispersal> { };
+        }
+
+        public virtual string CRBatchTranLineID { get; set; }
+        public virtual int? ItemNo { get; set; }
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+        public virtual string RemitNo { get; set; }
+        public virtual string CreditorRecID { get; set; }
+        public virtual string CreditorAccountNo { get; set; }
+        public virtual string CreditorName { get; set; }
+        public virtual decimal? HomeTransAmount { get; set; }
+        public virtual decimal? SupplierTransAmount { get; set; }
+        public virtual DateTime? ReceiptDate { get; set; }
+        public virtual DateTime? DueDate { get; set; }
+        public virtual decimal? SumOfDispersals { get; set; }
+        public virtual decimal? CurrencyRateUsed { get; set; }
+        public virtual string CurrencyID { get; set; }
+        public virtual bool? InferCurrencyRate { get; set; }
+        public virtual List<CRBatchDispersal> Dispersals { get; set; }
+    }
+
+    public partial class CreditorBatchTrans
+    {
+        public CreditorBatchTrans()
+        {
+            TransLines = new List<CRBatchTranLine> { };
+            Notes = new List<Note> { };
+            Documents = new List<Document> { };
+            CustomFieldValues = new List<CustomFieldValue> { };
+        }
+
+        public virtual string BatchID { get; set; }
+        public virtual CreditorBatchType? BatchType { get; set; }
+        public virtual bool? Template { get; set; }
+        public virtual string BatchNumber { get; set; }
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+        public virtual string JiwaUser { get; set; }
+        public virtual DateTime? BatchDate { get; set; }
+        public virtual BatchStatusType? BatchStatus { get; set; }
+        public virtual TemplateRepeatingType? RepeatingType { get; set; }
+        public virtual int? RepeatingUnits { get; set; }
+        public virtual DateTime? RepeatingNextDate { get; set; }
+        public virtual bool? RepeatingWillEnd { get; set; }
+        public virtual DateTime? RepeatingEndDate { get; set; }
+        public virtual string Description { get; set; }
+        public virtual List<CRBatchTranLine> TransLines { get; set; }
+        public virtual List<Note> Notes { get; set; }
+        public virtual List<Document> Documents { get; set; }
+        public virtual List<CustomFieldValue> CustomFieldValues { get; set; }
+    }
+
+    public enum CreditorBatchType
+    {
+        CreditorPurchase = 1,
+        CreditorDebitAdjustment = 2,
+        CreditorCreditAdjustment = 4,
+    }
+
+    public enum TemplateRepeatingType
+    {
+        None,
+        Days,
+        Months,
+    }
+
+}
+
 namespace JiwaFinancials.Jiwa.JiwaServiceModel.Creditors
 {
     public partial class Creditor
@@ -21040,12 +21795,30 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.CustomFields
 
     public partial class CustomField
     {
+        public CustomField()
+        {
+            LookupProviders = new Dictionary<string, string> { };
+            LookupDisplayValueResolvers = new Dictionary<string, string> { };
+            ComboKeyValuePairs = new Dictionary<string, string> { };
+        }
+
         public virtual string SettingID { get; set; }
         public virtual string SettingName { get; set; }
         public virtual string PluginID { get; set; }
         public virtual string PluginName { get; set; }
         public virtual CellTypes CellType { get; set; }
         public virtual int DisplayOrder { get; set; }
+        public virtual short? DecimalPlaces { get; set; }
+        public virtual decimal? DecimalMinValue { get; set; }
+        public virtual decimal? DecimalMaxValue { get; set; }
+        public virtual int? IntegerMinValue { get; set; }
+        public virtual int? IntegerMaxValue { get; set; }
+        public virtual DateTime? DateMinValue { get; set; }
+        public virtual DateTime? DateMaxValue { get; set; }
+        public virtual int? TextMaxLength { get; set; }
+        public virtual Dictionary<string, string> LookupProviders { get; set; }
+        public virtual Dictionary<string, string> LookupDisplayValueResolvers { get; set; }
+        public virtual Dictionary<string, string> ComboKeyValuePairs { get; set; }
     }
 
     public partial class CustomFieldValue
@@ -25308,6 +26081,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Staff.Timesheets
             RowHash = new byte[] { };
             Lines = new List<TimesheetLine> { };
             Documents = new List<Document> { };
+            Notes = new List<Note> { };
         }
 
         public virtual string TimesheetID { get; set; }
@@ -25316,9 +26090,11 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Staff.Timesheets
         public virtual DateTimeOffset? TimeSheetDate { get; set; }
         public virtual DateTimeOffset? LastSavedDateTime { get; set; }
         public virtual bool? IsActivated { get; set; }
+        public virtual string Reference { get; set; }
         public virtual byte[] RowHash { get; set; }
         public virtual List<TimesheetLine> Lines { get; set; }
         public virtual List<Document> Documents { get; set; }
+        public virtual List<Note> Notes { get; set; }
     }
 
     public partial class TimesheetJobCostCostCentre
@@ -38881,6 +39657,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual byte[] RowHash { get; set; }
     }
 
+    [Route("/Queries/CR_BatchTrans", "GET")]
     [ApiResponse(Description = "Read OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
@@ -49935,37 +50712,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string ItemNoLike { get; set; }
         public virtual string[] ItemNoBetween { get; set; }
         public virtual string[] ItemNoIn { get; set; }
-    }
-
-    public partial class fn_split
-    {
-        [Required]
-        public virtual short idx { get; set; }
-
-        public virtual string value { get; set; }
-    }
-
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    public partial class fn_splitQuery
-        : QueryDb<fn_split>, IReturn<QueryResponse<fn_split>>
-    {
-        public virtual short? idx { get; set; }
-        public virtual short? idxGreaterThanOrEqualTo { get; set; }
-        public virtual short? idxGreaterThan { get; set; }
-        public virtual short? idxLessThan { get; set; }
-        public virtual short? idxLessThanOrEqualTo { get; set; }
-        public virtual short? idxNotEqualTo { get; set; }
-        public virtual short[] idxBetween { get; set; }
-        public virtual short[] idxIn { get; set; }
-        public virtual string value { get; set; }
-        public virtual string valueStartsWith { get; set; }
-        public virtual string valueEndsWith { get; set; }
-        public virtual string valueContains { get; set; }
-        public virtual string valueLike { get; set; }
-        public virtual string[] valueBetween { get; set; }
-        public virtual string[] valueIn { get; set; }
     }
 
     public partial class FR_CarrierFreightDescriptions
@@ -101782,6 +102528,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual int[] SortOrderIndexIn { get; set; }
     }
 
+    [Route("/Queries/SY_Forms", "GET")]
     [ApiResponse(Description = "Read OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
@@ -107791,78 +108538,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual int?[] BASCodeBetween { get; set; }
         public virtual int?[] BASCodeIn { get; set; }
         public virtual bool? Disabled { get; set; }
-    }
-
-    public partial class udf_JIWA_WorkOrderPutIntoStockItemNos
-    {
-        public virtual int? ItemNo { get; set; }
-    }
-
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    public partial class udf_JIWA_WorkOrderPutIntoStockItemNosQuery
-        : QueryDb<udf_JIWA_WorkOrderPutIntoStockItemNos>, IReturn<QueryResponse<udf_JIWA_WorkOrderPutIntoStockItemNos>>
-    {
-        public virtual int? ItemNo { get; set; }
-        public virtual int? ItemNoGreaterThanOrEqualTo { get; set; }
-        public virtual int? ItemNoGreaterThan { get; set; }
-        public virtual int? ItemNoLessThan { get; set; }
-        public virtual int? ItemNoLessThanOrEqualTo { get; set; }
-        public virtual int? ItemNoNotEqualTo { get; set; }
-        public virtual int?[] ItemNoBetween { get; set; }
-        public virtual int?[] ItemNoIn { get; set; }
-    }
-
-    public partial class udf_JIWA_WorkOrderPutIntoStockRecIDs
-    {
-        public virtual Guid? RecID { get; set; }
-    }
-
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    public partial class udf_JIWA_WorkOrderPutIntoStockRecIDsQuery
-        : QueryDb<udf_JIWA_WorkOrderPutIntoStockRecIDs>, IReturn<QueryResponse<udf_JIWA_WorkOrderPutIntoStockRecIDs>>
-    {
-        public virtual Guid? RecID { get; set; }
-        public virtual Guid?[] RecIDIn { get; set; }
-    }
-
-    public partial class udf_JIWA_WorkOrderTakeStockItemNos
-    {
-        public virtual int? ItemNo { get; set; }
-    }
-
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    public partial class udf_JIWA_WorkOrderTakeStockItemNosQuery
-        : QueryDb<udf_JIWA_WorkOrderTakeStockItemNos>, IReturn<QueryResponse<udf_JIWA_WorkOrderTakeStockItemNos>>
-    {
-        public virtual int? ItemNo { get; set; }
-        public virtual int? ItemNoGreaterThanOrEqualTo { get; set; }
-        public virtual int? ItemNoGreaterThan { get; set; }
-        public virtual int? ItemNoLessThan { get; set; }
-        public virtual int? ItemNoLessThanOrEqualTo { get; set; }
-        public virtual int? ItemNoNotEqualTo { get; set; }
-        public virtual int?[] ItemNoBetween { get; set; }
-        public virtual int?[] ItemNoIn { get; set; }
-    }
-
-    public partial class udf_JIWA_WorkOrderTakeStockRecIDs
-    {
-        public virtual Guid? RecID { get; set; }
-    }
-
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    public partial class udf_JIWA_WorkOrderTakeStockRecIDsQuery
-        : QueryDb<udf_JIWA_WorkOrderTakeStockRecIDs>, IReturn<QueryResponse<udf_JIWA_WorkOrderTakeStockRecIDs>>
-    {
-        public virtual Guid? RecID { get; set; }
-        public virtual Guid?[] RecIDIn { get; set; }
     }
 
     public partial class v_AllWarehouses
@@ -115377,6 +116052,788 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual decimal?[] RealisedGainIn { get; set; }
     }
 
+    public partial class v_Jiwa_CreditorSummary
+    {
+        [Required]
+        public virtual string CreditorID { get; set; }
+
+        [Required]
+        public virtual string AccountNo { get; set; }
+
+        public virtual string Name { get; set; }
+        public virtual string TradingName { get; set; }
+        public virtual string CompanyName { get; set; }
+        [Required]
+        public virtual bool AccountOnHold { get; set; }
+
+        public virtual decimal? CreditLimit { get; set; }
+        public virtual string DefaultCurrencyShortName { get; set; }
+        public virtual string Phone { get; set; }
+        public virtual string Fax { get; set; }
+        public virtual string EmailAddress { get; set; }
+        public virtual string AlternativeAccountNo { get; set; }
+        public virtual string MailingAddress1 { get; set; }
+        public virtual string MailingAddress2 { get; set; }
+        public virtual string MailingAddress3 { get; set; }
+        public virtual string MailingAddress4 { get; set; }
+        public virtual string MailingPostCode { get; set; }
+        public virtual string MailingCountry { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifier { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlan { get; set; }
+        public virtual string ABN { get; set; }
+        public virtual string ACN { get; set; }
+        public virtual DateTime? CommenceDate { get; set; }
+        public virtual short? TermsDays { get; set; }
+        [Required]
+        public virtual string TermsType { get; set; }
+
+        [Required]
+        public virtual decimal MinimumPurchaseOrderValue { get; set; }
+
+        [Required]
+        public virtual decimal MaximumPurchaseOrderValue { get; set; }
+
+        public virtual short? StatementDiscountDays { get; set; }
+        [Required]
+        public virtual decimal StatementDiscountPercentage { get; set; }
+
+        public virtual string LedgerIDCreditorControl { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorControl_Description { get; set; }
+        public virtual string LedgerIDCreditorPurchases { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorPurchases_Description { get; set; }
+        public virtual string LedgerIDCreditorDiscounts { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_Description { get; set; }
+        public virtual string LedgerIDCreditorFreight { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorFreight_Description { get; set; }
+        public virtual string LedgerIDCreditorInsurance { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorInsurance_Description { get; set; }
+        public virtual string LedgerIDCreditorDuty { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorDuty_Description { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_Description { get; set; }
+        public virtual byte? TradingStatusCode { get; set; }
+        [Required]
+        public virtual string TradingStatus { get; set; }
+
+        public virtual string ProprietorName { get; set; }
+        public virtual string SupplierBankName { get; set; }
+        public virtual string SupplierBankAccountNo { get; set; }
+        public virtual string SupplierBSBN { get; set; }
+        public virtual string SupplierBankAccountName { get; set; }
+        public virtual Guid? DefaultPaymentBankAccountRecID { get; set; }
+        public virtual string DefaultPaymentBankName { get; set; }
+        public virtual string DefaultPaymentBankAccountNo { get; set; }
+        public virtual string DefaultPaymentBSBN { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountName { get; set; }
+        public virtual string DefaultWarehouseID { get; set; }
+        public virtual string DefaultWarehouseDescription { get; set; }
+        public virtual string DefaultWarehouseAddress1 { get; set; }
+        public virtual string DefaultWarehouseAddress2 { get; set; }
+        public virtual string DefaultWarehouseAddress3 { get; set; }
+        public virtual string DefaultWarehouseAddress4 { get; set; }
+        public virtual string DefaultWarehousePostCode { get; set; }
+        public virtual string DefaultWarehouseCountry { get; set; }
+        public virtual string DefaultWarehouseCourierDetails { get; set; }
+        public virtual string DefaultWarehouseNotes { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDays { get; set; }
+        public virtual string PurchaseOrderWorkflowID { get; set; }
+        public virtual string PurchaseOrderWorkflowName { get; set; }
+        public virtual short? PeriodTypeCode { get; set; }
+        [Required]
+        public virtual string PeriodType { get; set; }
+
+        [Required]
+        public virtual decimal Period1Balance { get; set; }
+
+        [Required]
+        public virtual decimal Period2Balance { get; set; }
+
+        [Required]
+        public virtual decimal Period3Balance { get; set; }
+
+        [Required]
+        public virtual decimal Period4Balance { get; set; }
+
+        [Required]
+        public virtual decimal TotalBalance { get; set; }
+
+        [Required]
+        public virtual string CreditorTags { get; set; }
+    }
+
+    [Route("/Queries/v_Jiwa_CreditorSummary", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class v_Jiwa_CreditorSummaryQuery
+        : QueryDb<v_Jiwa_CreditorSummary>, IReturn<QueryResponse<v_Jiwa_CreditorSummary>>
+    {
+        public virtual string CreditorID { get; set; }
+        public virtual string CreditorIDStartsWith { get; set; }
+        public virtual string CreditorIDEndsWith { get; set; }
+        public virtual string CreditorIDContains { get; set; }
+        public virtual string CreditorIDLike { get; set; }
+        public virtual string[] CreditorIDBetween { get; set; }
+        public virtual string[] CreditorIDIn { get; set; }
+        public virtual string AccountNo { get; set; }
+        public virtual string AccountNoStartsWith { get; set; }
+        public virtual string AccountNoEndsWith { get; set; }
+        public virtual string AccountNoContains { get; set; }
+        public virtual string AccountNoLike { get; set; }
+        public virtual string[] AccountNoBetween { get; set; }
+        public virtual string[] AccountNoIn { get; set; }
+        public virtual string Name { get; set; }
+        public virtual string NameStartsWith { get; set; }
+        public virtual string NameEndsWith { get; set; }
+        public virtual string NameContains { get; set; }
+        public virtual string NameLike { get; set; }
+        public virtual string[] NameBetween { get; set; }
+        public virtual string[] NameIn { get; set; }
+        public virtual string TradingName { get; set; }
+        public virtual string TradingNameStartsWith { get; set; }
+        public virtual string TradingNameEndsWith { get; set; }
+        public virtual string TradingNameContains { get; set; }
+        public virtual string TradingNameLike { get; set; }
+        public virtual string[] TradingNameBetween { get; set; }
+        public virtual string[] TradingNameIn { get; set; }
+        public virtual string CompanyName { get; set; }
+        public virtual string CompanyNameStartsWith { get; set; }
+        public virtual string CompanyNameEndsWith { get; set; }
+        public virtual string CompanyNameContains { get; set; }
+        public virtual string CompanyNameLike { get; set; }
+        public virtual string[] CompanyNameBetween { get; set; }
+        public virtual string[] CompanyNameIn { get; set; }
+        public virtual bool? AccountOnHold { get; set; }
+        public virtual decimal? CreditLimit { get; set; }
+        public virtual decimal? CreditLimitGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? CreditLimitGreaterThan { get; set; }
+        public virtual decimal? CreditLimitLessThan { get; set; }
+        public virtual decimal? CreditLimitLessThanOrEqualTo { get; set; }
+        public virtual decimal? CreditLimitNotEqualTo { get; set; }
+        public virtual decimal?[] CreditLimitBetween { get; set; }
+        public virtual decimal?[] CreditLimitIn { get; set; }
+        public virtual string DefaultCurrencyShortName { get; set; }
+        public virtual string DefaultCurrencyShortNameStartsWith { get; set; }
+        public virtual string DefaultCurrencyShortNameEndsWith { get; set; }
+        public virtual string DefaultCurrencyShortNameContains { get; set; }
+        public virtual string DefaultCurrencyShortNameLike { get; set; }
+        public virtual string[] DefaultCurrencyShortNameBetween { get; set; }
+        public virtual string[] DefaultCurrencyShortNameIn { get; set; }
+        public virtual string Phone { get; set; }
+        public virtual string PhoneStartsWith { get; set; }
+        public virtual string PhoneEndsWith { get; set; }
+        public virtual string PhoneContains { get; set; }
+        public virtual string PhoneLike { get; set; }
+        public virtual string[] PhoneBetween { get; set; }
+        public virtual string[] PhoneIn { get; set; }
+        public virtual string Fax { get; set; }
+        public virtual string FaxStartsWith { get; set; }
+        public virtual string FaxEndsWith { get; set; }
+        public virtual string FaxContains { get; set; }
+        public virtual string FaxLike { get; set; }
+        public virtual string[] FaxBetween { get; set; }
+        public virtual string[] FaxIn { get; set; }
+        public virtual string EmailAddress { get; set; }
+        public virtual string EmailAddressStartsWith { get; set; }
+        public virtual string EmailAddressEndsWith { get; set; }
+        public virtual string EmailAddressContains { get; set; }
+        public virtual string EmailAddressLike { get; set; }
+        public virtual string[] EmailAddressBetween { get; set; }
+        public virtual string[] EmailAddressIn { get; set; }
+        public virtual string AlternativeAccountNo { get; set; }
+        public virtual string AlternativeAccountNoStartsWith { get; set; }
+        public virtual string AlternativeAccountNoEndsWith { get; set; }
+        public virtual string AlternativeAccountNoContains { get; set; }
+        public virtual string AlternativeAccountNoLike { get; set; }
+        public virtual string[] AlternativeAccountNoBetween { get; set; }
+        public virtual string[] AlternativeAccountNoIn { get; set; }
+        public virtual string MailingAddress1 { get; set; }
+        public virtual string MailingAddress1StartsWith { get; set; }
+        public virtual string MailingAddress1EndsWith { get; set; }
+        public virtual string MailingAddress1Contains { get; set; }
+        public virtual string MailingAddress1Like { get; set; }
+        public virtual string[] MailingAddress1Between { get; set; }
+        public virtual string[] MailingAddress1In { get; set; }
+        public virtual string MailingAddress2 { get; set; }
+        public virtual string MailingAddress2StartsWith { get; set; }
+        public virtual string MailingAddress2EndsWith { get; set; }
+        public virtual string MailingAddress2Contains { get; set; }
+        public virtual string MailingAddress2Like { get; set; }
+        public virtual string[] MailingAddress2Between { get; set; }
+        public virtual string[] MailingAddress2In { get; set; }
+        public virtual string MailingAddress3 { get; set; }
+        public virtual string MailingAddress3StartsWith { get; set; }
+        public virtual string MailingAddress3EndsWith { get; set; }
+        public virtual string MailingAddress3Contains { get; set; }
+        public virtual string MailingAddress3Like { get; set; }
+        public virtual string[] MailingAddress3Between { get; set; }
+        public virtual string[] MailingAddress3In { get; set; }
+        public virtual string MailingAddress4 { get; set; }
+        public virtual string MailingAddress4StartsWith { get; set; }
+        public virtual string MailingAddress4EndsWith { get; set; }
+        public virtual string MailingAddress4Contains { get; set; }
+        public virtual string MailingAddress4Like { get; set; }
+        public virtual string[] MailingAddress4Between { get; set; }
+        public virtual string[] MailingAddress4In { get; set; }
+        public virtual string MailingPostCode { get; set; }
+        public virtual string MailingPostCodeStartsWith { get; set; }
+        public virtual string MailingPostCodeEndsWith { get; set; }
+        public virtual string MailingPostCodeContains { get; set; }
+        public virtual string MailingPostCodeLike { get; set; }
+        public virtual string[] MailingPostCodeBetween { get; set; }
+        public virtual string[] MailingPostCodeIn { get; set; }
+        public virtual string MailingCountry { get; set; }
+        public virtual string MailingCountryStartsWith { get; set; }
+        public virtual string MailingCountryEndsWith { get; set; }
+        public virtual string MailingCountryContains { get; set; }
+        public virtual string MailingCountryLike { get; set; }
+        public virtual string[] MailingCountryBetween { get; set; }
+        public virtual string[] MailingCountryIn { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifier { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifierStartsWith { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifierEndsWith { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifierContains { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifierLike { get; set; }
+        public virtual string[] MailingAustraliaPostDeliveryPointIdentifierBetween { get; set; }
+        public virtual string[] MailingAustraliaPostDeliveryPointIdentifierIn { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlan { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlanStartsWith { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlanEndsWith { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlanContains { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlanLike { get; set; }
+        public virtual string[] MailingAustraliaPostBarcodeSortPlanBetween { get; set; }
+        public virtual string[] MailingAustraliaPostBarcodeSortPlanIn { get; set; }
+        public virtual string ABN { get; set; }
+        public virtual string ABNStartsWith { get; set; }
+        public virtual string ABNEndsWith { get; set; }
+        public virtual string ABNContains { get; set; }
+        public virtual string ABNLike { get; set; }
+        public virtual string[] ABNBetween { get; set; }
+        public virtual string[] ABNIn { get; set; }
+        public virtual string ACN { get; set; }
+        public virtual string ACNStartsWith { get; set; }
+        public virtual string ACNEndsWith { get; set; }
+        public virtual string ACNContains { get; set; }
+        public virtual string ACNLike { get; set; }
+        public virtual string[] ACNBetween { get; set; }
+        public virtual string[] ACNIn { get; set; }
+        public virtual DateTime? CommenceDate { get; set; }
+        public virtual DateTime? CommenceDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? CommenceDateGreaterThan { get; set; }
+        public virtual DateTime? CommenceDateLessThan { get; set; }
+        public virtual DateTime? CommenceDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? CommenceDateNotEqualTo { get; set; }
+        public virtual DateTime?[] CommenceDateBetween { get; set; }
+        public virtual DateTime?[] CommenceDateIn { get; set; }
+        public virtual short? TermsDays { get; set; }
+        public virtual short? TermsDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? TermsDaysGreaterThan { get; set; }
+        public virtual short? TermsDaysLessThan { get; set; }
+        public virtual short? TermsDaysLessThanOrEqualTo { get; set; }
+        public virtual short? TermsDaysNotEqualTo { get; set; }
+        public virtual short?[] TermsDaysBetween { get; set; }
+        public virtual short?[] TermsDaysIn { get; set; }
+        public virtual string TermsType { get; set; }
+        public virtual string TermsTypeStartsWith { get; set; }
+        public virtual string TermsTypeEndsWith { get; set; }
+        public virtual string TermsTypeContains { get; set; }
+        public virtual string TermsTypeLike { get; set; }
+        public virtual string[] TermsTypeBetween { get; set; }
+        public virtual string[] TermsTypeIn { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValue { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValueGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValueGreaterThan { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValueLessThan { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValueLessThanOrEqualTo { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValueNotEqualTo { get; set; }
+        public virtual decimal[] MinimumPurchaseOrderValueBetween { get; set; }
+        public virtual decimal[] MinimumPurchaseOrderValueIn { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValue { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValueGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValueGreaterThan { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValueLessThan { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValueLessThanOrEqualTo { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValueNotEqualTo { get; set; }
+        public virtual decimal[] MaximumPurchaseOrderValueBetween { get; set; }
+        public virtual decimal[] MaximumPurchaseOrderValueIn { get; set; }
+        public virtual short? StatementDiscountDays { get; set; }
+        public virtual short? StatementDiscountDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? StatementDiscountDaysGreaterThan { get; set; }
+        public virtual short? StatementDiscountDaysLessThan { get; set; }
+        public virtual short? StatementDiscountDaysLessThanOrEqualTo { get; set; }
+        public virtual short? StatementDiscountDaysNotEqualTo { get; set; }
+        public virtual short?[] StatementDiscountDaysBetween { get; set; }
+        public virtual short?[] StatementDiscountDaysIn { get; set; }
+        public virtual decimal? StatementDiscountPercentage { get; set; }
+        public virtual decimal? StatementDiscountPercentageGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? StatementDiscountPercentageGreaterThan { get; set; }
+        public virtual decimal? StatementDiscountPercentageLessThan { get; set; }
+        public virtual decimal? StatementDiscountPercentageLessThanOrEqualTo { get; set; }
+        public virtual decimal? StatementDiscountPercentageNotEqualTo { get; set; }
+        public virtual decimal[] StatementDiscountPercentageBetween { get; set; }
+        public virtual decimal[] StatementDiscountPercentageIn { get; set; }
+        public virtual string LedgerIDCreditorControl { get; set; }
+        public virtual string LedgerIDCreditorControlStartsWith { get; set; }
+        public virtual string LedgerIDCreditorControlEndsWith { get; set; }
+        public virtual string LedgerIDCreditorControlContains { get; set; }
+        public virtual string LedgerIDCreditorControlLike { get; set; }
+        public virtual string[] LedgerIDCreditorControlBetween { get; set; }
+        public virtual string[] LedgerIDCreditorControlIn { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorControl_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorControl_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorControl_Description { get; set; }
+        public virtual string LedgerIDCreditorControl_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorControl_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorControl_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorControl_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorControl_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorControl_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorPurchases { get; set; }
+        public virtual string LedgerIDCreditorPurchasesStartsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchasesEndsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchasesContains { get; set; }
+        public virtual string LedgerIDCreditorPurchasesLike { get; set; }
+        public virtual string[] LedgerIDCreditorPurchasesBetween { get; set; }
+        public virtual string[] LedgerIDCreditorPurchasesIn { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorPurchases_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorPurchases_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorPurchases_Description { get; set; }
+        public virtual string LedgerIDCreditorPurchases_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchases_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchases_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorPurchases_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorPurchases_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorPurchases_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorDiscounts { get; set; }
+        public virtual string LedgerIDCreditorDiscountsStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscountsEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscountsContains { get; set; }
+        public virtual string LedgerIDCreditorDiscountsLike { get; set; }
+        public virtual string[] LedgerIDCreditorDiscountsBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDiscountsIn { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorDiscounts_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDiscounts_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_Description { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorDiscounts_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDiscounts_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustmentStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustmentEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustmentContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustmentLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustmentBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustmentIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustment_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustment_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustment_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustment_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchaseStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchaseEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchaseContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchaseLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchaseBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchaseIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchase_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchase_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchase_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchase_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustmentStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustmentEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustmentContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustmentLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustmentBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustmentIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustment_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustment_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustment_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustment_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorFreight { get; set; }
+        public virtual string LedgerIDCreditorFreightStartsWith { get; set; }
+        public virtual string LedgerIDCreditorFreightEndsWith { get; set; }
+        public virtual string LedgerIDCreditorFreightContains { get; set; }
+        public virtual string LedgerIDCreditorFreightLike { get; set; }
+        public virtual string[] LedgerIDCreditorFreightBetween { get; set; }
+        public virtual string[] LedgerIDCreditorFreightIn { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorFreight_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorFreight_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorFreight_Description { get; set; }
+        public virtual string LedgerIDCreditorFreight_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorFreight_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorFreight_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorFreight_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorFreight_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorFreight_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorInsurance { get; set; }
+        public virtual string LedgerIDCreditorInsuranceStartsWith { get; set; }
+        public virtual string LedgerIDCreditorInsuranceEndsWith { get; set; }
+        public virtual string LedgerIDCreditorInsuranceContains { get; set; }
+        public virtual string LedgerIDCreditorInsuranceLike { get; set; }
+        public virtual string[] LedgerIDCreditorInsuranceBetween { get; set; }
+        public virtual string[] LedgerIDCreditorInsuranceIn { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorInsurance_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorInsurance_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorInsurance_Description { get; set; }
+        public virtual string LedgerIDCreditorInsurance_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorInsurance_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorInsurance_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorInsurance_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorInsurance_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorInsurance_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorDuty { get; set; }
+        public virtual string LedgerIDCreditorDutyStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDutyEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDutyContains { get; set; }
+        public virtual string LedgerIDCreditorDutyLike { get; set; }
+        public virtual string[] LedgerIDCreditorDutyBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDutyIn { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorDuty_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDuty_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorDuty_Description { get; set; }
+        public virtual string LedgerIDCreditorDuty_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDuty_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDuty_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorDuty_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorDuty_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDuty_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLossStartsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLossEndsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLossContains { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLossLike { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLossBetween { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLossIn { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLoss_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLoss_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_Description { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLoss_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLoss_DescriptionIn { get; set; }
+        public virtual byte? TradingStatusCode { get; set; }
+        public virtual byte? TradingStatusCodeGreaterThanOrEqualTo { get; set; }
+        public virtual byte? TradingStatusCodeGreaterThan { get; set; }
+        public virtual byte? TradingStatusCodeLessThan { get; set; }
+        public virtual byte? TradingStatusCodeLessThanOrEqualTo { get; set; }
+        public virtual byte? TradingStatusCodeNotEqualTo { get; set; }
+        public virtual byte?[] TradingStatusCodeBetween { get; set; }
+        public virtual byte?[] TradingStatusCodeIn { get; set; }
+        public virtual string TradingStatus { get; set; }
+        public virtual string TradingStatusStartsWith { get; set; }
+        public virtual string TradingStatusEndsWith { get; set; }
+        public virtual string TradingStatusContains { get; set; }
+        public virtual string TradingStatusLike { get; set; }
+        public virtual string[] TradingStatusBetween { get; set; }
+        public virtual string[] TradingStatusIn { get; set; }
+        public virtual string ProprietorName { get; set; }
+        public virtual string ProprietorNameStartsWith { get; set; }
+        public virtual string ProprietorNameEndsWith { get; set; }
+        public virtual string ProprietorNameContains { get; set; }
+        public virtual string ProprietorNameLike { get; set; }
+        public virtual string[] ProprietorNameBetween { get; set; }
+        public virtual string[] ProprietorNameIn { get; set; }
+        public virtual string SupplierBankName { get; set; }
+        public virtual string SupplierBankNameStartsWith { get; set; }
+        public virtual string SupplierBankNameEndsWith { get; set; }
+        public virtual string SupplierBankNameContains { get; set; }
+        public virtual string SupplierBankNameLike { get; set; }
+        public virtual string[] SupplierBankNameBetween { get; set; }
+        public virtual string[] SupplierBankNameIn { get; set; }
+        public virtual string SupplierBankAccountNo { get; set; }
+        public virtual string SupplierBankAccountNoStartsWith { get; set; }
+        public virtual string SupplierBankAccountNoEndsWith { get; set; }
+        public virtual string SupplierBankAccountNoContains { get; set; }
+        public virtual string SupplierBankAccountNoLike { get; set; }
+        public virtual string[] SupplierBankAccountNoBetween { get; set; }
+        public virtual string[] SupplierBankAccountNoIn { get; set; }
+        public virtual string SupplierBSBN { get; set; }
+        public virtual string SupplierBSBNStartsWith { get; set; }
+        public virtual string SupplierBSBNEndsWith { get; set; }
+        public virtual string SupplierBSBNContains { get; set; }
+        public virtual string SupplierBSBNLike { get; set; }
+        public virtual string[] SupplierBSBNBetween { get; set; }
+        public virtual string[] SupplierBSBNIn { get; set; }
+        public virtual string SupplierBankAccountName { get; set; }
+        public virtual string SupplierBankAccountNameStartsWith { get; set; }
+        public virtual string SupplierBankAccountNameEndsWith { get; set; }
+        public virtual string SupplierBankAccountNameContains { get; set; }
+        public virtual string SupplierBankAccountNameLike { get; set; }
+        public virtual string[] SupplierBankAccountNameBetween { get; set; }
+        public virtual string[] SupplierBankAccountNameIn { get; set; }
+        public virtual Guid? DefaultPaymentBankAccountRecID { get; set; }
+        public virtual Guid?[] DefaultPaymentBankAccountRecIDIn { get; set; }
+        public virtual string DefaultPaymentBankName { get; set; }
+        public virtual string DefaultPaymentBankNameStartsWith { get; set; }
+        public virtual string DefaultPaymentBankNameEndsWith { get; set; }
+        public virtual string DefaultPaymentBankNameContains { get; set; }
+        public virtual string DefaultPaymentBankNameLike { get; set; }
+        public virtual string[] DefaultPaymentBankNameBetween { get; set; }
+        public virtual string[] DefaultPaymentBankNameIn { get; set; }
+        public virtual string DefaultPaymentBankAccountNo { get; set; }
+        public virtual string DefaultPaymentBankAccountNoStartsWith { get; set; }
+        public virtual string DefaultPaymentBankAccountNoEndsWith { get; set; }
+        public virtual string DefaultPaymentBankAccountNoContains { get; set; }
+        public virtual string DefaultPaymentBankAccountNoLike { get; set; }
+        public virtual string[] DefaultPaymentBankAccountNoBetween { get; set; }
+        public virtual string[] DefaultPaymentBankAccountNoIn { get; set; }
+        public virtual string DefaultPaymentBSBN { get; set; }
+        public virtual string DefaultPaymentBSBNStartsWith { get; set; }
+        public virtual string DefaultPaymentBSBNEndsWith { get; set; }
+        public virtual string DefaultPaymentBSBNContains { get; set; }
+        public virtual string DefaultPaymentBSBNLike { get; set; }
+        public virtual string[] DefaultPaymentBSBNBetween { get; set; }
+        public virtual string[] DefaultPaymentBSBNIn { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountName { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountNameStartsWith { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountNameEndsWith { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountNameContains { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountNameLike { get; set; }
+        public virtual string[] DefaultPaymentBankAccountAccountNameBetween { get; set; }
+        public virtual string[] DefaultPaymentBankAccountAccountNameIn { get; set; }
+        public virtual string DefaultWarehouseID { get; set; }
+        public virtual string DefaultWarehouseIDStartsWith { get; set; }
+        public virtual string DefaultWarehouseIDEndsWith { get; set; }
+        public virtual string DefaultWarehouseIDContains { get; set; }
+        public virtual string DefaultWarehouseIDLike { get; set; }
+        public virtual string[] DefaultWarehouseIDBetween { get; set; }
+        public virtual string[] DefaultWarehouseIDIn { get; set; }
+        public virtual string DefaultWarehouseDescription { get; set; }
+        public virtual string DefaultWarehouseDescriptionStartsWith { get; set; }
+        public virtual string DefaultWarehouseDescriptionEndsWith { get; set; }
+        public virtual string DefaultWarehouseDescriptionContains { get; set; }
+        public virtual string DefaultWarehouseDescriptionLike { get; set; }
+        public virtual string[] DefaultWarehouseDescriptionBetween { get; set; }
+        public virtual string[] DefaultWarehouseDescriptionIn { get; set; }
+        public virtual string DefaultWarehouseAddress1 { get; set; }
+        public virtual string DefaultWarehouseAddress1StartsWith { get; set; }
+        public virtual string DefaultWarehouseAddress1EndsWith { get; set; }
+        public virtual string DefaultWarehouseAddress1Contains { get; set; }
+        public virtual string DefaultWarehouseAddress1Like { get; set; }
+        public virtual string[] DefaultWarehouseAddress1Between { get; set; }
+        public virtual string[] DefaultWarehouseAddress1In { get; set; }
+        public virtual string DefaultWarehouseAddress2 { get; set; }
+        public virtual string DefaultWarehouseAddress2StartsWith { get; set; }
+        public virtual string DefaultWarehouseAddress2EndsWith { get; set; }
+        public virtual string DefaultWarehouseAddress2Contains { get; set; }
+        public virtual string DefaultWarehouseAddress2Like { get; set; }
+        public virtual string[] DefaultWarehouseAddress2Between { get; set; }
+        public virtual string[] DefaultWarehouseAddress2In { get; set; }
+        public virtual string DefaultWarehouseAddress3 { get; set; }
+        public virtual string DefaultWarehouseAddress3StartsWith { get; set; }
+        public virtual string DefaultWarehouseAddress3EndsWith { get; set; }
+        public virtual string DefaultWarehouseAddress3Contains { get; set; }
+        public virtual string DefaultWarehouseAddress3Like { get; set; }
+        public virtual string[] DefaultWarehouseAddress3Between { get; set; }
+        public virtual string[] DefaultWarehouseAddress3In { get; set; }
+        public virtual string DefaultWarehouseAddress4 { get; set; }
+        public virtual string DefaultWarehouseAddress4StartsWith { get; set; }
+        public virtual string DefaultWarehouseAddress4EndsWith { get; set; }
+        public virtual string DefaultWarehouseAddress4Contains { get; set; }
+        public virtual string DefaultWarehouseAddress4Like { get; set; }
+        public virtual string[] DefaultWarehouseAddress4Between { get; set; }
+        public virtual string[] DefaultWarehouseAddress4In { get; set; }
+        public virtual string DefaultWarehousePostCode { get; set; }
+        public virtual string DefaultWarehousePostCodeStartsWith { get; set; }
+        public virtual string DefaultWarehousePostCodeEndsWith { get; set; }
+        public virtual string DefaultWarehousePostCodeContains { get; set; }
+        public virtual string DefaultWarehousePostCodeLike { get; set; }
+        public virtual string[] DefaultWarehousePostCodeBetween { get; set; }
+        public virtual string[] DefaultWarehousePostCodeIn { get; set; }
+        public virtual string DefaultWarehouseCountry { get; set; }
+        public virtual string DefaultWarehouseCountryStartsWith { get; set; }
+        public virtual string DefaultWarehouseCountryEndsWith { get; set; }
+        public virtual string DefaultWarehouseCountryContains { get; set; }
+        public virtual string DefaultWarehouseCountryLike { get; set; }
+        public virtual string[] DefaultWarehouseCountryBetween { get; set; }
+        public virtual string[] DefaultWarehouseCountryIn { get; set; }
+        public virtual string DefaultWarehouseCourierDetails { get; set; }
+        public virtual string DefaultWarehouseCourierDetailsStartsWith { get; set; }
+        public virtual string DefaultWarehouseCourierDetailsEndsWith { get; set; }
+        public virtual string DefaultWarehouseCourierDetailsContains { get; set; }
+        public virtual string DefaultWarehouseCourierDetailsLike { get; set; }
+        public virtual string[] DefaultWarehouseCourierDetailsBetween { get; set; }
+        public virtual string[] DefaultWarehouseCourierDetailsIn { get; set; }
+        public virtual string DefaultWarehouseNotes { get; set; }
+        public virtual string DefaultWarehouseNotesStartsWith { get; set; }
+        public virtual string DefaultWarehouseNotesEndsWith { get; set; }
+        public virtual string DefaultWarehouseNotesContains { get; set; }
+        public virtual string DefaultWarehouseNotesLike { get; set; }
+        public virtual string[] DefaultWarehouseNotesBetween { get; set; }
+        public virtual string[] DefaultWarehouseNotesIn { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDays { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDaysGreaterThan { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDaysLessThan { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDaysLessThanOrEqualTo { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDaysNotEqualTo { get; set; }
+        public virtual short?[] DefaultWarehouseDefaultDeliveryDaysBetween { get; set; }
+        public virtual short?[] DefaultWarehouseDefaultDeliveryDaysIn { get; set; }
+        public virtual string PurchaseOrderWorkflowID { get; set; }
+        public virtual string PurchaseOrderWorkflowIDStartsWith { get; set; }
+        public virtual string PurchaseOrderWorkflowIDEndsWith { get; set; }
+        public virtual string PurchaseOrderWorkflowIDContains { get; set; }
+        public virtual string PurchaseOrderWorkflowIDLike { get; set; }
+        public virtual string[] PurchaseOrderWorkflowIDBetween { get; set; }
+        public virtual string[] PurchaseOrderWorkflowIDIn { get; set; }
+        public virtual string PurchaseOrderWorkflowName { get; set; }
+        public virtual string PurchaseOrderWorkflowNameStartsWith { get; set; }
+        public virtual string PurchaseOrderWorkflowNameEndsWith { get; set; }
+        public virtual string PurchaseOrderWorkflowNameContains { get; set; }
+        public virtual string PurchaseOrderWorkflowNameLike { get; set; }
+        public virtual string[] PurchaseOrderWorkflowNameBetween { get; set; }
+        public virtual string[] PurchaseOrderWorkflowNameIn { get; set; }
+        public virtual short? PeriodTypeCode { get; set; }
+        public virtual short? PeriodTypeCodeGreaterThanOrEqualTo { get; set; }
+        public virtual short? PeriodTypeCodeGreaterThan { get; set; }
+        public virtual short? PeriodTypeCodeLessThan { get; set; }
+        public virtual short? PeriodTypeCodeLessThanOrEqualTo { get; set; }
+        public virtual short? PeriodTypeCodeNotEqualTo { get; set; }
+        public virtual short?[] PeriodTypeCodeBetween { get; set; }
+        public virtual short?[] PeriodTypeCodeIn { get; set; }
+        public virtual string PeriodType { get; set; }
+        public virtual string PeriodTypeStartsWith { get; set; }
+        public virtual string PeriodTypeEndsWith { get; set; }
+        public virtual string PeriodTypeContains { get; set; }
+        public virtual string PeriodTypeLike { get; set; }
+        public virtual string[] PeriodTypeBetween { get; set; }
+        public virtual string[] PeriodTypeIn { get; set; }
+        public virtual decimal? Period1Balance { get; set; }
+        public virtual decimal? Period1BalanceGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? Period1BalanceGreaterThan { get; set; }
+        public virtual decimal? Period1BalanceLessThan { get; set; }
+        public virtual decimal? Period1BalanceLessThanOrEqualTo { get; set; }
+        public virtual decimal? Period1BalanceNotEqualTo { get; set; }
+        public virtual decimal[] Period1BalanceBetween { get; set; }
+        public virtual decimal[] Period1BalanceIn { get; set; }
+        public virtual decimal? Period2Balance { get; set; }
+        public virtual decimal? Period2BalanceGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? Period2BalanceGreaterThan { get; set; }
+        public virtual decimal? Period2BalanceLessThan { get; set; }
+        public virtual decimal? Period2BalanceLessThanOrEqualTo { get; set; }
+        public virtual decimal? Period2BalanceNotEqualTo { get; set; }
+        public virtual decimal[] Period2BalanceBetween { get; set; }
+        public virtual decimal[] Period2BalanceIn { get; set; }
+        public virtual decimal? Period3Balance { get; set; }
+        public virtual decimal? Period3BalanceGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? Period3BalanceGreaterThan { get; set; }
+        public virtual decimal? Period3BalanceLessThan { get; set; }
+        public virtual decimal? Period3BalanceLessThanOrEqualTo { get; set; }
+        public virtual decimal? Period3BalanceNotEqualTo { get; set; }
+        public virtual decimal[] Period3BalanceBetween { get; set; }
+        public virtual decimal[] Period3BalanceIn { get; set; }
+        public virtual decimal? Period4Balance { get; set; }
+        public virtual decimal? Period4BalanceGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? Period4BalanceGreaterThan { get; set; }
+        public virtual decimal? Period4BalanceLessThan { get; set; }
+        public virtual decimal? Period4BalanceLessThanOrEqualTo { get; set; }
+        public virtual decimal? Period4BalanceNotEqualTo { get; set; }
+        public virtual decimal[] Period4BalanceBetween { get; set; }
+        public virtual decimal[] Period4BalanceIn { get; set; }
+        public virtual decimal? TotalBalance { get; set; }
+        public virtual decimal? TotalBalanceGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? TotalBalanceGreaterThan { get; set; }
+        public virtual decimal? TotalBalanceLessThan { get; set; }
+        public virtual decimal? TotalBalanceLessThanOrEqualTo { get; set; }
+        public virtual decimal? TotalBalanceNotEqualTo { get; set; }
+        public virtual decimal[] TotalBalanceBetween { get; set; }
+        public virtual decimal[] TotalBalanceIn { get; set; }
+        public virtual string CreditorTags { get; set; }
+        public virtual string CreditorTagsStartsWith { get; set; }
+        public virtual string CreditorTagsEndsWith { get; set; }
+        public virtual string CreditorTagsContains { get; set; }
+        public virtual string CreditorTagsLike { get; set; }
+        public virtual string[] CreditorTagsBetween { get; set; }
+        public virtual string[] CreditorTagsIn { get; set; }
+    }
+
     public partial class v_Jiwa_DB_ContactNameMultiple
     {
         [Required]
@@ -119665,6 +121122,1629 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string[] SignatureIn { get; set; }
     }
 
+    public partial class v_Jiwa_PurchaseInformation
+    {
+        [Required]
+        public virtual string OrderID { get; set; }
+
+        [Required]
+        public virtual string OrderNo { get; set; }
+
+        [Required]
+        public virtual string OrderTypeCode { get; set; }
+
+        [Required]
+        public virtual string OrderType { get; set; }
+
+        [Required]
+        public virtual string OrderSupplierTypeCode { get; set; }
+
+        [Required]
+        public virtual string OrderSupplierType { get; set; }
+
+        [Required]
+        public virtual string OrderStatusCode { get; set; }
+
+        [Required]
+        public virtual string OrderStatus { get; set; }
+
+        [Required]
+        public virtual string FX_Currency_RecID { get; set; }
+
+        public virtual string Currency { get; set; }
+        [Required]
+        public virtual decimal CurrencyRate { get; set; }
+
+        public virtual string Reference { get; set; }
+        public virtual string Workflow { get; set; }
+        [Required]
+        public virtual DateTime OrderDate { get; set; }
+
+        [Required]
+        public virtual DateTimeOffset PurchaseOrderLastModifiedDate { get; set; }
+
+        public virtual string Staff { get; set; }
+        public virtual string Attention { get; set; }
+        public virtual string ContactBy { get; set; }
+        [Required]
+        public virtual string UseInTransit { get; set; }
+
+        [Required]
+        public virtual string CR_Main_CreditorID { get; set; }
+
+        public virtual string CreditorAccountNo { get; set; }
+        public virtual string CreditorName { get; set; }
+        public virtual string CreditorClassification { get; set; }
+        [Required]
+        public virtual string InTransitWarehouse_IN_LogicalID { get; set; }
+
+        public virtual string InTransitPhysicalWarehouse { get; set; }
+        public virtual string InTransitLogicalWarehouse { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalID { get; set; }
+        public virtual string SupplyingPhysicalWarehouse { get; set; }
+        public virtual string SupplyingLogicalWarehouse { get; set; }
+        [Required]
+        public virtual string ResidingInWarehouse_IN_LogicalID { get; set; }
+
+        public virtual string ResidingInPhysicalWarehouse { get; set; }
+        public virtual string ResidingInLogicalWarehouse { get; set; }
+        public virtual string BackToBackInvoiceID { get; set; }
+        public virtual string BackToBackInvoiceNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorName { get; set; }
+        public virtual string ShippingContactName { get; set; }
+        public virtual string ShippingAddress1 { get; set; }
+        public virtual string ShippingAddress2 { get; set; }
+        public virtual string ShippingAddressSuburb { get; set; }
+        public virtual string ShippingAddressState { get; set; }
+        public virtual string ShippingAddressPostCode { get; set; }
+        public virtual string ShippingAddressCountry { get; set; }
+        public virtual string ShippingAddressPhone { get; set; }
+        public virtual string ShippingAddressFax { get; set; }
+        public virtual string Spare1 { get; set; }
+        public virtual string Spare2 { get; set; }
+        public virtual string Spare3 { get; set; }
+        public virtual string Spare4 { get; set; }
+        public virtual string Spare5 { get; set; }
+        [Required]
+        public virtual string OrderLineID { get; set; }
+
+        public virtual short? LineNumber { get; set; }
+        [Required]
+        public virtual string LineTypeCode { get; set; }
+
+        [Required]
+        public virtual string LineType { get; set; }
+
+        public virtual string CommentText { get; set; }
+        public virtual decimal? Quantity { get; set; }
+        public virtual string Unit { get; set; }
+        public virtual DateTime? DeliveryDate { get; set; }
+        public virtual decimal? QuantityDelivered { get; set; }
+        public virtual short? QuantityDecimalPlaces { get; set; }
+        public virtual string SupplierPartNo { get; set; }
+        [Required]
+        public virtual DateTimeOffset LineLastModifiedDate { get; set; }
+
+        public virtual decimal? OrderUnits { get; set; }
+        public virtual short? DeliveryDays { get; set; }
+        public virtual string TaxID { get; set; }
+        public virtual string TaxRateDescription { get; set; }
+        public virtual decimal? TaxRate { get; set; }
+        public virtual Guid? IN_UnitOfMeasure_RecID { get; set; }
+        public virtual string UnitOfMeasureName { get; set; }
+        public virtual decimal? QuantityUnitOfMeasure { get; set; }
+        public virtual decimal? LocalUnitBuyPriceEx { get; set; }
+        public virtual decimal? FXUnitBuyPriceEx { get; set; }
+        public virtual decimal? LocalUnitBuyPriceInc { get; set; }
+        public virtual decimal? FXUnitBuyPriceInc { get; set; }
+        [Required]
+        public virtual decimal LocalLineTotalEx { get; set; }
+
+        public virtual decimal? FXLineTotalEx { get; set; }
+        public virtual decimal? LocalLineTax { get; set; }
+        public virtual decimal? FXLineTax { get; set; }
+        public virtual decimal? LocalLineTotalInc { get; set; }
+        public virtual decimal? FxLineTotalInc { get; set; }
+        [Required]
+        public virtual string IN_Main_InventoryID { get; set; }
+
+        public virtual string PartNo { get; set; }
+        public virtual string Description { get; set; }
+        public virtual bool? IsSerialised { get; set; }
+        public virtual bool? IsPhysicalItem { get; set; }
+        public virtual bool? IsExpiryItem { get; set; }
+        [Required]
+        public virtual string InventoryClassificationID { get; set; }
+
+        public virtual string InventoryClassification { get; set; }
+        public virtual string Category1 { get; set; }
+        public virtual string Category2 { get; set; }
+        public virtual string Category3 { get; set; }
+        public virtual string Category4 { get; set; }
+        public virtual string Category5 { get; set; }
+        public virtual string PurchasingClassificationID { get; set; }
+        public virtual string PurchasingClassificationDescription { get; set; }
+        public virtual string SupplierWarehouseID { get; set; }
+        public virtual string SupplierWarehouseDescription { get; set; }
+        public virtual string SupplierWarehouseAddress1 { get; set; }
+        public virtual string SupplierWarehouseAddress2 { get; set; }
+        public virtual string SupplierWarehouseAddress3 { get; set; }
+        public virtual string SupplierWarehouseAddress4 { get; set; }
+        public virtual string SupplierWarehousePostCode { get; set; }
+        public virtual string SupplierWarehouseCountry { get; set; }
+        public virtual string SuppliertWarehouseCourierDetails { get; set; }
+        public virtual string SupplierWarehouseNotes { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDays { get; set; }
+        public virtual bool? SupplierWarehouseIsDefault { get; set; }
+        public virtual DateTime? UserDefinedDate1 { get; set; }
+        public virtual DateTime? UserDefinedDate2 { get; set; }
+        public virtual DateTime? UserDefinedDate3 { get; set; }
+        public virtual string UserDefinedString1 { get; set; }
+        public virtual string UserDefinedString2 { get; set; }
+        public virtual string UserDefinedString3 { get; set; }
+        public virtual decimal? UserDefinedFloat1 { get; set; }
+        public virtual decimal? UserDefinedFloat2 { get; set; }
+        public virtual decimal? UserDefinedFloat3 { get; set; }
+        public virtual string ServiceManagerTaskRecID { get; set; }
+        public virtual int? ServiceManagerTaskTaskNo { get; set; }
+        public virtual string ServiceManagerJobRecID { get; set; }
+        public virtual string ServiceManagerJobJobNo { get; set; }
+        public virtual string JobCostingJobRecID { get; set; }
+        public virtual string JobCostingStageNo { get; set; }
+        public virtual string JobCostingStageName { get; set; }
+        public virtual string JobCostingStageClassificationRecID { get; set; }
+        public virtual string JobCostingCostCentreRecID { get; set; }
+        public virtual string JobCostingCostCentreNo { get; set; }
+        public virtual string JobCostingCostCentreName { get; set; }
+        public virtual string JobCostingJobID { get; set; }
+        public virtual string JobCostingJobNo { get; set; }
+        public virtual string JobCostingJobDescription { get; set; }
+        public virtual string Category1Label { get; set; }
+        public virtual string Category2Label { get; set; }
+        public virtual string Category3Label { get; set; }
+        public virtual string Category4Label { get; set; }
+        public virtual string Category5Label { get; set; }
+        [Required]
+        public virtual decimal LocalFreightEx { get; set; }
+
+        [Required]
+        public virtual decimal LocalFreightTaxRate { get; set; }
+
+        public virtual string LocalFreightTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal LocalFreightTaxAmount { get; set; }
+
+        public virtual decimal? LocalFreightInc { get; set; }
+        [Required]
+        public virtual decimal LocalDutyEx { get; set; }
+
+        [Required]
+        public virtual decimal LocalDutyTaxRate { get; set; }
+
+        public virtual string LocalDutyTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal LocalDutyTaxAmount { get; set; }
+
+        public virtual decimal? LocalDutyInc { get; set; }
+        [Required]
+        public virtual decimal LocalInsuranceEx { get; set; }
+
+        [Required]
+        public virtual decimal LocalInsuranceTaxRate { get; set; }
+
+        public virtual string LocalInsuranceTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal LocalInsuranceTaxAmount { get; set; }
+
+        public virtual decimal? LocalInsuranceInc { get; set; }
+        [Required]
+        public virtual decimal FXFreightEx { get; set; }
+
+        [Required]
+        public virtual decimal FXFreightTaxRate { get; set; }
+
+        public virtual string FXFreightTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal FXFreightTaxAmount { get; set; }
+
+        public virtual decimal? FXFreightInc { get; set; }
+        [Required]
+        public virtual decimal FXDutyEx { get; set; }
+
+        [Required]
+        public virtual decimal FXDutyTaxRate { get; set; }
+
+        public virtual string FXDutyTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal FXDutyTaxAmount { get; set; }
+
+        public virtual decimal? FXDutyInc { get; set; }
+        [Required]
+        public virtual decimal FXInsuranceEx { get; set; }
+
+        [Required]
+        public virtual decimal FXInsuranceTaxRate { get; set; }
+
+        public virtual string FXInsuranceTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal FXInsuranceTaxAmount { get; set; }
+
+        public virtual decimal? FXInsuranceInc { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+        [Required]
+        public virtual string ReceivedOn { get; set; }
+    }
+
+    [Route("/Queries/v_Jiwa_PurchaseInformation", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class v_Jiwa_PurchaseInformationQuery
+        : QueryDb<v_Jiwa_PurchaseInformation>, IReturn<QueryResponse<v_Jiwa_PurchaseInformation>>
+    {
+        public virtual string OrderID { get; set; }
+        public virtual string OrderIDStartsWith { get; set; }
+        public virtual string OrderIDEndsWith { get; set; }
+        public virtual string OrderIDContains { get; set; }
+        public virtual string OrderIDLike { get; set; }
+        public virtual string[] OrderIDBetween { get; set; }
+        public virtual string[] OrderIDIn { get; set; }
+        public virtual string OrderNo { get; set; }
+        public virtual string OrderNoStartsWith { get; set; }
+        public virtual string OrderNoEndsWith { get; set; }
+        public virtual string OrderNoContains { get; set; }
+        public virtual string OrderNoLike { get; set; }
+        public virtual string[] OrderNoBetween { get; set; }
+        public virtual string[] OrderNoIn { get; set; }
+        public virtual string OrderTypeCode { get; set; }
+        public virtual string OrderTypeCodeStartsWith { get; set; }
+        public virtual string OrderTypeCodeEndsWith { get; set; }
+        public virtual string OrderTypeCodeContains { get; set; }
+        public virtual string OrderTypeCodeLike { get; set; }
+        public virtual string[] OrderTypeCodeBetween { get; set; }
+        public virtual string[] OrderTypeCodeIn { get; set; }
+        public virtual string OrderType { get; set; }
+        public virtual string OrderTypeStartsWith { get; set; }
+        public virtual string OrderTypeEndsWith { get; set; }
+        public virtual string OrderTypeContains { get; set; }
+        public virtual string OrderTypeLike { get; set; }
+        public virtual string[] OrderTypeBetween { get; set; }
+        public virtual string[] OrderTypeIn { get; set; }
+        public virtual string OrderSupplierTypeCode { get; set; }
+        public virtual string OrderSupplierTypeCodeStartsWith { get; set; }
+        public virtual string OrderSupplierTypeCodeEndsWith { get; set; }
+        public virtual string OrderSupplierTypeCodeContains { get; set; }
+        public virtual string OrderSupplierTypeCodeLike { get; set; }
+        public virtual string[] OrderSupplierTypeCodeBetween { get; set; }
+        public virtual string[] OrderSupplierTypeCodeIn { get; set; }
+        public virtual string OrderSupplierType { get; set; }
+        public virtual string OrderSupplierTypeStartsWith { get; set; }
+        public virtual string OrderSupplierTypeEndsWith { get; set; }
+        public virtual string OrderSupplierTypeContains { get; set; }
+        public virtual string OrderSupplierTypeLike { get; set; }
+        public virtual string[] OrderSupplierTypeBetween { get; set; }
+        public virtual string[] OrderSupplierTypeIn { get; set; }
+        public virtual string OrderStatusCode { get; set; }
+        public virtual string OrderStatusCodeStartsWith { get; set; }
+        public virtual string OrderStatusCodeEndsWith { get; set; }
+        public virtual string OrderStatusCodeContains { get; set; }
+        public virtual string OrderStatusCodeLike { get; set; }
+        public virtual string[] OrderStatusCodeBetween { get; set; }
+        public virtual string[] OrderStatusCodeIn { get; set; }
+        public virtual string OrderStatus { get; set; }
+        public virtual string OrderStatusStartsWith { get; set; }
+        public virtual string OrderStatusEndsWith { get; set; }
+        public virtual string OrderStatusContains { get; set; }
+        public virtual string OrderStatusLike { get; set; }
+        public virtual string[] OrderStatusBetween { get; set; }
+        public virtual string[] OrderStatusIn { get; set; }
+        public virtual string FX_Currency_RecID { get; set; }
+        public virtual string FX_Currency_RecIDStartsWith { get; set; }
+        public virtual string FX_Currency_RecIDEndsWith { get; set; }
+        public virtual string FX_Currency_RecIDContains { get; set; }
+        public virtual string FX_Currency_RecIDLike { get; set; }
+        public virtual string[] FX_Currency_RecIDBetween { get; set; }
+        public virtual string[] FX_Currency_RecIDIn { get; set; }
+        public virtual string Currency { get; set; }
+        public virtual string CurrencyStartsWith { get; set; }
+        public virtual string CurrencyEndsWith { get; set; }
+        public virtual string CurrencyContains { get; set; }
+        public virtual string CurrencyLike { get; set; }
+        public virtual string[] CurrencyBetween { get; set; }
+        public virtual string[] CurrencyIn { get; set; }
+        public virtual decimal? CurrencyRate { get; set; }
+        public virtual decimal? CurrencyRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateGreaterThan { get; set; }
+        public virtual decimal? CurrencyRateLessThan { get; set; }
+        public virtual decimal? CurrencyRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateNotEqualTo { get; set; }
+        public virtual decimal[] CurrencyRateBetween { get; set; }
+        public virtual decimal[] CurrencyRateIn { get; set; }
+        public virtual string Reference { get; set; }
+        public virtual string ReferenceStartsWith { get; set; }
+        public virtual string ReferenceEndsWith { get; set; }
+        public virtual string ReferenceContains { get; set; }
+        public virtual string ReferenceLike { get; set; }
+        public virtual string[] ReferenceBetween { get; set; }
+        public virtual string[] ReferenceIn { get; set; }
+        public virtual string Workflow { get; set; }
+        public virtual string WorkflowStartsWith { get; set; }
+        public virtual string WorkflowEndsWith { get; set; }
+        public virtual string WorkflowContains { get; set; }
+        public virtual string WorkflowLike { get; set; }
+        public virtual string[] WorkflowBetween { get; set; }
+        public virtual string[] WorkflowIn { get; set; }
+        public virtual DateTime? OrderDate { get; set; }
+        public virtual DateTime? OrderDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? OrderDateGreaterThan { get; set; }
+        public virtual DateTime? OrderDateLessThan { get; set; }
+        public virtual DateTime? OrderDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? OrderDateNotEqualTo { get; set; }
+        public virtual DateTime[] OrderDateBetween { get; set; }
+        public virtual DateTime[] OrderDateIn { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDate { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateGreaterThan { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateLessThan { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateLessThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateNotEqualTo { get; set; }
+        public virtual DateTimeOffset[] PurchaseOrderLastModifiedDateBetween { get; set; }
+        public virtual DateTimeOffset[] PurchaseOrderLastModifiedDateIn { get; set; }
+        public virtual string Staff { get; set; }
+        public virtual string StaffStartsWith { get; set; }
+        public virtual string StaffEndsWith { get; set; }
+        public virtual string StaffContains { get; set; }
+        public virtual string StaffLike { get; set; }
+        public virtual string[] StaffBetween { get; set; }
+        public virtual string[] StaffIn { get; set; }
+        public virtual string Attention { get; set; }
+        public virtual string AttentionStartsWith { get; set; }
+        public virtual string AttentionEndsWith { get; set; }
+        public virtual string AttentionContains { get; set; }
+        public virtual string AttentionLike { get; set; }
+        public virtual string[] AttentionBetween { get; set; }
+        public virtual string[] AttentionIn { get; set; }
+        public virtual string ContactBy { get; set; }
+        public virtual string ContactByStartsWith { get; set; }
+        public virtual string ContactByEndsWith { get; set; }
+        public virtual string ContactByContains { get; set; }
+        public virtual string ContactByLike { get; set; }
+        public virtual string[] ContactByBetween { get; set; }
+        public virtual string[] ContactByIn { get; set; }
+        public virtual string UseInTransit { get; set; }
+        public virtual string UseInTransitStartsWith { get; set; }
+        public virtual string UseInTransitEndsWith { get; set; }
+        public virtual string UseInTransitContains { get; set; }
+        public virtual string UseInTransitLike { get; set; }
+        public virtual string[] UseInTransitBetween { get; set; }
+        public virtual string[] UseInTransitIn { get; set; }
+        public virtual string CR_Main_CreditorID { get; set; }
+        public virtual string CR_Main_CreditorIDStartsWith { get; set; }
+        public virtual string CR_Main_CreditorIDEndsWith { get; set; }
+        public virtual string CR_Main_CreditorIDContains { get; set; }
+        public virtual string CR_Main_CreditorIDLike { get; set; }
+        public virtual string[] CR_Main_CreditorIDBetween { get; set; }
+        public virtual string[] CR_Main_CreditorIDIn { get; set; }
+        public virtual string CreditorAccountNo { get; set; }
+        public virtual string CreditorAccountNoStartsWith { get; set; }
+        public virtual string CreditorAccountNoEndsWith { get; set; }
+        public virtual string CreditorAccountNoContains { get; set; }
+        public virtual string CreditorAccountNoLike { get; set; }
+        public virtual string[] CreditorAccountNoBetween { get; set; }
+        public virtual string[] CreditorAccountNoIn { get; set; }
+        public virtual string CreditorName { get; set; }
+        public virtual string CreditorNameStartsWith { get; set; }
+        public virtual string CreditorNameEndsWith { get; set; }
+        public virtual string CreditorNameContains { get; set; }
+        public virtual string CreditorNameLike { get; set; }
+        public virtual string[] CreditorNameBetween { get; set; }
+        public virtual string[] CreditorNameIn { get; set; }
+        public virtual string CreditorClassification { get; set; }
+        public virtual string CreditorClassificationStartsWith { get; set; }
+        public virtual string CreditorClassificationEndsWith { get; set; }
+        public virtual string CreditorClassificationContains { get; set; }
+        public virtual string CreditorClassificationLike { get; set; }
+        public virtual string[] CreditorClassificationBetween { get; set; }
+        public virtual string[] CreditorClassificationIn { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalID { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] InTransitWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] InTransitWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string InTransitPhysicalWarehouse { get; set; }
+        public virtual string InTransitPhysicalWarehouseStartsWith { get; set; }
+        public virtual string InTransitPhysicalWarehouseEndsWith { get; set; }
+        public virtual string InTransitPhysicalWarehouseContains { get; set; }
+        public virtual string InTransitPhysicalWarehouseLike { get; set; }
+        public virtual string[] InTransitPhysicalWarehouseBetween { get; set; }
+        public virtual string[] InTransitPhysicalWarehouseIn { get; set; }
+        public virtual string InTransitLogicalWarehouse { get; set; }
+        public virtual string InTransitLogicalWarehouseStartsWith { get; set; }
+        public virtual string InTransitLogicalWarehouseEndsWith { get; set; }
+        public virtual string InTransitLogicalWarehouseContains { get; set; }
+        public virtual string InTransitLogicalWarehouseLike { get; set; }
+        public virtual string[] InTransitLogicalWarehouseBetween { get; set; }
+        public virtual string[] InTransitLogicalWarehouseIn { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalID { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] SupplyingWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] SupplyingWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string SupplyingPhysicalWarehouse { get; set; }
+        public virtual string SupplyingPhysicalWarehouseStartsWith { get; set; }
+        public virtual string SupplyingPhysicalWarehouseEndsWith { get; set; }
+        public virtual string SupplyingPhysicalWarehouseContains { get; set; }
+        public virtual string SupplyingPhysicalWarehouseLike { get; set; }
+        public virtual string[] SupplyingPhysicalWarehouseBetween { get; set; }
+        public virtual string[] SupplyingPhysicalWarehouseIn { get; set; }
+        public virtual string SupplyingLogicalWarehouse { get; set; }
+        public virtual string SupplyingLogicalWarehouseStartsWith { get; set; }
+        public virtual string SupplyingLogicalWarehouseEndsWith { get; set; }
+        public virtual string SupplyingLogicalWarehouseContains { get; set; }
+        public virtual string SupplyingLogicalWarehouseLike { get; set; }
+        public virtual string[] SupplyingLogicalWarehouseBetween { get; set; }
+        public virtual string[] SupplyingLogicalWarehouseIn { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalID { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] ResidingInWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] ResidingInWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string ResidingInPhysicalWarehouse { get; set; }
+        public virtual string ResidingInPhysicalWarehouseStartsWith { get; set; }
+        public virtual string ResidingInPhysicalWarehouseEndsWith { get; set; }
+        public virtual string ResidingInPhysicalWarehouseContains { get; set; }
+        public virtual string ResidingInPhysicalWarehouseLike { get; set; }
+        public virtual string[] ResidingInPhysicalWarehouseBetween { get; set; }
+        public virtual string[] ResidingInPhysicalWarehouseIn { get; set; }
+        public virtual string ResidingInLogicalWarehouse { get; set; }
+        public virtual string ResidingInLogicalWarehouseStartsWith { get; set; }
+        public virtual string ResidingInLogicalWarehouseEndsWith { get; set; }
+        public virtual string ResidingInLogicalWarehouseContains { get; set; }
+        public virtual string ResidingInLogicalWarehouseLike { get; set; }
+        public virtual string[] ResidingInLogicalWarehouseBetween { get; set; }
+        public virtual string[] ResidingInLogicalWarehouseIn { get; set; }
+        public virtual string BackToBackInvoiceID { get; set; }
+        public virtual string BackToBackInvoiceIDStartsWith { get; set; }
+        public virtual string BackToBackInvoiceIDEndsWith { get; set; }
+        public virtual string BackToBackInvoiceIDContains { get; set; }
+        public virtual string BackToBackInvoiceIDLike { get; set; }
+        public virtual string[] BackToBackInvoiceIDBetween { get; set; }
+        public virtual string[] BackToBackInvoiceIDIn { get; set; }
+        public virtual string BackToBackInvoiceNo { get; set; }
+        public virtual string BackToBackInvoiceNoStartsWith { get; set; }
+        public virtual string BackToBackInvoiceNoEndsWith { get; set; }
+        public virtual string BackToBackInvoiceNoContains { get; set; }
+        public virtual string BackToBackInvoiceNoLike { get; set; }
+        public virtual string[] BackToBackInvoiceNoBetween { get; set; }
+        public virtual string[] BackToBackInvoiceNoIn { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoStartsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoEndsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoContains { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoLike { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorAccountNoBetween { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorAccountNoIn { get; set; }
+        public virtual string BackToBackInvoiceDebtorName { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameStartsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameEndsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameContains { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameLike { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorNameBetween { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorNameIn { get; set; }
+        public virtual string ShippingContactName { get; set; }
+        public virtual string ShippingContactNameStartsWith { get; set; }
+        public virtual string ShippingContactNameEndsWith { get; set; }
+        public virtual string ShippingContactNameContains { get; set; }
+        public virtual string ShippingContactNameLike { get; set; }
+        public virtual string[] ShippingContactNameBetween { get; set; }
+        public virtual string[] ShippingContactNameIn { get; set; }
+        public virtual string ShippingAddress1 { get; set; }
+        public virtual string ShippingAddress1StartsWith { get; set; }
+        public virtual string ShippingAddress1EndsWith { get; set; }
+        public virtual string ShippingAddress1Contains { get; set; }
+        public virtual string ShippingAddress1Like { get; set; }
+        public virtual string[] ShippingAddress1Between { get; set; }
+        public virtual string[] ShippingAddress1In { get; set; }
+        public virtual string ShippingAddress2 { get; set; }
+        public virtual string ShippingAddress2StartsWith { get; set; }
+        public virtual string ShippingAddress2EndsWith { get; set; }
+        public virtual string ShippingAddress2Contains { get; set; }
+        public virtual string ShippingAddress2Like { get; set; }
+        public virtual string[] ShippingAddress2Between { get; set; }
+        public virtual string[] ShippingAddress2In { get; set; }
+        public virtual string ShippingAddressSuburb { get; set; }
+        public virtual string ShippingAddressSuburbStartsWith { get; set; }
+        public virtual string ShippingAddressSuburbEndsWith { get; set; }
+        public virtual string ShippingAddressSuburbContains { get; set; }
+        public virtual string ShippingAddressSuburbLike { get; set; }
+        public virtual string[] ShippingAddressSuburbBetween { get; set; }
+        public virtual string[] ShippingAddressSuburbIn { get; set; }
+        public virtual string ShippingAddressState { get; set; }
+        public virtual string ShippingAddressStateStartsWith { get; set; }
+        public virtual string ShippingAddressStateEndsWith { get; set; }
+        public virtual string ShippingAddressStateContains { get; set; }
+        public virtual string ShippingAddressStateLike { get; set; }
+        public virtual string[] ShippingAddressStateBetween { get; set; }
+        public virtual string[] ShippingAddressStateIn { get; set; }
+        public virtual string ShippingAddressPostCode { get; set; }
+        public virtual string ShippingAddressPostCodeStartsWith { get; set; }
+        public virtual string ShippingAddressPostCodeEndsWith { get; set; }
+        public virtual string ShippingAddressPostCodeContains { get; set; }
+        public virtual string ShippingAddressPostCodeLike { get; set; }
+        public virtual string[] ShippingAddressPostCodeBetween { get; set; }
+        public virtual string[] ShippingAddressPostCodeIn { get; set; }
+        public virtual string ShippingAddressCountry { get; set; }
+        public virtual string ShippingAddressCountryStartsWith { get; set; }
+        public virtual string ShippingAddressCountryEndsWith { get; set; }
+        public virtual string ShippingAddressCountryContains { get; set; }
+        public virtual string ShippingAddressCountryLike { get; set; }
+        public virtual string[] ShippingAddressCountryBetween { get; set; }
+        public virtual string[] ShippingAddressCountryIn { get; set; }
+        public virtual string ShippingAddressPhone { get; set; }
+        public virtual string ShippingAddressPhoneStartsWith { get; set; }
+        public virtual string ShippingAddressPhoneEndsWith { get; set; }
+        public virtual string ShippingAddressPhoneContains { get; set; }
+        public virtual string ShippingAddressPhoneLike { get; set; }
+        public virtual string[] ShippingAddressPhoneBetween { get; set; }
+        public virtual string[] ShippingAddressPhoneIn { get; set; }
+        public virtual string ShippingAddressFax { get; set; }
+        public virtual string ShippingAddressFaxStartsWith { get; set; }
+        public virtual string ShippingAddressFaxEndsWith { get; set; }
+        public virtual string ShippingAddressFaxContains { get; set; }
+        public virtual string ShippingAddressFaxLike { get; set; }
+        public virtual string[] ShippingAddressFaxBetween { get; set; }
+        public virtual string[] ShippingAddressFaxIn { get; set; }
+        public virtual string Spare1 { get; set; }
+        public virtual string Spare1StartsWith { get; set; }
+        public virtual string Spare1EndsWith { get; set; }
+        public virtual string Spare1Contains { get; set; }
+        public virtual string Spare1Like { get; set; }
+        public virtual string[] Spare1Between { get; set; }
+        public virtual string[] Spare1In { get; set; }
+        public virtual string Spare2 { get; set; }
+        public virtual string Spare2StartsWith { get; set; }
+        public virtual string Spare2EndsWith { get; set; }
+        public virtual string Spare2Contains { get; set; }
+        public virtual string Spare2Like { get; set; }
+        public virtual string[] Spare2Between { get; set; }
+        public virtual string[] Spare2In { get; set; }
+        public virtual string Spare3 { get; set; }
+        public virtual string Spare3StartsWith { get; set; }
+        public virtual string Spare3EndsWith { get; set; }
+        public virtual string Spare3Contains { get; set; }
+        public virtual string Spare3Like { get; set; }
+        public virtual string[] Spare3Between { get; set; }
+        public virtual string[] Spare3In { get; set; }
+        public virtual string Spare4 { get; set; }
+        public virtual string Spare4StartsWith { get; set; }
+        public virtual string Spare4EndsWith { get; set; }
+        public virtual string Spare4Contains { get; set; }
+        public virtual string Spare4Like { get; set; }
+        public virtual string[] Spare4Between { get; set; }
+        public virtual string[] Spare4In { get; set; }
+        public virtual string Spare5 { get; set; }
+        public virtual string Spare5StartsWith { get; set; }
+        public virtual string Spare5EndsWith { get; set; }
+        public virtual string Spare5Contains { get; set; }
+        public virtual string Spare5Like { get; set; }
+        public virtual string[] Spare5Between { get; set; }
+        public virtual string[] Spare5In { get; set; }
+        public virtual string OrderLineID { get; set; }
+        public virtual string OrderLineIDStartsWith { get; set; }
+        public virtual string OrderLineIDEndsWith { get; set; }
+        public virtual string OrderLineIDContains { get; set; }
+        public virtual string OrderLineIDLike { get; set; }
+        public virtual string[] OrderLineIDBetween { get; set; }
+        public virtual string[] OrderLineIDIn { get; set; }
+        public virtual short? LineNumber { get; set; }
+        public virtual short? LineNumberGreaterThanOrEqualTo { get; set; }
+        public virtual short? LineNumberGreaterThan { get; set; }
+        public virtual short? LineNumberLessThan { get; set; }
+        public virtual short? LineNumberLessThanOrEqualTo { get; set; }
+        public virtual short? LineNumberNotEqualTo { get; set; }
+        public virtual short?[] LineNumberBetween { get; set; }
+        public virtual short?[] LineNumberIn { get; set; }
+        public virtual string LineTypeCode { get; set; }
+        public virtual string LineTypeCodeStartsWith { get; set; }
+        public virtual string LineTypeCodeEndsWith { get; set; }
+        public virtual string LineTypeCodeContains { get; set; }
+        public virtual string LineTypeCodeLike { get; set; }
+        public virtual string[] LineTypeCodeBetween { get; set; }
+        public virtual string[] LineTypeCodeIn { get; set; }
+        public virtual string LineType { get; set; }
+        public virtual string LineTypeStartsWith { get; set; }
+        public virtual string LineTypeEndsWith { get; set; }
+        public virtual string LineTypeContains { get; set; }
+        public virtual string LineTypeLike { get; set; }
+        public virtual string[] LineTypeBetween { get; set; }
+        public virtual string[] LineTypeIn { get; set; }
+        public virtual string CommentText { get; set; }
+        public virtual string CommentTextStartsWith { get; set; }
+        public virtual string CommentTextEndsWith { get; set; }
+        public virtual string CommentTextContains { get; set; }
+        public virtual string CommentTextLike { get; set; }
+        public virtual string[] CommentTextBetween { get; set; }
+        public virtual string[] CommentTextIn { get; set; }
+        public virtual decimal? Quantity { get; set; }
+        public virtual decimal? QuantityGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityGreaterThan { get; set; }
+        public virtual decimal? QuantityLessThan { get; set; }
+        public virtual decimal? QuantityLessThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityNotEqualTo { get; set; }
+        public virtual decimal?[] QuantityBetween { get; set; }
+        public virtual decimal?[] QuantityIn { get; set; }
+        public virtual string Unit { get; set; }
+        public virtual string UnitStartsWith { get; set; }
+        public virtual string UnitEndsWith { get; set; }
+        public virtual string UnitContains { get; set; }
+        public virtual string UnitLike { get; set; }
+        public virtual string[] UnitBetween { get; set; }
+        public virtual string[] UnitIn { get; set; }
+        public virtual DateTime? DeliveryDate { get; set; }
+        public virtual DateTime? DeliveryDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? DeliveryDateGreaterThan { get; set; }
+        public virtual DateTime? DeliveryDateLessThan { get; set; }
+        public virtual DateTime? DeliveryDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? DeliveryDateNotEqualTo { get; set; }
+        public virtual DateTime?[] DeliveryDateBetween { get; set; }
+        public virtual DateTime?[] DeliveryDateIn { get; set; }
+        public virtual decimal? QuantityDelivered { get; set; }
+        public virtual decimal? QuantityDeliveredGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityDeliveredGreaterThan { get; set; }
+        public virtual decimal? QuantityDeliveredLessThan { get; set; }
+        public virtual decimal? QuantityDeliveredLessThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityDeliveredNotEqualTo { get; set; }
+        public virtual decimal?[] QuantityDeliveredBetween { get; set; }
+        public virtual decimal?[] QuantityDeliveredIn { get; set; }
+        public virtual short? QuantityDecimalPlaces { get; set; }
+        public virtual short? QuantityDecimalPlacesGreaterThanOrEqualTo { get; set; }
+        public virtual short? QuantityDecimalPlacesGreaterThan { get; set; }
+        public virtual short? QuantityDecimalPlacesLessThan { get; set; }
+        public virtual short? QuantityDecimalPlacesLessThanOrEqualTo { get; set; }
+        public virtual short? QuantityDecimalPlacesNotEqualTo { get; set; }
+        public virtual short?[] QuantityDecimalPlacesBetween { get; set; }
+        public virtual short?[] QuantityDecimalPlacesIn { get; set; }
+        public virtual string SupplierPartNo { get; set; }
+        public virtual string SupplierPartNoStartsWith { get; set; }
+        public virtual string SupplierPartNoEndsWith { get; set; }
+        public virtual string SupplierPartNoContains { get; set; }
+        public virtual string SupplierPartNoLike { get; set; }
+        public virtual string[] SupplierPartNoBetween { get; set; }
+        public virtual string[] SupplierPartNoIn { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDate { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDateGreaterThan { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDateLessThan { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDateLessThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDateNotEqualTo { get; set; }
+        public virtual DateTimeOffset[] LineLastModifiedDateBetween { get; set; }
+        public virtual DateTimeOffset[] LineLastModifiedDateIn { get; set; }
+        public virtual decimal? OrderUnits { get; set; }
+        public virtual decimal? OrderUnitsGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? OrderUnitsGreaterThan { get; set; }
+        public virtual decimal? OrderUnitsLessThan { get; set; }
+        public virtual decimal? OrderUnitsLessThanOrEqualTo { get; set; }
+        public virtual decimal? OrderUnitsNotEqualTo { get; set; }
+        public virtual decimal?[] OrderUnitsBetween { get; set; }
+        public virtual decimal?[] OrderUnitsIn { get; set; }
+        public virtual short? DeliveryDays { get; set; }
+        public virtual short? DeliveryDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? DeliveryDaysGreaterThan { get; set; }
+        public virtual short? DeliveryDaysLessThan { get; set; }
+        public virtual short? DeliveryDaysLessThanOrEqualTo { get; set; }
+        public virtual short? DeliveryDaysNotEqualTo { get; set; }
+        public virtual short?[] DeliveryDaysBetween { get; set; }
+        public virtual short?[] DeliveryDaysIn { get; set; }
+        public virtual string TaxID { get; set; }
+        public virtual string TaxIDStartsWith { get; set; }
+        public virtual string TaxIDEndsWith { get; set; }
+        public virtual string TaxIDContains { get; set; }
+        public virtual string TaxIDLike { get; set; }
+        public virtual string[] TaxIDBetween { get; set; }
+        public virtual string[] TaxIDIn { get; set; }
+        public virtual string TaxRateDescription { get; set; }
+        public virtual string TaxRateDescriptionStartsWith { get; set; }
+        public virtual string TaxRateDescriptionEndsWith { get; set; }
+        public virtual string TaxRateDescriptionContains { get; set; }
+        public virtual string TaxRateDescriptionLike { get; set; }
+        public virtual string[] TaxRateDescriptionBetween { get; set; }
+        public virtual string[] TaxRateDescriptionIn { get; set; }
+        public virtual decimal? TaxRate { get; set; }
+        public virtual decimal? TaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? TaxRateGreaterThan { get; set; }
+        public virtual decimal? TaxRateLessThan { get; set; }
+        public virtual decimal? TaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? TaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] TaxRateBetween { get; set; }
+        public virtual decimal?[] TaxRateIn { get; set; }
+        public virtual Guid? IN_UnitOfMeasure_RecID { get; set; }
+        public virtual Guid?[] IN_UnitOfMeasure_RecIDIn { get; set; }
+        public virtual string UnitOfMeasureName { get; set; }
+        public virtual string UnitOfMeasureNameStartsWith { get; set; }
+        public virtual string UnitOfMeasureNameEndsWith { get; set; }
+        public virtual string UnitOfMeasureNameContains { get; set; }
+        public virtual string UnitOfMeasureNameLike { get; set; }
+        public virtual string[] UnitOfMeasureNameBetween { get; set; }
+        public virtual string[] UnitOfMeasureNameIn { get; set; }
+        public virtual decimal? QuantityUnitOfMeasure { get; set; }
+        public virtual decimal? QuantityUnitOfMeasureGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityUnitOfMeasureGreaterThan { get; set; }
+        public virtual decimal? QuantityUnitOfMeasureLessThan { get; set; }
+        public virtual decimal? QuantityUnitOfMeasureLessThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityUnitOfMeasureNotEqualTo { get; set; }
+        public virtual decimal?[] QuantityUnitOfMeasureBetween { get; set; }
+        public virtual decimal?[] QuantityUnitOfMeasureIn { get; set; }
+        public virtual decimal? LocalUnitBuyPriceEx { get; set; }
+        public virtual decimal? LocalUnitBuyPriceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalUnitBuyPriceExGreaterThan { get; set; }
+        public virtual decimal? LocalUnitBuyPriceExLessThan { get; set; }
+        public virtual decimal? LocalUnitBuyPriceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalUnitBuyPriceExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalUnitBuyPriceExBetween { get; set; }
+        public virtual decimal?[] LocalUnitBuyPriceExIn { get; set; }
+        public virtual decimal? FXUnitBuyPriceEx { get; set; }
+        public virtual decimal? FXUnitBuyPriceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXUnitBuyPriceExGreaterThan { get; set; }
+        public virtual decimal? FXUnitBuyPriceExLessThan { get; set; }
+        public virtual decimal? FXUnitBuyPriceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXUnitBuyPriceExNotEqualTo { get; set; }
+        public virtual decimal?[] FXUnitBuyPriceExBetween { get; set; }
+        public virtual decimal?[] FXUnitBuyPriceExIn { get; set; }
+        public virtual decimal? LocalUnitBuyPriceInc { get; set; }
+        public virtual decimal? LocalUnitBuyPriceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalUnitBuyPriceIncGreaterThan { get; set; }
+        public virtual decimal? LocalUnitBuyPriceIncLessThan { get; set; }
+        public virtual decimal? LocalUnitBuyPriceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalUnitBuyPriceIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalUnitBuyPriceIncBetween { get; set; }
+        public virtual decimal?[] LocalUnitBuyPriceIncIn { get; set; }
+        public virtual decimal? FXUnitBuyPriceInc { get; set; }
+        public virtual decimal? FXUnitBuyPriceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXUnitBuyPriceIncGreaterThan { get; set; }
+        public virtual decimal? FXUnitBuyPriceIncLessThan { get; set; }
+        public virtual decimal? FXUnitBuyPriceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXUnitBuyPriceIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXUnitBuyPriceIncBetween { get; set; }
+        public virtual decimal?[] FXUnitBuyPriceIncIn { get; set; }
+        public virtual decimal? LocalLineTotalEx { get; set; }
+        public virtual decimal? LocalLineTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTotalExGreaterThan { get; set; }
+        public virtual decimal? LocalLineTotalExLessThan { get; set; }
+        public virtual decimal? LocalLineTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTotalExNotEqualTo { get; set; }
+        public virtual decimal[] LocalLineTotalExBetween { get; set; }
+        public virtual decimal[] LocalLineTotalExIn { get; set; }
+        public virtual decimal? FXLineTotalEx { get; set; }
+        public virtual decimal? FXLineTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXLineTotalExGreaterThan { get; set; }
+        public virtual decimal? FXLineTotalExLessThan { get; set; }
+        public virtual decimal? FXLineTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXLineTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] FXLineTotalExBetween { get; set; }
+        public virtual decimal?[] FXLineTotalExIn { get; set; }
+        public virtual decimal? LocalLineTax { get; set; }
+        public virtual decimal? LocalLineTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTaxGreaterThan { get; set; }
+        public virtual decimal? LocalLineTaxLessThan { get; set; }
+        public virtual decimal? LocalLineTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTaxNotEqualTo { get; set; }
+        public virtual decimal?[] LocalLineTaxBetween { get; set; }
+        public virtual decimal?[] LocalLineTaxIn { get; set; }
+        public virtual decimal? FXLineTax { get; set; }
+        public virtual decimal? FXLineTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXLineTaxGreaterThan { get; set; }
+        public virtual decimal? FXLineTaxLessThan { get; set; }
+        public virtual decimal? FXLineTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXLineTaxNotEqualTo { get; set; }
+        public virtual decimal?[] FXLineTaxBetween { get; set; }
+        public virtual decimal?[] FXLineTaxIn { get; set; }
+        public virtual decimal? LocalLineTotalInc { get; set; }
+        public virtual decimal? LocalLineTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTotalIncGreaterThan { get; set; }
+        public virtual decimal? LocalLineTotalIncLessThan { get; set; }
+        public virtual decimal? LocalLineTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalLineTotalIncBetween { get; set; }
+        public virtual decimal?[] LocalLineTotalIncIn { get; set; }
+        public virtual decimal? FxLineTotalInc { get; set; }
+        public virtual decimal? FxLineTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FxLineTotalIncGreaterThan { get; set; }
+        public virtual decimal? FxLineTotalIncLessThan { get; set; }
+        public virtual decimal? FxLineTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FxLineTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] FxLineTotalIncBetween { get; set; }
+        public virtual decimal?[] FxLineTotalIncIn { get; set; }
+        public virtual string IN_Main_InventoryID { get; set; }
+        public virtual string IN_Main_InventoryIDStartsWith { get; set; }
+        public virtual string IN_Main_InventoryIDEndsWith { get; set; }
+        public virtual string IN_Main_InventoryIDContains { get; set; }
+        public virtual string IN_Main_InventoryIDLike { get; set; }
+        public virtual string[] IN_Main_InventoryIDBetween { get; set; }
+        public virtual string[] IN_Main_InventoryIDIn { get; set; }
+        public virtual string PartNo { get; set; }
+        public virtual string PartNoStartsWith { get; set; }
+        public virtual string PartNoEndsWith { get; set; }
+        public virtual string PartNoContains { get; set; }
+        public virtual string PartNoLike { get; set; }
+        public virtual string[] PartNoBetween { get; set; }
+        public virtual string[] PartNoIn { get; set; }
+        public virtual string Description { get; set; }
+        public virtual string DescriptionStartsWith { get; set; }
+        public virtual string DescriptionEndsWith { get; set; }
+        public virtual string DescriptionContains { get; set; }
+        public virtual string DescriptionLike { get; set; }
+        public virtual string[] DescriptionBetween { get; set; }
+        public virtual string[] DescriptionIn { get; set; }
+        public virtual bool? IsSerialised { get; set; }
+        public virtual bool? IsPhysicalItem { get; set; }
+        public virtual bool? IsExpiryItem { get; set; }
+        public virtual string InventoryClassificationID { get; set; }
+        public virtual string InventoryClassificationIDStartsWith { get; set; }
+        public virtual string InventoryClassificationIDEndsWith { get; set; }
+        public virtual string InventoryClassificationIDContains { get; set; }
+        public virtual string InventoryClassificationIDLike { get; set; }
+        public virtual string[] InventoryClassificationIDBetween { get; set; }
+        public virtual string[] InventoryClassificationIDIn { get; set; }
+        public virtual string InventoryClassification { get; set; }
+        public virtual string InventoryClassificationStartsWith { get; set; }
+        public virtual string InventoryClassificationEndsWith { get; set; }
+        public virtual string InventoryClassificationContains { get; set; }
+        public virtual string InventoryClassificationLike { get; set; }
+        public virtual string[] InventoryClassificationBetween { get; set; }
+        public virtual string[] InventoryClassificationIn { get; set; }
+        public virtual string Category1 { get; set; }
+        public virtual string Category1StartsWith { get; set; }
+        public virtual string Category1EndsWith { get; set; }
+        public virtual string Category1Contains { get; set; }
+        public virtual string Category1Like { get; set; }
+        public virtual string[] Category1Between { get; set; }
+        public virtual string[] Category1In { get; set; }
+        public virtual string Category2 { get; set; }
+        public virtual string Category2StartsWith { get; set; }
+        public virtual string Category2EndsWith { get; set; }
+        public virtual string Category2Contains { get; set; }
+        public virtual string Category2Like { get; set; }
+        public virtual string[] Category2Between { get; set; }
+        public virtual string[] Category2In { get; set; }
+        public virtual string Category3 { get; set; }
+        public virtual string Category3StartsWith { get; set; }
+        public virtual string Category3EndsWith { get; set; }
+        public virtual string Category3Contains { get; set; }
+        public virtual string Category3Like { get; set; }
+        public virtual string[] Category3Between { get; set; }
+        public virtual string[] Category3In { get; set; }
+        public virtual string Category4 { get; set; }
+        public virtual string Category4StartsWith { get; set; }
+        public virtual string Category4EndsWith { get; set; }
+        public virtual string Category4Contains { get; set; }
+        public virtual string Category4Like { get; set; }
+        public virtual string[] Category4Between { get; set; }
+        public virtual string[] Category4In { get; set; }
+        public virtual string Category5 { get; set; }
+        public virtual string Category5StartsWith { get; set; }
+        public virtual string Category5EndsWith { get; set; }
+        public virtual string Category5Contains { get; set; }
+        public virtual string Category5Like { get; set; }
+        public virtual string[] Category5Between { get; set; }
+        public virtual string[] Category5In { get; set; }
+        public virtual string PurchasingClassificationID { get; set; }
+        public virtual string PurchasingClassificationIDStartsWith { get; set; }
+        public virtual string PurchasingClassificationIDEndsWith { get; set; }
+        public virtual string PurchasingClassificationIDContains { get; set; }
+        public virtual string PurchasingClassificationIDLike { get; set; }
+        public virtual string[] PurchasingClassificationIDBetween { get; set; }
+        public virtual string[] PurchasingClassificationIDIn { get; set; }
+        public virtual string PurchasingClassificationDescription { get; set; }
+        public virtual string PurchasingClassificationDescriptionStartsWith { get; set; }
+        public virtual string PurchasingClassificationDescriptionEndsWith { get; set; }
+        public virtual string PurchasingClassificationDescriptionContains { get; set; }
+        public virtual string PurchasingClassificationDescriptionLike { get; set; }
+        public virtual string[] PurchasingClassificationDescriptionBetween { get; set; }
+        public virtual string[] PurchasingClassificationDescriptionIn { get; set; }
+        public virtual string SupplierWarehouseID { get; set; }
+        public virtual string SupplierWarehouseIDStartsWith { get; set; }
+        public virtual string SupplierWarehouseIDEndsWith { get; set; }
+        public virtual string SupplierWarehouseIDContains { get; set; }
+        public virtual string SupplierWarehouseIDLike { get; set; }
+        public virtual string[] SupplierWarehouseIDBetween { get; set; }
+        public virtual string[] SupplierWarehouseIDIn { get; set; }
+        public virtual string SupplierWarehouseDescription { get; set; }
+        public virtual string SupplierWarehouseDescriptionStartsWith { get; set; }
+        public virtual string SupplierWarehouseDescriptionEndsWith { get; set; }
+        public virtual string SupplierWarehouseDescriptionContains { get; set; }
+        public virtual string SupplierWarehouseDescriptionLike { get; set; }
+        public virtual string[] SupplierWarehouseDescriptionBetween { get; set; }
+        public virtual string[] SupplierWarehouseDescriptionIn { get; set; }
+        public virtual string SupplierWarehouseAddress1 { get; set; }
+        public virtual string SupplierWarehouseAddress1StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress1EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress1Contains { get; set; }
+        public virtual string SupplierWarehouseAddress1Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress1Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress1In { get; set; }
+        public virtual string SupplierWarehouseAddress2 { get; set; }
+        public virtual string SupplierWarehouseAddress2StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress2EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress2Contains { get; set; }
+        public virtual string SupplierWarehouseAddress2Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress2Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress2In { get; set; }
+        public virtual string SupplierWarehouseAddress3 { get; set; }
+        public virtual string SupplierWarehouseAddress3StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress3EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress3Contains { get; set; }
+        public virtual string SupplierWarehouseAddress3Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress3Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress3In { get; set; }
+        public virtual string SupplierWarehouseAddress4 { get; set; }
+        public virtual string SupplierWarehouseAddress4StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress4EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress4Contains { get; set; }
+        public virtual string SupplierWarehouseAddress4Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress4Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress4In { get; set; }
+        public virtual string SupplierWarehousePostCode { get; set; }
+        public virtual string SupplierWarehousePostCodeStartsWith { get; set; }
+        public virtual string SupplierWarehousePostCodeEndsWith { get; set; }
+        public virtual string SupplierWarehousePostCodeContains { get; set; }
+        public virtual string SupplierWarehousePostCodeLike { get; set; }
+        public virtual string[] SupplierWarehousePostCodeBetween { get; set; }
+        public virtual string[] SupplierWarehousePostCodeIn { get; set; }
+        public virtual string SupplierWarehouseCountry { get; set; }
+        public virtual string SupplierWarehouseCountryStartsWith { get; set; }
+        public virtual string SupplierWarehouseCountryEndsWith { get; set; }
+        public virtual string SupplierWarehouseCountryContains { get; set; }
+        public virtual string SupplierWarehouseCountryLike { get; set; }
+        public virtual string[] SupplierWarehouseCountryBetween { get; set; }
+        public virtual string[] SupplierWarehouseCountryIn { get; set; }
+        public virtual string SuppliertWarehouseCourierDetails { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsStartsWith { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsEndsWith { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsContains { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsLike { get; set; }
+        public virtual string[] SuppliertWarehouseCourierDetailsBetween { get; set; }
+        public virtual string[] SuppliertWarehouseCourierDetailsIn { get; set; }
+        public virtual string SupplierWarehouseNotes { get; set; }
+        public virtual string SupplierWarehouseNotesStartsWith { get; set; }
+        public virtual string SupplierWarehouseNotesEndsWith { get; set; }
+        public virtual string SupplierWarehouseNotesContains { get; set; }
+        public virtual string SupplierWarehouseNotesLike { get; set; }
+        public virtual string[] SupplierWarehouseNotesBetween { get; set; }
+        public virtual string[] SupplierWarehouseNotesIn { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDays { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysGreaterThan { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysLessThan { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysLessThanOrEqualTo { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysNotEqualTo { get; set; }
+        public virtual short?[] SupplierWarehouseDefaultDeliveryDaysBetween { get; set; }
+        public virtual short?[] SupplierWarehouseDefaultDeliveryDaysIn { get; set; }
+        public virtual bool? SupplierWarehouseIsDefault { get; set; }
+        public virtual DateTime? UserDefinedDate1 { get; set; }
+        public virtual DateTime? UserDefinedDate1GreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate1GreaterThan { get; set; }
+        public virtual DateTime? UserDefinedDate1LessThan { get; set; }
+        public virtual DateTime? UserDefinedDate1LessThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate1NotEqualTo { get; set; }
+        public virtual DateTime?[] UserDefinedDate1Between { get; set; }
+        public virtual DateTime?[] UserDefinedDate1In { get; set; }
+        public virtual DateTime? UserDefinedDate2 { get; set; }
+        public virtual DateTime? UserDefinedDate2GreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate2GreaterThan { get; set; }
+        public virtual DateTime? UserDefinedDate2LessThan { get; set; }
+        public virtual DateTime? UserDefinedDate2LessThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate2NotEqualTo { get; set; }
+        public virtual DateTime?[] UserDefinedDate2Between { get; set; }
+        public virtual DateTime?[] UserDefinedDate2In { get; set; }
+        public virtual DateTime? UserDefinedDate3 { get; set; }
+        public virtual DateTime? UserDefinedDate3GreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate3GreaterThan { get; set; }
+        public virtual DateTime? UserDefinedDate3LessThan { get; set; }
+        public virtual DateTime? UserDefinedDate3LessThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate3NotEqualTo { get; set; }
+        public virtual DateTime?[] UserDefinedDate3Between { get; set; }
+        public virtual DateTime?[] UserDefinedDate3In { get; set; }
+        public virtual string UserDefinedString1 { get; set; }
+        public virtual string UserDefinedString1StartsWith { get; set; }
+        public virtual string UserDefinedString1EndsWith { get; set; }
+        public virtual string UserDefinedString1Contains { get; set; }
+        public virtual string UserDefinedString1Like { get; set; }
+        public virtual string[] UserDefinedString1Between { get; set; }
+        public virtual string[] UserDefinedString1In { get; set; }
+        public virtual string UserDefinedString2 { get; set; }
+        public virtual string UserDefinedString2StartsWith { get; set; }
+        public virtual string UserDefinedString2EndsWith { get; set; }
+        public virtual string UserDefinedString2Contains { get; set; }
+        public virtual string UserDefinedString2Like { get; set; }
+        public virtual string[] UserDefinedString2Between { get; set; }
+        public virtual string[] UserDefinedString2In { get; set; }
+        public virtual string UserDefinedString3 { get; set; }
+        public virtual string UserDefinedString3StartsWith { get; set; }
+        public virtual string UserDefinedString3EndsWith { get; set; }
+        public virtual string UserDefinedString3Contains { get; set; }
+        public virtual string UserDefinedString3Like { get; set; }
+        public virtual string[] UserDefinedString3Between { get; set; }
+        public virtual string[] UserDefinedString3In { get; set; }
+        public virtual decimal? UserDefinedFloat1 { get; set; }
+        public virtual decimal? UserDefinedFloat1GreaterThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat1GreaterThan { get; set; }
+        public virtual decimal? UserDefinedFloat1LessThan { get; set; }
+        public virtual decimal? UserDefinedFloat1LessThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat1NotEqualTo { get; set; }
+        public virtual decimal?[] UserDefinedFloat1Between { get; set; }
+        public virtual decimal?[] UserDefinedFloat1In { get; set; }
+        public virtual decimal? UserDefinedFloat2 { get; set; }
+        public virtual decimal? UserDefinedFloat2GreaterThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat2GreaterThan { get; set; }
+        public virtual decimal? UserDefinedFloat2LessThan { get; set; }
+        public virtual decimal? UserDefinedFloat2LessThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat2NotEqualTo { get; set; }
+        public virtual decimal?[] UserDefinedFloat2Between { get; set; }
+        public virtual decimal?[] UserDefinedFloat2In { get; set; }
+        public virtual decimal? UserDefinedFloat3 { get; set; }
+        public virtual decimal? UserDefinedFloat3GreaterThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat3GreaterThan { get; set; }
+        public virtual decimal? UserDefinedFloat3LessThan { get; set; }
+        public virtual decimal? UserDefinedFloat3LessThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat3NotEqualTo { get; set; }
+        public virtual decimal?[] UserDefinedFloat3Between { get; set; }
+        public virtual decimal?[] UserDefinedFloat3In { get; set; }
+        public virtual string ServiceManagerTaskRecID { get; set; }
+        public virtual string ServiceManagerTaskRecIDStartsWith { get; set; }
+        public virtual string ServiceManagerTaskRecIDEndsWith { get; set; }
+        public virtual string ServiceManagerTaskRecIDContains { get; set; }
+        public virtual string ServiceManagerTaskRecIDLike { get; set; }
+        public virtual string[] ServiceManagerTaskRecIDBetween { get; set; }
+        public virtual string[] ServiceManagerTaskRecIDIn { get; set; }
+        public virtual int? ServiceManagerTaskTaskNo { get; set; }
+        public virtual int? ServiceManagerTaskTaskNoGreaterThanOrEqualTo { get; set; }
+        public virtual int? ServiceManagerTaskTaskNoGreaterThan { get; set; }
+        public virtual int? ServiceManagerTaskTaskNoLessThan { get; set; }
+        public virtual int? ServiceManagerTaskTaskNoLessThanOrEqualTo { get; set; }
+        public virtual int? ServiceManagerTaskTaskNoNotEqualTo { get; set; }
+        public virtual int?[] ServiceManagerTaskTaskNoBetween { get; set; }
+        public virtual int?[] ServiceManagerTaskTaskNoIn { get; set; }
+        public virtual string ServiceManagerJobRecID { get; set; }
+        public virtual string ServiceManagerJobRecIDStartsWith { get; set; }
+        public virtual string ServiceManagerJobRecIDEndsWith { get; set; }
+        public virtual string ServiceManagerJobRecIDContains { get; set; }
+        public virtual string ServiceManagerJobRecIDLike { get; set; }
+        public virtual string[] ServiceManagerJobRecIDBetween { get; set; }
+        public virtual string[] ServiceManagerJobRecIDIn { get; set; }
+        public virtual string ServiceManagerJobJobNo { get; set; }
+        public virtual string ServiceManagerJobJobNoStartsWith { get; set; }
+        public virtual string ServiceManagerJobJobNoEndsWith { get; set; }
+        public virtual string ServiceManagerJobJobNoContains { get; set; }
+        public virtual string ServiceManagerJobJobNoLike { get; set; }
+        public virtual string[] ServiceManagerJobJobNoBetween { get; set; }
+        public virtual string[] ServiceManagerJobJobNoIn { get; set; }
+        public virtual string JobCostingJobRecID { get; set; }
+        public virtual string JobCostingJobRecIDStartsWith { get; set; }
+        public virtual string JobCostingJobRecIDEndsWith { get; set; }
+        public virtual string JobCostingJobRecIDContains { get; set; }
+        public virtual string JobCostingJobRecIDLike { get; set; }
+        public virtual string[] JobCostingJobRecIDBetween { get; set; }
+        public virtual string[] JobCostingJobRecIDIn { get; set; }
+        public virtual string JobCostingStageNo { get; set; }
+        public virtual string JobCostingStageNoStartsWith { get; set; }
+        public virtual string JobCostingStageNoEndsWith { get; set; }
+        public virtual string JobCostingStageNoContains { get; set; }
+        public virtual string JobCostingStageNoLike { get; set; }
+        public virtual string[] JobCostingStageNoBetween { get; set; }
+        public virtual string[] JobCostingStageNoIn { get; set; }
+        public virtual string JobCostingStageName { get; set; }
+        public virtual string JobCostingStageNameStartsWith { get; set; }
+        public virtual string JobCostingStageNameEndsWith { get; set; }
+        public virtual string JobCostingStageNameContains { get; set; }
+        public virtual string JobCostingStageNameLike { get; set; }
+        public virtual string[] JobCostingStageNameBetween { get; set; }
+        public virtual string[] JobCostingStageNameIn { get; set; }
+        public virtual string JobCostingStageClassificationRecID { get; set; }
+        public virtual string JobCostingStageClassificationRecIDStartsWith { get; set; }
+        public virtual string JobCostingStageClassificationRecIDEndsWith { get; set; }
+        public virtual string JobCostingStageClassificationRecIDContains { get; set; }
+        public virtual string JobCostingStageClassificationRecIDLike { get; set; }
+        public virtual string[] JobCostingStageClassificationRecIDBetween { get; set; }
+        public virtual string[] JobCostingStageClassificationRecIDIn { get; set; }
+        public virtual string JobCostingCostCentreRecID { get; set; }
+        public virtual string JobCostingCostCentreRecIDStartsWith { get; set; }
+        public virtual string JobCostingCostCentreRecIDEndsWith { get; set; }
+        public virtual string JobCostingCostCentreRecIDContains { get; set; }
+        public virtual string JobCostingCostCentreRecIDLike { get; set; }
+        public virtual string[] JobCostingCostCentreRecIDBetween { get; set; }
+        public virtual string[] JobCostingCostCentreRecIDIn { get; set; }
+        public virtual string JobCostingCostCentreNo { get; set; }
+        public virtual string JobCostingCostCentreNoStartsWith { get; set; }
+        public virtual string JobCostingCostCentreNoEndsWith { get; set; }
+        public virtual string JobCostingCostCentreNoContains { get; set; }
+        public virtual string JobCostingCostCentreNoLike { get; set; }
+        public virtual string[] JobCostingCostCentreNoBetween { get; set; }
+        public virtual string[] JobCostingCostCentreNoIn { get; set; }
+        public virtual string JobCostingCostCentreName { get; set; }
+        public virtual string JobCostingCostCentreNameStartsWith { get; set; }
+        public virtual string JobCostingCostCentreNameEndsWith { get; set; }
+        public virtual string JobCostingCostCentreNameContains { get; set; }
+        public virtual string JobCostingCostCentreNameLike { get; set; }
+        public virtual string[] JobCostingCostCentreNameBetween { get; set; }
+        public virtual string[] JobCostingCostCentreNameIn { get; set; }
+        public virtual string JobCostingJobID { get; set; }
+        public virtual string JobCostingJobIDStartsWith { get; set; }
+        public virtual string JobCostingJobIDEndsWith { get; set; }
+        public virtual string JobCostingJobIDContains { get; set; }
+        public virtual string JobCostingJobIDLike { get; set; }
+        public virtual string[] JobCostingJobIDBetween { get; set; }
+        public virtual string[] JobCostingJobIDIn { get; set; }
+        public virtual string JobCostingJobNo { get; set; }
+        public virtual string JobCostingJobNoStartsWith { get; set; }
+        public virtual string JobCostingJobNoEndsWith { get; set; }
+        public virtual string JobCostingJobNoContains { get; set; }
+        public virtual string JobCostingJobNoLike { get; set; }
+        public virtual string[] JobCostingJobNoBetween { get; set; }
+        public virtual string[] JobCostingJobNoIn { get; set; }
+        public virtual string JobCostingJobDescription { get; set; }
+        public virtual string JobCostingJobDescriptionStartsWith { get; set; }
+        public virtual string JobCostingJobDescriptionEndsWith { get; set; }
+        public virtual string JobCostingJobDescriptionContains { get; set; }
+        public virtual string JobCostingJobDescriptionLike { get; set; }
+        public virtual string[] JobCostingJobDescriptionBetween { get; set; }
+        public virtual string[] JobCostingJobDescriptionIn { get; set; }
+        public virtual string Category1Label { get; set; }
+        public virtual string Category1LabelStartsWith { get; set; }
+        public virtual string Category1LabelEndsWith { get; set; }
+        public virtual string Category1LabelContains { get; set; }
+        public virtual string Category1LabelLike { get; set; }
+        public virtual string[] Category1LabelBetween { get; set; }
+        public virtual string[] Category1LabelIn { get; set; }
+        public virtual string Category2Label { get; set; }
+        public virtual string Category2LabelStartsWith { get; set; }
+        public virtual string Category2LabelEndsWith { get; set; }
+        public virtual string Category2LabelContains { get; set; }
+        public virtual string Category2LabelLike { get; set; }
+        public virtual string[] Category2LabelBetween { get; set; }
+        public virtual string[] Category2LabelIn { get; set; }
+        public virtual string Category3Label { get; set; }
+        public virtual string Category3LabelStartsWith { get; set; }
+        public virtual string Category3LabelEndsWith { get; set; }
+        public virtual string Category3LabelContains { get; set; }
+        public virtual string Category3LabelLike { get; set; }
+        public virtual string[] Category3LabelBetween { get; set; }
+        public virtual string[] Category3LabelIn { get; set; }
+        public virtual string Category4Label { get; set; }
+        public virtual string Category4LabelStartsWith { get; set; }
+        public virtual string Category4LabelEndsWith { get; set; }
+        public virtual string Category4LabelContains { get; set; }
+        public virtual string Category4LabelLike { get; set; }
+        public virtual string[] Category4LabelBetween { get; set; }
+        public virtual string[] Category4LabelIn { get; set; }
+        public virtual string Category5Label { get; set; }
+        public virtual string Category5LabelStartsWith { get; set; }
+        public virtual string Category5LabelEndsWith { get; set; }
+        public virtual string Category5LabelContains { get; set; }
+        public virtual string Category5LabelLike { get; set; }
+        public virtual string[] Category5LabelBetween { get; set; }
+        public virtual string[] Category5LabelIn { get; set; }
+        public virtual decimal? LocalFreightEx { get; set; }
+        public virtual decimal? LocalFreightExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightExGreaterThan { get; set; }
+        public virtual decimal? LocalFreightExLessThan { get; set; }
+        public virtual decimal? LocalFreightExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightExNotEqualTo { get; set; }
+        public virtual decimal[] LocalFreightExBetween { get; set; }
+        public virtual decimal[] LocalFreightExIn { get; set; }
+        public virtual decimal? LocalFreightTaxRate { get; set; }
+        public virtual decimal? LocalFreightTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalFreightTaxRateLessThan { get; set; }
+        public virtual decimal? LocalFreightTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] LocalFreightTaxRateBetween { get; set; }
+        public virtual decimal[] LocalFreightTaxRateIn { get; set; }
+        public virtual string LocalFreightTaxRateDescription { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionContains { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalFreightTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalFreightTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalFreightTaxAmount { get; set; }
+        public virtual decimal? LocalFreightTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalFreightTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalFreightTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] LocalFreightTaxAmountBetween { get; set; }
+        public virtual decimal[] LocalFreightTaxAmountIn { get; set; }
+        public virtual decimal? LocalFreightInc { get; set; }
+        public virtual decimal? LocalFreightIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightIncGreaterThan { get; set; }
+        public virtual decimal? LocalFreightIncLessThan { get; set; }
+        public virtual decimal? LocalFreightIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalFreightIncBetween { get; set; }
+        public virtual decimal?[] LocalFreightIncIn { get; set; }
+        public virtual decimal? LocalDutyEx { get; set; }
+        public virtual decimal? LocalDutyExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyExGreaterThan { get; set; }
+        public virtual decimal? LocalDutyExLessThan { get; set; }
+        public virtual decimal? LocalDutyExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyExNotEqualTo { get; set; }
+        public virtual decimal[] LocalDutyExBetween { get; set; }
+        public virtual decimal[] LocalDutyExIn { get; set; }
+        public virtual decimal? LocalDutyTaxRate { get; set; }
+        public virtual decimal? LocalDutyTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalDutyTaxRateLessThan { get; set; }
+        public virtual decimal? LocalDutyTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] LocalDutyTaxRateBetween { get; set; }
+        public virtual decimal[] LocalDutyTaxRateIn { get; set; }
+        public virtual string LocalDutyTaxRateDescription { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionContains { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalDutyTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalDutyTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalDutyTaxAmount { get; set; }
+        public virtual decimal? LocalDutyTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalDutyTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalDutyTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] LocalDutyTaxAmountBetween { get; set; }
+        public virtual decimal[] LocalDutyTaxAmountIn { get; set; }
+        public virtual decimal? LocalDutyInc { get; set; }
+        public virtual decimal? LocalDutyIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyIncGreaterThan { get; set; }
+        public virtual decimal? LocalDutyIncLessThan { get; set; }
+        public virtual decimal? LocalDutyIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalDutyIncBetween { get; set; }
+        public virtual decimal?[] LocalDutyIncIn { get; set; }
+        public virtual decimal? LocalInsuranceEx { get; set; }
+        public virtual decimal? LocalInsuranceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceExGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceExLessThan { get; set; }
+        public virtual decimal? LocalInsuranceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceExNotEqualTo { get; set; }
+        public virtual decimal[] LocalInsuranceExBetween { get; set; }
+        public virtual decimal[] LocalInsuranceExIn { get; set; }
+        public virtual decimal? LocalInsuranceTaxRate { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateLessThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] LocalInsuranceTaxRateBetween { get; set; }
+        public virtual decimal[] LocalInsuranceTaxRateIn { get; set; }
+        public virtual string LocalInsuranceTaxRateDescription { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionContains { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalInsuranceTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalInsuranceTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmount { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] LocalInsuranceTaxAmountBetween { get; set; }
+        public virtual decimal[] LocalInsuranceTaxAmountIn { get; set; }
+        public virtual decimal? LocalInsuranceInc { get; set; }
+        public virtual decimal? LocalInsuranceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceIncGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceIncLessThan { get; set; }
+        public virtual decimal? LocalInsuranceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInsuranceIncBetween { get; set; }
+        public virtual decimal?[] LocalInsuranceIncIn { get; set; }
+        public virtual decimal? FXFreightEx { get; set; }
+        public virtual decimal? FXFreightExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightExGreaterThan { get; set; }
+        public virtual decimal? FXFreightExLessThan { get; set; }
+        public virtual decimal? FXFreightExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightExNotEqualTo { get; set; }
+        public virtual decimal[] FXFreightExBetween { get; set; }
+        public virtual decimal[] FXFreightExIn { get; set; }
+        public virtual decimal? FXFreightTaxRate { get; set; }
+        public virtual decimal? FXFreightTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXFreightTaxRateLessThan { get; set; }
+        public virtual decimal? FXFreightTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] FXFreightTaxRateBetween { get; set; }
+        public virtual decimal[] FXFreightTaxRateIn { get; set; }
+        public virtual string FXFreightTaxRateDescription { get; set; }
+        public virtual string FXFreightTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXFreightTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXFreightTaxRateDescriptionContains { get; set; }
+        public virtual string FXFreightTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXFreightTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXFreightTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXFreightTaxAmount { get; set; }
+        public virtual decimal? FXFreightTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXFreightTaxAmountLessThan { get; set; }
+        public virtual decimal? FXFreightTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] FXFreightTaxAmountBetween { get; set; }
+        public virtual decimal[] FXFreightTaxAmountIn { get; set; }
+        public virtual decimal? FXFreightInc { get; set; }
+        public virtual decimal? FXFreightIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightIncGreaterThan { get; set; }
+        public virtual decimal? FXFreightIncLessThan { get; set; }
+        public virtual decimal? FXFreightIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXFreightIncBetween { get; set; }
+        public virtual decimal?[] FXFreightIncIn { get; set; }
+        public virtual decimal? FXDutyEx { get; set; }
+        public virtual decimal? FXDutyExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyExGreaterThan { get; set; }
+        public virtual decimal? FXDutyExLessThan { get; set; }
+        public virtual decimal? FXDutyExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyExNotEqualTo { get; set; }
+        public virtual decimal[] FXDutyExBetween { get; set; }
+        public virtual decimal[] FXDutyExIn { get; set; }
+        public virtual decimal? FXDutyTaxRate { get; set; }
+        public virtual decimal? FXDutyTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXDutyTaxRateLessThan { get; set; }
+        public virtual decimal? FXDutyTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] FXDutyTaxRateBetween { get; set; }
+        public virtual decimal[] FXDutyTaxRateIn { get; set; }
+        public virtual string FXDutyTaxRateDescription { get; set; }
+        public virtual string FXDutyTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXDutyTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXDutyTaxRateDescriptionContains { get; set; }
+        public virtual string FXDutyTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXDutyTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXDutyTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXDutyTaxAmount { get; set; }
+        public virtual decimal? FXDutyTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXDutyTaxAmountLessThan { get; set; }
+        public virtual decimal? FXDutyTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] FXDutyTaxAmountBetween { get; set; }
+        public virtual decimal[] FXDutyTaxAmountIn { get; set; }
+        public virtual decimal? FXDutyInc { get; set; }
+        public virtual decimal? FXDutyIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyIncGreaterThan { get; set; }
+        public virtual decimal? FXDutyIncLessThan { get; set; }
+        public virtual decimal? FXDutyIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXDutyIncBetween { get; set; }
+        public virtual decimal?[] FXDutyIncIn { get; set; }
+        public virtual decimal? FXInsuranceEx { get; set; }
+        public virtual decimal? FXInsuranceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceExGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceExLessThan { get; set; }
+        public virtual decimal? FXInsuranceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceExNotEqualTo { get; set; }
+        public virtual decimal[] FXInsuranceExBetween { get; set; }
+        public virtual decimal[] FXInsuranceExIn { get; set; }
+        public virtual decimal? FXInsuranceTaxRate { get; set; }
+        public virtual decimal? FXInsuranceTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceTaxRateLessThan { get; set; }
+        public virtual decimal? FXInsuranceTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] FXInsuranceTaxRateBetween { get; set; }
+        public virtual decimal[] FXInsuranceTaxRateIn { get; set; }
+        public virtual string FXInsuranceTaxRateDescription { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionContains { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXInsuranceTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXInsuranceTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXInsuranceTaxAmount { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountLessThan { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] FXInsuranceTaxAmountBetween { get; set; }
+        public virtual decimal[] FXInsuranceTaxAmountIn { get; set; }
+        public virtual decimal? FXInsuranceInc { get; set; }
+        public virtual decimal? FXInsuranceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceIncGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceIncLessThan { get; set; }
+        public virtual decimal? FXInsuranceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXInsuranceIncBetween { get; set; }
+        public virtual decimal?[] FXInsuranceIncIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncIn { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExIn { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncIn { get; set; }
+        public virtual string ReceivedOn { get; set; }
+        public virtual string ReceivedOnStartsWith { get; set; }
+        public virtual string ReceivedOnEndsWith { get; set; }
+        public virtual string ReceivedOnContains { get; set; }
+        public virtual string ReceivedOnLike { get; set; }
+        public virtual string[] ReceivedOnBetween { get; set; }
+        public virtual string[] ReceivedOnIn { get; set; }
+    }
+
+    public partial class v_Jiwa_PurchaseOrders
+    {
+        [Required]
+        public virtual string OrderID { get; set; }
+
+        public virtual string OrderNo { get; set; }
+        [Required]
+        public virtual string OrderTypeCode { get; set; }
+
+        [Required]
+        public virtual string OrderType { get; set; }
+
+        [Required]
+        public virtual string OrderSupplierTypeCode { get; set; }
+
+        [Required]
+        public virtual string OrderSupplierType { get; set; }
+
+        [Required]
+        public virtual string OrderStatusCode { get; set; }
+
+        [Required]
+        public virtual string OrderStatus { get; set; }
+
+        public virtual string FX_Currency_RecID { get; set; }
+        public virtual string Currency { get; set; }
+        public virtual decimal? CurrencyRate { get; set; }
+        public virtual string Reference { get; set; }
+        public virtual string Workflow { get; set; }
+        public virtual DateTime? OrderDate { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDate { get; set; }
+        public virtual string Staff { get; set; }
+        public virtual string Attention { get; set; }
+        public virtual string ContactBy { get; set; }
+        [Required]
+        public virtual string UseInTransit { get; set; }
+
+        public virtual string CR_Main_CreditorID { get; set; }
+        public virtual string CreditorAccountNo { get; set; }
+        public virtual string CreditorName { get; set; }
+        public virtual string CreditorClassification { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalID { get; set; }
+        public virtual string InTransitPhysicalWarehouse { get; set; }
+        public virtual string InTransitLogicalWarehouse { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalID { get; set; }
+        public virtual string SupplyingPhysicalWarehouse { get; set; }
+        public virtual string SupplyingLogicalWarehouse { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalID { get; set; }
+        public virtual string ResidingInPhysicalWarehouse { get; set; }
+        public virtual string ResidingInLogicalWarehouse { get; set; }
+        public virtual string BackToBackInvoiceID { get; set; }
+        public virtual string BackToBackInvoiceNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorName { get; set; }
+        public virtual string ShippingContactName { get; set; }
+        public virtual string ShippingAddress1 { get; set; }
+        public virtual string ShippingAddress2 { get; set; }
+        public virtual string ShippingAddressSuburb { get; set; }
+        public virtual string ShippingAddressState { get; set; }
+        public virtual string ShippingAddressPostCode { get; set; }
+        public virtual string ShippingAddressCountry { get; set; }
+        public virtual string ShippingAddressPhone { get; set; }
+        public virtual string ShippingAddressFax { get; set; }
+        public virtual string Spare1 { get; set; }
+        public virtual string Spare2 { get; set; }
+        public virtual string Spare3 { get; set; }
+        public virtual string Spare4 { get; set; }
+        public virtual string Spare5 { get; set; }
+        public virtual string SupplierWarehouseID { get; set; }
+        public virtual string SupplierWarehouseDescription { get; set; }
+        public virtual string SupplierWarehouseAddress1 { get; set; }
+        public virtual string SupplierWarehouseAddress2 { get; set; }
+        public virtual string SupplierWarehouseAddress3 { get; set; }
+        public virtual string SupplierWarehouseAddress4 { get; set; }
+        public virtual string SupplierWarehousePostCode { get; set; }
+        public virtual string SupplierWarehouseCountry { get; set; }
+        public virtual string SuppliertWarehouseCourierDetails { get; set; }
+        public virtual string SupplierWarehouseNotes { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDays { get; set; }
+        public virtual byte? SupplierWarehouseIsDefault { get; set; }
+        public virtual decimal? LocalFreightEx { get; set; }
+        public virtual decimal? LocalFreightTaxRate { get; set; }
+        public virtual string LocalFreightTaxRateDescription { get; set; }
+        public virtual decimal? LocalFreightTaxAmount { get; set; }
+        public virtual decimal? LocalFreightInc { get; set; }
+        public virtual decimal? LocalDutyEx { get; set; }
+        public virtual decimal? LocalDutyTaxRate { get; set; }
+        public virtual string LocalDutyTaxRateDescription { get; set; }
+        public virtual decimal? LocalDutyTaxAmount { get; set; }
+        public virtual decimal? LocalDutyInc { get; set; }
+        public virtual decimal? LocalInsuranceEx { get; set; }
+        public virtual decimal? LocalInsuranceTaxRate { get; set; }
+        public virtual string LocalInsuranceTaxRateDescription { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmount { get; set; }
+        public virtual decimal? LocalInsuranceInc { get; set; }
+        public virtual decimal? FXFreightEx { get; set; }
+        public virtual decimal? FXFreightTaxRate { get; set; }
+        public virtual string FXFreightTaxRateDescription { get; set; }
+        public virtual decimal? FXFreightTaxAmount { get; set; }
+        public virtual decimal? FXFreightInc { get; set; }
+        public virtual decimal? FXDutyEx { get; set; }
+        public virtual decimal? FXDutyTaxRate { get; set; }
+        public virtual string FXDutyTaxRateDescription { get; set; }
+        public virtual decimal? FXDutyTaxAmount { get; set; }
+        public virtual decimal? FXDutyInc { get; set; }
+        public virtual decimal? FXInsuranceEx { get; set; }
+        public virtual decimal? FXInsuranceTaxRate { get; set; }
+        public virtual string FXInsuranceTaxRateDescription { get; set; }
+        public virtual decimal? FXInsuranceTaxAmount { get; set; }
+        public virtual decimal? FXInsuranceInc { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+        public virtual string ReceivedOn { get; set; }
+    }
+
     public partial class v_JIWA_PurchaseOrders_DeliveryNotes
     {
         [Required]
@@ -119732,6 +122812,743 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string NameLike { get; set; }
         public virtual string[] NameBetween { get; set; }
         public virtual string[] NameIn { get; set; }
+    }
+
+    [Route("/Queries/v_Jiwa_PurchaseOrders", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class v_Jiwa_PurchaseOrdersQuery
+        : QueryDb<v_Jiwa_PurchaseOrders>, IReturn<QueryResponse<v_Jiwa_PurchaseOrders>>
+    {
+        public virtual string OrderID { get; set; }
+        public virtual string OrderIDStartsWith { get; set; }
+        public virtual string OrderIDEndsWith { get; set; }
+        public virtual string OrderIDContains { get; set; }
+        public virtual string OrderIDLike { get; set; }
+        public virtual string[] OrderIDBetween { get; set; }
+        public virtual string[] OrderIDIn { get; set; }
+        public virtual string OrderNo { get; set; }
+        public virtual string OrderNoStartsWith { get; set; }
+        public virtual string OrderNoEndsWith { get; set; }
+        public virtual string OrderNoContains { get; set; }
+        public virtual string OrderNoLike { get; set; }
+        public virtual string[] OrderNoBetween { get; set; }
+        public virtual string[] OrderNoIn { get; set; }
+        public virtual string OrderTypeCode { get; set; }
+        public virtual string OrderTypeCodeStartsWith { get; set; }
+        public virtual string OrderTypeCodeEndsWith { get; set; }
+        public virtual string OrderTypeCodeContains { get; set; }
+        public virtual string OrderTypeCodeLike { get; set; }
+        public virtual string[] OrderTypeCodeBetween { get; set; }
+        public virtual string[] OrderTypeCodeIn { get; set; }
+        public virtual string OrderType { get; set; }
+        public virtual string OrderTypeStartsWith { get; set; }
+        public virtual string OrderTypeEndsWith { get; set; }
+        public virtual string OrderTypeContains { get; set; }
+        public virtual string OrderTypeLike { get; set; }
+        public virtual string[] OrderTypeBetween { get; set; }
+        public virtual string[] OrderTypeIn { get; set; }
+        public virtual string OrderSupplierTypeCode { get; set; }
+        public virtual string OrderSupplierTypeCodeStartsWith { get; set; }
+        public virtual string OrderSupplierTypeCodeEndsWith { get; set; }
+        public virtual string OrderSupplierTypeCodeContains { get; set; }
+        public virtual string OrderSupplierTypeCodeLike { get; set; }
+        public virtual string[] OrderSupplierTypeCodeBetween { get; set; }
+        public virtual string[] OrderSupplierTypeCodeIn { get; set; }
+        public virtual string OrderSupplierType { get; set; }
+        public virtual string OrderSupplierTypeStartsWith { get; set; }
+        public virtual string OrderSupplierTypeEndsWith { get; set; }
+        public virtual string OrderSupplierTypeContains { get; set; }
+        public virtual string OrderSupplierTypeLike { get; set; }
+        public virtual string[] OrderSupplierTypeBetween { get; set; }
+        public virtual string[] OrderSupplierTypeIn { get; set; }
+        public virtual string OrderStatusCode { get; set; }
+        public virtual string OrderStatusCodeStartsWith { get; set; }
+        public virtual string OrderStatusCodeEndsWith { get; set; }
+        public virtual string OrderStatusCodeContains { get; set; }
+        public virtual string OrderStatusCodeLike { get; set; }
+        public virtual string[] OrderStatusCodeBetween { get; set; }
+        public virtual string[] OrderStatusCodeIn { get; set; }
+        public virtual string OrderStatus { get; set; }
+        public virtual string OrderStatusStartsWith { get; set; }
+        public virtual string OrderStatusEndsWith { get; set; }
+        public virtual string OrderStatusContains { get; set; }
+        public virtual string OrderStatusLike { get; set; }
+        public virtual string[] OrderStatusBetween { get; set; }
+        public virtual string[] OrderStatusIn { get; set; }
+        public virtual string FX_Currency_RecID { get; set; }
+        public virtual string FX_Currency_RecIDStartsWith { get; set; }
+        public virtual string FX_Currency_RecIDEndsWith { get; set; }
+        public virtual string FX_Currency_RecIDContains { get; set; }
+        public virtual string FX_Currency_RecIDLike { get; set; }
+        public virtual string[] FX_Currency_RecIDBetween { get; set; }
+        public virtual string[] FX_Currency_RecIDIn { get; set; }
+        public virtual string Currency { get; set; }
+        public virtual string CurrencyStartsWith { get; set; }
+        public virtual string CurrencyEndsWith { get; set; }
+        public virtual string CurrencyContains { get; set; }
+        public virtual string CurrencyLike { get; set; }
+        public virtual string[] CurrencyBetween { get; set; }
+        public virtual string[] CurrencyIn { get; set; }
+        public virtual decimal? CurrencyRate { get; set; }
+        public virtual decimal? CurrencyRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateGreaterThan { get; set; }
+        public virtual decimal? CurrencyRateLessThan { get; set; }
+        public virtual decimal? CurrencyRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateNotEqualTo { get; set; }
+        public virtual decimal?[] CurrencyRateBetween { get; set; }
+        public virtual decimal?[] CurrencyRateIn { get; set; }
+        public virtual string Reference { get; set; }
+        public virtual string ReferenceStartsWith { get; set; }
+        public virtual string ReferenceEndsWith { get; set; }
+        public virtual string ReferenceContains { get; set; }
+        public virtual string ReferenceLike { get; set; }
+        public virtual string[] ReferenceBetween { get; set; }
+        public virtual string[] ReferenceIn { get; set; }
+        public virtual string Workflow { get; set; }
+        public virtual string WorkflowStartsWith { get; set; }
+        public virtual string WorkflowEndsWith { get; set; }
+        public virtual string WorkflowContains { get; set; }
+        public virtual string WorkflowLike { get; set; }
+        public virtual string[] WorkflowBetween { get; set; }
+        public virtual string[] WorkflowIn { get; set; }
+        public virtual DateTime? OrderDate { get; set; }
+        public virtual DateTime? OrderDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? OrderDateGreaterThan { get; set; }
+        public virtual DateTime? OrderDateLessThan { get; set; }
+        public virtual DateTime? OrderDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? OrderDateNotEqualTo { get; set; }
+        public virtual DateTime?[] OrderDateBetween { get; set; }
+        public virtual DateTime?[] OrderDateIn { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDate { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateGreaterThan { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateLessThan { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateLessThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateNotEqualTo { get; set; }
+        public virtual DateTimeOffset?[] PurchaseOrderLastModifiedDateBetween { get; set; }
+        public virtual DateTimeOffset?[] PurchaseOrderLastModifiedDateIn { get; set; }
+        public virtual string Staff { get; set; }
+        public virtual string StaffStartsWith { get; set; }
+        public virtual string StaffEndsWith { get; set; }
+        public virtual string StaffContains { get; set; }
+        public virtual string StaffLike { get; set; }
+        public virtual string[] StaffBetween { get; set; }
+        public virtual string[] StaffIn { get; set; }
+        public virtual string Attention { get; set; }
+        public virtual string AttentionStartsWith { get; set; }
+        public virtual string AttentionEndsWith { get; set; }
+        public virtual string AttentionContains { get; set; }
+        public virtual string AttentionLike { get; set; }
+        public virtual string[] AttentionBetween { get; set; }
+        public virtual string[] AttentionIn { get; set; }
+        public virtual string ContactBy { get; set; }
+        public virtual string ContactByStartsWith { get; set; }
+        public virtual string ContactByEndsWith { get; set; }
+        public virtual string ContactByContains { get; set; }
+        public virtual string ContactByLike { get; set; }
+        public virtual string[] ContactByBetween { get; set; }
+        public virtual string[] ContactByIn { get; set; }
+        public virtual string UseInTransit { get; set; }
+        public virtual string UseInTransitStartsWith { get; set; }
+        public virtual string UseInTransitEndsWith { get; set; }
+        public virtual string UseInTransitContains { get; set; }
+        public virtual string UseInTransitLike { get; set; }
+        public virtual string[] UseInTransitBetween { get; set; }
+        public virtual string[] UseInTransitIn { get; set; }
+        public virtual string CR_Main_CreditorID { get; set; }
+        public virtual string CR_Main_CreditorIDStartsWith { get; set; }
+        public virtual string CR_Main_CreditorIDEndsWith { get; set; }
+        public virtual string CR_Main_CreditorIDContains { get; set; }
+        public virtual string CR_Main_CreditorIDLike { get; set; }
+        public virtual string[] CR_Main_CreditorIDBetween { get; set; }
+        public virtual string[] CR_Main_CreditorIDIn { get; set; }
+        public virtual string CreditorAccountNo { get; set; }
+        public virtual string CreditorAccountNoStartsWith { get; set; }
+        public virtual string CreditorAccountNoEndsWith { get; set; }
+        public virtual string CreditorAccountNoContains { get; set; }
+        public virtual string CreditorAccountNoLike { get; set; }
+        public virtual string[] CreditorAccountNoBetween { get; set; }
+        public virtual string[] CreditorAccountNoIn { get; set; }
+        public virtual string CreditorName { get; set; }
+        public virtual string CreditorNameStartsWith { get; set; }
+        public virtual string CreditorNameEndsWith { get; set; }
+        public virtual string CreditorNameContains { get; set; }
+        public virtual string CreditorNameLike { get; set; }
+        public virtual string[] CreditorNameBetween { get; set; }
+        public virtual string[] CreditorNameIn { get; set; }
+        public virtual string CreditorClassification { get; set; }
+        public virtual string CreditorClassificationStartsWith { get; set; }
+        public virtual string CreditorClassificationEndsWith { get; set; }
+        public virtual string CreditorClassificationContains { get; set; }
+        public virtual string CreditorClassificationLike { get; set; }
+        public virtual string[] CreditorClassificationBetween { get; set; }
+        public virtual string[] CreditorClassificationIn { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalID { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] InTransitWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] InTransitWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string InTransitPhysicalWarehouse { get; set; }
+        public virtual string InTransitPhysicalWarehouseStartsWith { get; set; }
+        public virtual string InTransitPhysicalWarehouseEndsWith { get; set; }
+        public virtual string InTransitPhysicalWarehouseContains { get; set; }
+        public virtual string InTransitPhysicalWarehouseLike { get; set; }
+        public virtual string[] InTransitPhysicalWarehouseBetween { get; set; }
+        public virtual string[] InTransitPhysicalWarehouseIn { get; set; }
+        public virtual string InTransitLogicalWarehouse { get; set; }
+        public virtual string InTransitLogicalWarehouseStartsWith { get; set; }
+        public virtual string InTransitLogicalWarehouseEndsWith { get; set; }
+        public virtual string InTransitLogicalWarehouseContains { get; set; }
+        public virtual string InTransitLogicalWarehouseLike { get; set; }
+        public virtual string[] InTransitLogicalWarehouseBetween { get; set; }
+        public virtual string[] InTransitLogicalWarehouseIn { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalID { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] SupplyingWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] SupplyingWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string SupplyingPhysicalWarehouse { get; set; }
+        public virtual string SupplyingPhysicalWarehouseStartsWith { get; set; }
+        public virtual string SupplyingPhysicalWarehouseEndsWith { get; set; }
+        public virtual string SupplyingPhysicalWarehouseContains { get; set; }
+        public virtual string SupplyingPhysicalWarehouseLike { get; set; }
+        public virtual string[] SupplyingPhysicalWarehouseBetween { get; set; }
+        public virtual string[] SupplyingPhysicalWarehouseIn { get; set; }
+        public virtual string SupplyingLogicalWarehouse { get; set; }
+        public virtual string SupplyingLogicalWarehouseStartsWith { get; set; }
+        public virtual string SupplyingLogicalWarehouseEndsWith { get; set; }
+        public virtual string SupplyingLogicalWarehouseContains { get; set; }
+        public virtual string SupplyingLogicalWarehouseLike { get; set; }
+        public virtual string[] SupplyingLogicalWarehouseBetween { get; set; }
+        public virtual string[] SupplyingLogicalWarehouseIn { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalID { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] ResidingInWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] ResidingInWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string ResidingInPhysicalWarehouse { get; set; }
+        public virtual string ResidingInPhysicalWarehouseStartsWith { get; set; }
+        public virtual string ResidingInPhysicalWarehouseEndsWith { get; set; }
+        public virtual string ResidingInPhysicalWarehouseContains { get; set; }
+        public virtual string ResidingInPhysicalWarehouseLike { get; set; }
+        public virtual string[] ResidingInPhysicalWarehouseBetween { get; set; }
+        public virtual string[] ResidingInPhysicalWarehouseIn { get; set; }
+        public virtual string ResidingInLogicalWarehouse { get; set; }
+        public virtual string ResidingInLogicalWarehouseStartsWith { get; set; }
+        public virtual string ResidingInLogicalWarehouseEndsWith { get; set; }
+        public virtual string ResidingInLogicalWarehouseContains { get; set; }
+        public virtual string ResidingInLogicalWarehouseLike { get; set; }
+        public virtual string[] ResidingInLogicalWarehouseBetween { get; set; }
+        public virtual string[] ResidingInLogicalWarehouseIn { get; set; }
+        public virtual string BackToBackInvoiceID { get; set; }
+        public virtual string BackToBackInvoiceIDStartsWith { get; set; }
+        public virtual string BackToBackInvoiceIDEndsWith { get; set; }
+        public virtual string BackToBackInvoiceIDContains { get; set; }
+        public virtual string BackToBackInvoiceIDLike { get; set; }
+        public virtual string[] BackToBackInvoiceIDBetween { get; set; }
+        public virtual string[] BackToBackInvoiceIDIn { get; set; }
+        public virtual string BackToBackInvoiceNo { get; set; }
+        public virtual string BackToBackInvoiceNoStartsWith { get; set; }
+        public virtual string BackToBackInvoiceNoEndsWith { get; set; }
+        public virtual string BackToBackInvoiceNoContains { get; set; }
+        public virtual string BackToBackInvoiceNoLike { get; set; }
+        public virtual string[] BackToBackInvoiceNoBetween { get; set; }
+        public virtual string[] BackToBackInvoiceNoIn { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoStartsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoEndsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoContains { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoLike { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorAccountNoBetween { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorAccountNoIn { get; set; }
+        public virtual string BackToBackInvoiceDebtorName { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameStartsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameEndsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameContains { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameLike { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorNameBetween { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorNameIn { get; set; }
+        public virtual string ShippingContactName { get; set; }
+        public virtual string ShippingContactNameStartsWith { get; set; }
+        public virtual string ShippingContactNameEndsWith { get; set; }
+        public virtual string ShippingContactNameContains { get; set; }
+        public virtual string ShippingContactNameLike { get; set; }
+        public virtual string[] ShippingContactNameBetween { get; set; }
+        public virtual string[] ShippingContactNameIn { get; set; }
+        public virtual string ShippingAddress1 { get; set; }
+        public virtual string ShippingAddress1StartsWith { get; set; }
+        public virtual string ShippingAddress1EndsWith { get; set; }
+        public virtual string ShippingAddress1Contains { get; set; }
+        public virtual string ShippingAddress1Like { get; set; }
+        public virtual string[] ShippingAddress1Between { get; set; }
+        public virtual string[] ShippingAddress1In { get; set; }
+        public virtual string ShippingAddress2 { get; set; }
+        public virtual string ShippingAddress2StartsWith { get; set; }
+        public virtual string ShippingAddress2EndsWith { get; set; }
+        public virtual string ShippingAddress2Contains { get; set; }
+        public virtual string ShippingAddress2Like { get; set; }
+        public virtual string[] ShippingAddress2Between { get; set; }
+        public virtual string[] ShippingAddress2In { get; set; }
+        public virtual string ShippingAddressSuburb { get; set; }
+        public virtual string ShippingAddressSuburbStartsWith { get; set; }
+        public virtual string ShippingAddressSuburbEndsWith { get; set; }
+        public virtual string ShippingAddressSuburbContains { get; set; }
+        public virtual string ShippingAddressSuburbLike { get; set; }
+        public virtual string[] ShippingAddressSuburbBetween { get; set; }
+        public virtual string[] ShippingAddressSuburbIn { get; set; }
+        public virtual string ShippingAddressState { get; set; }
+        public virtual string ShippingAddressStateStartsWith { get; set; }
+        public virtual string ShippingAddressStateEndsWith { get; set; }
+        public virtual string ShippingAddressStateContains { get; set; }
+        public virtual string ShippingAddressStateLike { get; set; }
+        public virtual string[] ShippingAddressStateBetween { get; set; }
+        public virtual string[] ShippingAddressStateIn { get; set; }
+        public virtual string ShippingAddressPostCode { get; set; }
+        public virtual string ShippingAddressPostCodeStartsWith { get; set; }
+        public virtual string ShippingAddressPostCodeEndsWith { get; set; }
+        public virtual string ShippingAddressPostCodeContains { get; set; }
+        public virtual string ShippingAddressPostCodeLike { get; set; }
+        public virtual string[] ShippingAddressPostCodeBetween { get; set; }
+        public virtual string[] ShippingAddressPostCodeIn { get; set; }
+        public virtual string ShippingAddressCountry { get; set; }
+        public virtual string ShippingAddressCountryStartsWith { get; set; }
+        public virtual string ShippingAddressCountryEndsWith { get; set; }
+        public virtual string ShippingAddressCountryContains { get; set; }
+        public virtual string ShippingAddressCountryLike { get; set; }
+        public virtual string[] ShippingAddressCountryBetween { get; set; }
+        public virtual string[] ShippingAddressCountryIn { get; set; }
+        public virtual string ShippingAddressPhone { get; set; }
+        public virtual string ShippingAddressPhoneStartsWith { get; set; }
+        public virtual string ShippingAddressPhoneEndsWith { get; set; }
+        public virtual string ShippingAddressPhoneContains { get; set; }
+        public virtual string ShippingAddressPhoneLike { get; set; }
+        public virtual string[] ShippingAddressPhoneBetween { get; set; }
+        public virtual string[] ShippingAddressPhoneIn { get; set; }
+        public virtual string ShippingAddressFax { get; set; }
+        public virtual string ShippingAddressFaxStartsWith { get; set; }
+        public virtual string ShippingAddressFaxEndsWith { get; set; }
+        public virtual string ShippingAddressFaxContains { get; set; }
+        public virtual string ShippingAddressFaxLike { get; set; }
+        public virtual string[] ShippingAddressFaxBetween { get; set; }
+        public virtual string[] ShippingAddressFaxIn { get; set; }
+        public virtual string Spare1 { get; set; }
+        public virtual string Spare1StartsWith { get; set; }
+        public virtual string Spare1EndsWith { get; set; }
+        public virtual string Spare1Contains { get; set; }
+        public virtual string Spare1Like { get; set; }
+        public virtual string[] Spare1Between { get; set; }
+        public virtual string[] Spare1In { get; set; }
+        public virtual string Spare2 { get; set; }
+        public virtual string Spare2StartsWith { get; set; }
+        public virtual string Spare2EndsWith { get; set; }
+        public virtual string Spare2Contains { get; set; }
+        public virtual string Spare2Like { get; set; }
+        public virtual string[] Spare2Between { get; set; }
+        public virtual string[] Spare2In { get; set; }
+        public virtual string Spare3 { get; set; }
+        public virtual string Spare3StartsWith { get; set; }
+        public virtual string Spare3EndsWith { get; set; }
+        public virtual string Spare3Contains { get; set; }
+        public virtual string Spare3Like { get; set; }
+        public virtual string[] Spare3Between { get; set; }
+        public virtual string[] Spare3In { get; set; }
+        public virtual string Spare4 { get; set; }
+        public virtual string Spare4StartsWith { get; set; }
+        public virtual string Spare4EndsWith { get; set; }
+        public virtual string Spare4Contains { get; set; }
+        public virtual string Spare4Like { get; set; }
+        public virtual string[] Spare4Between { get; set; }
+        public virtual string[] Spare4In { get; set; }
+        public virtual string Spare5 { get; set; }
+        public virtual string Spare5StartsWith { get; set; }
+        public virtual string Spare5EndsWith { get; set; }
+        public virtual string Spare5Contains { get; set; }
+        public virtual string Spare5Like { get; set; }
+        public virtual string[] Spare5Between { get; set; }
+        public virtual string[] Spare5In { get; set; }
+        public virtual string SupplierWarehouseID { get; set; }
+        public virtual string SupplierWarehouseIDStartsWith { get; set; }
+        public virtual string SupplierWarehouseIDEndsWith { get; set; }
+        public virtual string SupplierWarehouseIDContains { get; set; }
+        public virtual string SupplierWarehouseIDLike { get; set; }
+        public virtual string[] SupplierWarehouseIDBetween { get; set; }
+        public virtual string[] SupplierWarehouseIDIn { get; set; }
+        public virtual string SupplierWarehouseDescription { get; set; }
+        public virtual string SupplierWarehouseDescriptionStartsWith { get; set; }
+        public virtual string SupplierWarehouseDescriptionEndsWith { get; set; }
+        public virtual string SupplierWarehouseDescriptionContains { get; set; }
+        public virtual string SupplierWarehouseDescriptionLike { get; set; }
+        public virtual string[] SupplierWarehouseDescriptionBetween { get; set; }
+        public virtual string[] SupplierWarehouseDescriptionIn { get; set; }
+        public virtual string SupplierWarehouseAddress1 { get; set; }
+        public virtual string SupplierWarehouseAddress1StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress1EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress1Contains { get; set; }
+        public virtual string SupplierWarehouseAddress1Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress1Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress1In { get; set; }
+        public virtual string SupplierWarehouseAddress2 { get; set; }
+        public virtual string SupplierWarehouseAddress2StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress2EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress2Contains { get; set; }
+        public virtual string SupplierWarehouseAddress2Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress2Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress2In { get; set; }
+        public virtual string SupplierWarehouseAddress3 { get; set; }
+        public virtual string SupplierWarehouseAddress3StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress3EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress3Contains { get; set; }
+        public virtual string SupplierWarehouseAddress3Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress3Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress3In { get; set; }
+        public virtual string SupplierWarehouseAddress4 { get; set; }
+        public virtual string SupplierWarehouseAddress4StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress4EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress4Contains { get; set; }
+        public virtual string SupplierWarehouseAddress4Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress4Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress4In { get; set; }
+        public virtual string SupplierWarehousePostCode { get; set; }
+        public virtual string SupplierWarehousePostCodeStartsWith { get; set; }
+        public virtual string SupplierWarehousePostCodeEndsWith { get; set; }
+        public virtual string SupplierWarehousePostCodeContains { get; set; }
+        public virtual string SupplierWarehousePostCodeLike { get; set; }
+        public virtual string[] SupplierWarehousePostCodeBetween { get; set; }
+        public virtual string[] SupplierWarehousePostCodeIn { get; set; }
+        public virtual string SupplierWarehouseCountry { get; set; }
+        public virtual string SupplierWarehouseCountryStartsWith { get; set; }
+        public virtual string SupplierWarehouseCountryEndsWith { get; set; }
+        public virtual string SupplierWarehouseCountryContains { get; set; }
+        public virtual string SupplierWarehouseCountryLike { get; set; }
+        public virtual string[] SupplierWarehouseCountryBetween { get; set; }
+        public virtual string[] SupplierWarehouseCountryIn { get; set; }
+        public virtual string SuppliertWarehouseCourierDetails { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsStartsWith { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsEndsWith { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsContains { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsLike { get; set; }
+        public virtual string[] SuppliertWarehouseCourierDetailsBetween { get; set; }
+        public virtual string[] SuppliertWarehouseCourierDetailsIn { get; set; }
+        public virtual string SupplierWarehouseNotes { get; set; }
+        public virtual string SupplierWarehouseNotesStartsWith { get; set; }
+        public virtual string SupplierWarehouseNotesEndsWith { get; set; }
+        public virtual string SupplierWarehouseNotesContains { get; set; }
+        public virtual string SupplierWarehouseNotesLike { get; set; }
+        public virtual string[] SupplierWarehouseNotesBetween { get; set; }
+        public virtual string[] SupplierWarehouseNotesIn { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDays { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysGreaterThan { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysLessThan { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysLessThanOrEqualTo { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysNotEqualTo { get; set; }
+        public virtual short?[] SupplierWarehouseDefaultDeliveryDaysBetween { get; set; }
+        public virtual short?[] SupplierWarehouseDefaultDeliveryDaysIn { get; set; }
+        public virtual byte? SupplierWarehouseIsDefault { get; set; }
+        public virtual byte? SupplierWarehouseIsDefaultGreaterThanOrEqualTo { get; set; }
+        public virtual byte? SupplierWarehouseIsDefaultGreaterThan { get; set; }
+        public virtual byte? SupplierWarehouseIsDefaultLessThan { get; set; }
+        public virtual byte? SupplierWarehouseIsDefaultLessThanOrEqualTo { get; set; }
+        public virtual byte? SupplierWarehouseIsDefaultNotEqualTo { get; set; }
+        public virtual byte?[] SupplierWarehouseIsDefaultBetween { get; set; }
+        public virtual byte?[] SupplierWarehouseIsDefaultIn { get; set; }
+        public virtual decimal? LocalFreightEx { get; set; }
+        public virtual decimal? LocalFreightExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightExGreaterThan { get; set; }
+        public virtual decimal? LocalFreightExLessThan { get; set; }
+        public virtual decimal? LocalFreightExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalFreightExBetween { get; set; }
+        public virtual decimal?[] LocalFreightExIn { get; set; }
+        public virtual decimal? LocalFreightTaxRate { get; set; }
+        public virtual decimal? LocalFreightTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalFreightTaxRateLessThan { get; set; }
+        public virtual decimal? LocalFreightTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalFreightTaxRateBetween { get; set; }
+        public virtual decimal?[] LocalFreightTaxRateIn { get; set; }
+        public virtual string LocalFreightTaxRateDescription { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionContains { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalFreightTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalFreightTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalFreightTaxAmount { get; set; }
+        public virtual decimal? LocalFreightTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalFreightTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalFreightTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalFreightTaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalFreightTaxAmountIn { get; set; }
+        public virtual decimal? LocalFreightInc { get; set; }
+        public virtual decimal? LocalFreightIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightIncGreaterThan { get; set; }
+        public virtual decimal? LocalFreightIncLessThan { get; set; }
+        public virtual decimal? LocalFreightIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalFreightIncBetween { get; set; }
+        public virtual decimal?[] LocalFreightIncIn { get; set; }
+        public virtual decimal? LocalDutyEx { get; set; }
+        public virtual decimal? LocalDutyExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyExGreaterThan { get; set; }
+        public virtual decimal? LocalDutyExLessThan { get; set; }
+        public virtual decimal? LocalDutyExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalDutyExBetween { get; set; }
+        public virtual decimal?[] LocalDutyExIn { get; set; }
+        public virtual decimal? LocalDutyTaxRate { get; set; }
+        public virtual decimal? LocalDutyTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalDutyTaxRateLessThan { get; set; }
+        public virtual decimal? LocalDutyTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalDutyTaxRateBetween { get; set; }
+        public virtual decimal?[] LocalDutyTaxRateIn { get; set; }
+        public virtual string LocalDutyTaxRateDescription { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionContains { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalDutyTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalDutyTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalDutyTaxAmount { get; set; }
+        public virtual decimal? LocalDutyTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalDutyTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalDutyTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalDutyTaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalDutyTaxAmountIn { get; set; }
+        public virtual decimal? LocalDutyInc { get; set; }
+        public virtual decimal? LocalDutyIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyIncGreaterThan { get; set; }
+        public virtual decimal? LocalDutyIncLessThan { get; set; }
+        public virtual decimal? LocalDutyIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalDutyIncBetween { get; set; }
+        public virtual decimal?[] LocalDutyIncIn { get; set; }
+        public virtual decimal? LocalInsuranceEx { get; set; }
+        public virtual decimal? LocalInsuranceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceExGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceExLessThan { get; set; }
+        public virtual decimal? LocalInsuranceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInsuranceExBetween { get; set; }
+        public virtual decimal?[] LocalInsuranceExIn { get; set; }
+        public virtual decimal? LocalInsuranceTaxRate { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateLessThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInsuranceTaxRateBetween { get; set; }
+        public virtual decimal?[] LocalInsuranceTaxRateIn { get; set; }
+        public virtual string LocalInsuranceTaxRateDescription { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionContains { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalInsuranceTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalInsuranceTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmount { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInsuranceTaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalInsuranceTaxAmountIn { get; set; }
+        public virtual decimal? LocalInsuranceInc { get; set; }
+        public virtual decimal? LocalInsuranceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceIncGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceIncLessThan { get; set; }
+        public virtual decimal? LocalInsuranceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInsuranceIncBetween { get; set; }
+        public virtual decimal?[] LocalInsuranceIncIn { get; set; }
+        public virtual decimal? FXFreightEx { get; set; }
+        public virtual decimal? FXFreightExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightExGreaterThan { get; set; }
+        public virtual decimal? FXFreightExLessThan { get; set; }
+        public virtual decimal? FXFreightExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightExNotEqualTo { get; set; }
+        public virtual decimal?[] FXFreightExBetween { get; set; }
+        public virtual decimal?[] FXFreightExIn { get; set; }
+        public virtual decimal? FXFreightTaxRate { get; set; }
+        public virtual decimal? FXFreightTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXFreightTaxRateLessThan { get; set; }
+        public virtual decimal? FXFreightTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] FXFreightTaxRateBetween { get; set; }
+        public virtual decimal?[] FXFreightTaxRateIn { get; set; }
+        public virtual string FXFreightTaxRateDescription { get; set; }
+        public virtual string FXFreightTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXFreightTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXFreightTaxRateDescriptionContains { get; set; }
+        public virtual string FXFreightTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXFreightTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXFreightTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXFreightTaxAmount { get; set; }
+        public virtual decimal? FXFreightTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXFreightTaxAmountLessThan { get; set; }
+        public virtual decimal? FXFreightTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXFreightTaxAmountBetween { get; set; }
+        public virtual decimal?[] FXFreightTaxAmountIn { get; set; }
+        public virtual decimal? FXFreightInc { get; set; }
+        public virtual decimal? FXFreightIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightIncGreaterThan { get; set; }
+        public virtual decimal? FXFreightIncLessThan { get; set; }
+        public virtual decimal? FXFreightIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXFreightIncBetween { get; set; }
+        public virtual decimal?[] FXFreightIncIn { get; set; }
+        public virtual decimal? FXDutyEx { get; set; }
+        public virtual decimal? FXDutyExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyExGreaterThan { get; set; }
+        public virtual decimal? FXDutyExLessThan { get; set; }
+        public virtual decimal? FXDutyExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyExNotEqualTo { get; set; }
+        public virtual decimal?[] FXDutyExBetween { get; set; }
+        public virtual decimal?[] FXDutyExIn { get; set; }
+        public virtual decimal? FXDutyTaxRate { get; set; }
+        public virtual decimal? FXDutyTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXDutyTaxRateLessThan { get; set; }
+        public virtual decimal? FXDutyTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] FXDutyTaxRateBetween { get; set; }
+        public virtual decimal?[] FXDutyTaxRateIn { get; set; }
+        public virtual string FXDutyTaxRateDescription { get; set; }
+        public virtual string FXDutyTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXDutyTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXDutyTaxRateDescriptionContains { get; set; }
+        public virtual string FXDutyTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXDutyTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXDutyTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXDutyTaxAmount { get; set; }
+        public virtual decimal? FXDutyTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXDutyTaxAmountLessThan { get; set; }
+        public virtual decimal? FXDutyTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXDutyTaxAmountBetween { get; set; }
+        public virtual decimal?[] FXDutyTaxAmountIn { get; set; }
+        public virtual decimal? FXDutyInc { get; set; }
+        public virtual decimal? FXDutyIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyIncGreaterThan { get; set; }
+        public virtual decimal? FXDutyIncLessThan { get; set; }
+        public virtual decimal? FXDutyIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXDutyIncBetween { get; set; }
+        public virtual decimal?[] FXDutyIncIn { get; set; }
+        public virtual decimal? FXInsuranceEx { get; set; }
+        public virtual decimal? FXInsuranceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceExGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceExLessThan { get; set; }
+        public virtual decimal? FXInsuranceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceExNotEqualTo { get; set; }
+        public virtual decimal?[] FXInsuranceExBetween { get; set; }
+        public virtual decimal?[] FXInsuranceExIn { get; set; }
+        public virtual decimal? FXInsuranceTaxRate { get; set; }
+        public virtual decimal? FXInsuranceTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceTaxRateLessThan { get; set; }
+        public virtual decimal? FXInsuranceTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] FXInsuranceTaxRateBetween { get; set; }
+        public virtual decimal?[] FXInsuranceTaxRateIn { get; set; }
+        public virtual string FXInsuranceTaxRateDescription { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionContains { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXInsuranceTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXInsuranceTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXInsuranceTaxAmount { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountLessThan { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXInsuranceTaxAmountBetween { get; set; }
+        public virtual decimal?[] FXInsuranceTaxAmountIn { get; set; }
+        public virtual decimal? FXInsuranceInc { get; set; }
+        public virtual decimal? FXInsuranceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceIncGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceIncLessThan { get; set; }
+        public virtual decimal? FXInsuranceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXInsuranceIncBetween { get; set; }
+        public virtual decimal?[] FXInsuranceIncIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncIn { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExIn { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncIn { get; set; }
+        public virtual string ReceivedOn { get; set; }
+        public virtual string ReceivedOnStartsWith { get; set; }
+        public virtual string ReceivedOnEndsWith { get; set; }
+        public virtual string ReceivedOnContains { get; set; }
+        public virtual string ReceivedOnLike { get; set; }
+        public virtual string[] ReceivedOnBetween { get; set; }
+        public virtual string[] ReceivedOnIn { get; set; }
     }
 
     public partial class v_Jiwa_RE_Lines
@@ -120067,6 +123884,9 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string InvoiceHistoryID { get; set; }
         public virtual short? HistoryNo { get; set; }
         [Required]
+        public virtual string OrderStatusCode { get; set; }
+
+        [Required]
         public virtual string OrderStatus { get; set; }
 
         [Required]
@@ -120078,6 +123898,9 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string OrderNo { get; set; }
         public virtual string InvoiceType { get; set; }
         [Required]
+        public virtual string BillingTypeCode { get; set; }
+
+        [Required]
         public virtual string BillingType { get; set; }
 
         public virtual string IN_PriceSchemes_PriceSchemeID { get; set; }
@@ -120087,6 +123910,9 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string TaxExemptNo { get; set; }
         [Required]
         public virtual string BackOrderMode { get; set; }
+
+        [Required]
+        public virtual string OrderTypeCode { get; set; }
 
         [Required]
         public virtual string OrderType { get; set; }
@@ -120136,7 +123962,9 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual decimal? ItemWeight { get; set; }
         public virtual decimal? ItemCubic { get; set; }
         public virtual bool? IsPicked { get; set; }
+        public virtual short? KitTypeCode { get; set; }
         public virtual string KitType { get; set; }
+        public virtual short? KitLineTypeCode { get; set; }
         public virtual string KitLineType { get; set; }
         public virtual string MyKitHeaderInvoiceLineID { get; set; }
         public virtual decimal? LocalUnitCost { get; set; }
@@ -120232,6 +124060,13 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual short? HistoryNoNotEqualTo { get; set; }
         public virtual short?[] HistoryNoBetween { get; set; }
         public virtual short?[] HistoryNoIn { get; set; }
+        public virtual string OrderStatusCode { get; set; }
+        public virtual string OrderStatusCodeStartsWith { get; set; }
+        public virtual string OrderStatusCodeEndsWith { get; set; }
+        public virtual string OrderStatusCodeContains { get; set; }
+        public virtual string OrderStatusCodeLike { get; set; }
+        public virtual string[] OrderStatusCodeBetween { get; set; }
+        public virtual string[] OrderStatusCodeIn { get; set; }
         public virtual string OrderStatus { get; set; }
         public virtual string OrderStatusStartsWith { get; set; }
         public virtual string OrderStatusEndsWith { get; set; }
@@ -120276,6 +124111,13 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string InvoiceTypeLike { get; set; }
         public virtual string[] InvoiceTypeBetween { get; set; }
         public virtual string[] InvoiceTypeIn { get; set; }
+        public virtual string BillingTypeCode { get; set; }
+        public virtual string BillingTypeCodeStartsWith { get; set; }
+        public virtual string BillingTypeCodeEndsWith { get; set; }
+        public virtual string BillingTypeCodeContains { get; set; }
+        public virtual string BillingTypeCodeLike { get; set; }
+        public virtual string[] BillingTypeCodeBetween { get; set; }
+        public virtual string[] BillingTypeCodeIn { get; set; }
         public virtual string BillingType { get; set; }
         public virtual string BillingTypeStartsWith { get; set; }
         public virtual string BillingTypeEndsWith { get; set; }
@@ -120311,6 +124153,13 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string BackOrderModeLike { get; set; }
         public virtual string[] BackOrderModeBetween { get; set; }
         public virtual string[] BackOrderModeIn { get; set; }
+        public virtual string OrderTypeCode { get; set; }
+        public virtual string OrderTypeCodeStartsWith { get; set; }
+        public virtual string OrderTypeCodeEndsWith { get; set; }
+        public virtual string OrderTypeCodeContains { get; set; }
+        public virtual string OrderTypeCodeLike { get; set; }
+        public virtual string[] OrderTypeCodeBetween { get; set; }
+        public virtual string[] OrderTypeCodeIn { get; set; }
         public virtual string OrderType { get; set; }
         public virtual string OrderTypeStartsWith { get; set; }
         public virtual string OrderTypeEndsWith { get; set; }
@@ -120575,6 +124424,14 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual decimal?[] ItemCubicBetween { get; set; }
         public virtual decimal?[] ItemCubicIn { get; set; }
         public virtual bool? IsPicked { get; set; }
+        public virtual short? KitTypeCode { get; set; }
+        public virtual short? KitTypeCodeGreaterThanOrEqualTo { get; set; }
+        public virtual short? KitTypeCodeGreaterThan { get; set; }
+        public virtual short? KitTypeCodeLessThan { get; set; }
+        public virtual short? KitTypeCodeLessThanOrEqualTo { get; set; }
+        public virtual short? KitTypeCodeNotEqualTo { get; set; }
+        public virtual short?[] KitTypeCodeBetween { get; set; }
+        public virtual short?[] KitTypeCodeIn { get; set; }
         public virtual string KitType { get; set; }
         public virtual string KitTypeStartsWith { get; set; }
         public virtual string KitTypeEndsWith { get; set; }
@@ -120582,6 +124439,14 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string KitTypeLike { get; set; }
         public virtual string[] KitTypeBetween { get; set; }
         public virtual string[] KitTypeIn { get; set; }
+        public virtual short? KitLineTypeCode { get; set; }
+        public virtual short? KitLineTypeCodeGreaterThanOrEqualTo { get; set; }
+        public virtual short? KitLineTypeCodeGreaterThan { get; set; }
+        public virtual short? KitLineTypeCodeLessThan { get; set; }
+        public virtual short? KitLineTypeCodeLessThanOrEqualTo { get; set; }
+        public virtual short? KitLineTypeCodeNotEqualTo { get; set; }
+        public virtual short?[] KitLineTypeCodeBetween { get; set; }
+        public virtual short?[] KitLineTypeCodeIn { get; set; }
         public virtual string KitLineType { get; set; }
         public virtual string KitLineTypeStartsWith { get; set; }
         public virtual string KitLineTypeEndsWith { get; set; }
@@ -121634,6 +125499,652 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string StatusLike { get; set; }
         public virtual string[] StatusBetween { get; set; }
         public virtual string[] StatusIn { get; set; }
+    }
+
+    public partial class v_Jiwa_SalesOrders
+    {
+        public virtual string InvoiceID { get; set; }
+        public virtual string InvoiceNo { get; set; }
+        [Required]
+        public virtual string InvoiceHistoryID { get; set; }
+
+        [Required]
+        public virtual string OrderStatusCode { get; set; }
+
+        [Required]
+        public virtual string OrderStatus { get; set; }
+
+        public virtual int? IsCreditNote { get; set; }
+        public virtual string FX_Currency_RecID { get; set; }
+        public virtual string Currency { get; set; }
+        public virtual decimal? CurrencyRate { get; set; }
+        public virtual string OrderNo { get; set; }
+        public virtual string InvoiceType { get; set; }
+        [Required]
+        public virtual string BillingTypeCode { get; set; }
+
+        [Required]
+        public virtual string BillingType { get; set; }
+
+        public virtual string IN_PriceSchemes_PriceSchemeID { get; set; }
+        public virtual string PriceScheme { get; set; }
+        public virtual string TaxExemptNo { get; set; }
+        [Required]
+        public virtual string BackOrderMode { get; set; }
+
+        [Required]
+        public virtual string OrderTypeCode { get; set; }
+
+        [Required]
+        public virtual string OrderType { get; set; }
+
+        [Required]
+        public virtual string PrintStatus { get; set; }
+
+        [Required]
+        public virtual string EmailStatus { get; set; }
+
+        public virtual string IN_Logical_IN_LogicalID { get; set; }
+        public virtual string PhysicalWarehouse { get; set; }
+        public virtual string LogicalWarehouse { get; set; }
+        public virtual DateTime? SalesOrderDate { get; set; }
+        public virtual DateTime? ExpectedDeliveryDate { get; set; }
+        public virtual DateTime? InvoiceDate { get; set; }
+        public virtual DateTime? DeliveredDate { get; set; }
+        public virtual string DB_Main_DebtorID { get; set; }
+        public virtual string DebtorAccountNo { get; set; }
+        public virtual string DebtorName { get; set; }
+        public virtual string DebtorClassification { get; set; }
+        public virtual string DeliveryAddressee { get; set; }
+        public virtual string DeliveryAddress1 { get; set; }
+        public virtual string DeliveryAddress2 { get; set; }
+        public virtual string DeliveryAddressSuburb { get; set; }
+        public virtual string DeliveryAddressState { get; set; }
+        public virtual string DeliveryAddressPostCode { get; set; }
+        public virtual string DeliveryAddressCountry { get; set; }
+        public virtual string DeliveryAddressPhone { get; set; }
+        public virtual decimal? DeliveryAddressLatitude { get; set; }
+        public virtual decimal? DeliveryAddressLongitude { get; set; }
+        public virtual string DeliveryCourierDetails { get; set; }
+        public virtual decimal? LocalCartageCharge1Ex { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge1Inc { get; set; }
+        public virtual decimal? LocalCartageCharge2Ex { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge2Inc { get; set; }
+        public virtual decimal? LocalCartageCharge3Ex { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge3Inc { get; set; }
+        public virtual decimal? FXCartageCharge1Ex { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge1Inc { get; set; }
+        public virtual decimal? FXCartageCharge2Ex { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge2Inc { get; set; }
+        public virtual decimal? FXCartageCharge3Ex { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge3Inc { get; set; }
+        public virtual decimal? LocalAmountPaid { get; set; }
+        public virtual decimal? FXAmountPaid { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+    }
+
+    [Route("/Queries/v_Jiwa_SalesOrders", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class v_Jiwa_SalesOrdersQuery
+        : QueryDb<v_Jiwa_SalesOrders>, IReturn<QueryResponse<v_Jiwa_SalesOrders>>
+    {
+        public virtual string InvoiceID { get; set; }
+        public virtual string InvoiceIDStartsWith { get; set; }
+        public virtual string InvoiceIDEndsWith { get; set; }
+        public virtual string InvoiceIDContains { get; set; }
+        public virtual string InvoiceIDLike { get; set; }
+        public virtual string[] InvoiceIDBetween { get; set; }
+        public virtual string[] InvoiceIDIn { get; set; }
+        public virtual string InvoiceNo { get; set; }
+        public virtual string InvoiceNoStartsWith { get; set; }
+        public virtual string InvoiceNoEndsWith { get; set; }
+        public virtual string InvoiceNoContains { get; set; }
+        public virtual string InvoiceNoLike { get; set; }
+        public virtual string[] InvoiceNoBetween { get; set; }
+        public virtual string[] InvoiceNoIn { get; set; }
+        public virtual string InvoiceHistoryID { get; set; }
+        public virtual string InvoiceHistoryIDStartsWith { get; set; }
+        public virtual string InvoiceHistoryIDEndsWith { get; set; }
+        public virtual string InvoiceHistoryIDContains { get; set; }
+        public virtual string InvoiceHistoryIDLike { get; set; }
+        public virtual string[] InvoiceHistoryIDBetween { get; set; }
+        public virtual string[] InvoiceHistoryIDIn { get; set; }
+        public virtual string OrderStatusCode { get; set; }
+        public virtual string OrderStatusCodeStartsWith { get; set; }
+        public virtual string OrderStatusCodeEndsWith { get; set; }
+        public virtual string OrderStatusCodeContains { get; set; }
+        public virtual string OrderStatusCodeLike { get; set; }
+        public virtual string[] OrderStatusCodeBetween { get; set; }
+        public virtual string[] OrderStatusCodeIn { get; set; }
+        public virtual string OrderStatus { get; set; }
+        public virtual string OrderStatusStartsWith { get; set; }
+        public virtual string OrderStatusEndsWith { get; set; }
+        public virtual string OrderStatusContains { get; set; }
+        public virtual string OrderStatusLike { get; set; }
+        public virtual string[] OrderStatusBetween { get; set; }
+        public virtual string[] OrderStatusIn { get; set; }
+        public virtual int? IsCreditNote { get; set; }
+        public virtual int? IsCreditNoteGreaterThanOrEqualTo { get; set; }
+        public virtual int? IsCreditNoteGreaterThan { get; set; }
+        public virtual int? IsCreditNoteLessThan { get; set; }
+        public virtual int? IsCreditNoteLessThanOrEqualTo { get; set; }
+        public virtual int? IsCreditNoteNotEqualTo { get; set; }
+        public virtual int?[] IsCreditNoteBetween { get; set; }
+        public virtual int?[] IsCreditNoteIn { get; set; }
+        public virtual string FX_Currency_RecID { get; set; }
+        public virtual string FX_Currency_RecIDStartsWith { get; set; }
+        public virtual string FX_Currency_RecIDEndsWith { get; set; }
+        public virtual string FX_Currency_RecIDContains { get; set; }
+        public virtual string FX_Currency_RecIDLike { get; set; }
+        public virtual string[] FX_Currency_RecIDBetween { get; set; }
+        public virtual string[] FX_Currency_RecIDIn { get; set; }
+        public virtual string Currency { get; set; }
+        public virtual string CurrencyStartsWith { get; set; }
+        public virtual string CurrencyEndsWith { get; set; }
+        public virtual string CurrencyContains { get; set; }
+        public virtual string CurrencyLike { get; set; }
+        public virtual string[] CurrencyBetween { get; set; }
+        public virtual string[] CurrencyIn { get; set; }
+        public virtual decimal? CurrencyRate { get; set; }
+        public virtual decimal? CurrencyRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateGreaterThan { get; set; }
+        public virtual decimal? CurrencyRateLessThan { get; set; }
+        public virtual decimal? CurrencyRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateNotEqualTo { get; set; }
+        public virtual decimal?[] CurrencyRateBetween { get; set; }
+        public virtual decimal?[] CurrencyRateIn { get; set; }
+        public virtual string OrderNo { get; set; }
+        public virtual string OrderNoStartsWith { get; set; }
+        public virtual string OrderNoEndsWith { get; set; }
+        public virtual string OrderNoContains { get; set; }
+        public virtual string OrderNoLike { get; set; }
+        public virtual string[] OrderNoBetween { get; set; }
+        public virtual string[] OrderNoIn { get; set; }
+        public virtual string InvoiceType { get; set; }
+        public virtual string InvoiceTypeStartsWith { get; set; }
+        public virtual string InvoiceTypeEndsWith { get; set; }
+        public virtual string InvoiceTypeContains { get; set; }
+        public virtual string InvoiceTypeLike { get; set; }
+        public virtual string[] InvoiceTypeBetween { get; set; }
+        public virtual string[] InvoiceTypeIn { get; set; }
+        public virtual string BillingTypeCode { get; set; }
+        public virtual string BillingTypeCodeStartsWith { get; set; }
+        public virtual string BillingTypeCodeEndsWith { get; set; }
+        public virtual string BillingTypeCodeContains { get; set; }
+        public virtual string BillingTypeCodeLike { get; set; }
+        public virtual string[] BillingTypeCodeBetween { get; set; }
+        public virtual string[] BillingTypeCodeIn { get; set; }
+        public virtual string BillingType { get; set; }
+        public virtual string BillingTypeStartsWith { get; set; }
+        public virtual string BillingTypeEndsWith { get; set; }
+        public virtual string BillingTypeContains { get; set; }
+        public virtual string BillingTypeLike { get; set; }
+        public virtual string[] BillingTypeBetween { get; set; }
+        public virtual string[] BillingTypeIn { get; set; }
+        public virtual string IN_PriceSchemes_PriceSchemeID { get; set; }
+        public virtual string IN_PriceSchemes_PriceSchemeIDStartsWith { get; set; }
+        public virtual string IN_PriceSchemes_PriceSchemeIDEndsWith { get; set; }
+        public virtual string IN_PriceSchemes_PriceSchemeIDContains { get; set; }
+        public virtual string IN_PriceSchemes_PriceSchemeIDLike { get; set; }
+        public virtual string[] IN_PriceSchemes_PriceSchemeIDBetween { get; set; }
+        public virtual string[] IN_PriceSchemes_PriceSchemeIDIn { get; set; }
+        public virtual string PriceScheme { get; set; }
+        public virtual string PriceSchemeStartsWith { get; set; }
+        public virtual string PriceSchemeEndsWith { get; set; }
+        public virtual string PriceSchemeContains { get; set; }
+        public virtual string PriceSchemeLike { get; set; }
+        public virtual string[] PriceSchemeBetween { get; set; }
+        public virtual string[] PriceSchemeIn { get; set; }
+        public virtual string TaxExemptNo { get; set; }
+        public virtual string TaxExemptNoStartsWith { get; set; }
+        public virtual string TaxExemptNoEndsWith { get; set; }
+        public virtual string TaxExemptNoContains { get; set; }
+        public virtual string TaxExemptNoLike { get; set; }
+        public virtual string[] TaxExemptNoBetween { get; set; }
+        public virtual string[] TaxExemptNoIn { get; set; }
+        public virtual string BackOrderMode { get; set; }
+        public virtual string BackOrderModeStartsWith { get; set; }
+        public virtual string BackOrderModeEndsWith { get; set; }
+        public virtual string BackOrderModeContains { get; set; }
+        public virtual string BackOrderModeLike { get; set; }
+        public virtual string[] BackOrderModeBetween { get; set; }
+        public virtual string[] BackOrderModeIn { get; set; }
+        public virtual string OrderTypeCode { get; set; }
+        public virtual string OrderTypeCodeStartsWith { get; set; }
+        public virtual string OrderTypeCodeEndsWith { get; set; }
+        public virtual string OrderTypeCodeContains { get; set; }
+        public virtual string OrderTypeCodeLike { get; set; }
+        public virtual string[] OrderTypeCodeBetween { get; set; }
+        public virtual string[] OrderTypeCodeIn { get; set; }
+        public virtual string OrderType { get; set; }
+        public virtual string OrderTypeStartsWith { get; set; }
+        public virtual string OrderTypeEndsWith { get; set; }
+        public virtual string OrderTypeContains { get; set; }
+        public virtual string OrderTypeLike { get; set; }
+        public virtual string[] OrderTypeBetween { get; set; }
+        public virtual string[] OrderTypeIn { get; set; }
+        public virtual string PrintStatus { get; set; }
+        public virtual string PrintStatusStartsWith { get; set; }
+        public virtual string PrintStatusEndsWith { get; set; }
+        public virtual string PrintStatusContains { get; set; }
+        public virtual string PrintStatusLike { get; set; }
+        public virtual string[] PrintStatusBetween { get; set; }
+        public virtual string[] PrintStatusIn { get; set; }
+        public virtual string EmailStatus { get; set; }
+        public virtual string EmailStatusStartsWith { get; set; }
+        public virtual string EmailStatusEndsWith { get; set; }
+        public virtual string EmailStatusContains { get; set; }
+        public virtual string EmailStatusLike { get; set; }
+        public virtual string[] EmailStatusBetween { get; set; }
+        public virtual string[] EmailStatusIn { get; set; }
+        public virtual string IN_Logical_IN_LogicalID { get; set; }
+        public virtual string IN_Logical_IN_LogicalIDStartsWith { get; set; }
+        public virtual string IN_Logical_IN_LogicalIDEndsWith { get; set; }
+        public virtual string IN_Logical_IN_LogicalIDContains { get; set; }
+        public virtual string IN_Logical_IN_LogicalIDLike { get; set; }
+        public virtual string[] IN_Logical_IN_LogicalIDBetween { get; set; }
+        public virtual string[] IN_Logical_IN_LogicalIDIn { get; set; }
+        public virtual string PhysicalWarehouse { get; set; }
+        public virtual string PhysicalWarehouseStartsWith { get; set; }
+        public virtual string PhysicalWarehouseEndsWith { get; set; }
+        public virtual string PhysicalWarehouseContains { get; set; }
+        public virtual string PhysicalWarehouseLike { get; set; }
+        public virtual string[] PhysicalWarehouseBetween { get; set; }
+        public virtual string[] PhysicalWarehouseIn { get; set; }
+        public virtual string LogicalWarehouse { get; set; }
+        public virtual string LogicalWarehouseStartsWith { get; set; }
+        public virtual string LogicalWarehouseEndsWith { get; set; }
+        public virtual string LogicalWarehouseContains { get; set; }
+        public virtual string LogicalWarehouseLike { get; set; }
+        public virtual string[] LogicalWarehouseBetween { get; set; }
+        public virtual string[] LogicalWarehouseIn { get; set; }
+        public virtual DateTime? SalesOrderDate { get; set; }
+        public virtual DateTime? SalesOrderDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? SalesOrderDateGreaterThan { get; set; }
+        public virtual DateTime? SalesOrderDateLessThan { get; set; }
+        public virtual DateTime? SalesOrderDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? SalesOrderDateNotEqualTo { get; set; }
+        public virtual DateTime?[] SalesOrderDateBetween { get; set; }
+        public virtual DateTime?[] SalesOrderDateIn { get; set; }
+        public virtual DateTime? ExpectedDeliveryDate { get; set; }
+        public virtual DateTime? ExpectedDeliveryDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? ExpectedDeliveryDateGreaterThan { get; set; }
+        public virtual DateTime? ExpectedDeliveryDateLessThan { get; set; }
+        public virtual DateTime? ExpectedDeliveryDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? ExpectedDeliveryDateNotEqualTo { get; set; }
+        public virtual DateTime?[] ExpectedDeliveryDateBetween { get; set; }
+        public virtual DateTime?[] ExpectedDeliveryDateIn { get; set; }
+        public virtual DateTime? InvoiceDate { get; set; }
+        public virtual DateTime? InvoiceDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? InvoiceDateGreaterThan { get; set; }
+        public virtual DateTime? InvoiceDateLessThan { get; set; }
+        public virtual DateTime? InvoiceDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? InvoiceDateNotEqualTo { get; set; }
+        public virtual DateTime?[] InvoiceDateBetween { get; set; }
+        public virtual DateTime?[] InvoiceDateIn { get; set; }
+        public virtual DateTime? DeliveredDate { get; set; }
+        public virtual DateTime? DeliveredDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? DeliveredDateGreaterThan { get; set; }
+        public virtual DateTime? DeliveredDateLessThan { get; set; }
+        public virtual DateTime? DeliveredDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? DeliveredDateNotEqualTo { get; set; }
+        public virtual DateTime?[] DeliveredDateBetween { get; set; }
+        public virtual DateTime?[] DeliveredDateIn { get; set; }
+        public virtual string DB_Main_DebtorID { get; set; }
+        public virtual string DB_Main_DebtorIDStartsWith { get; set; }
+        public virtual string DB_Main_DebtorIDEndsWith { get; set; }
+        public virtual string DB_Main_DebtorIDContains { get; set; }
+        public virtual string DB_Main_DebtorIDLike { get; set; }
+        public virtual string[] DB_Main_DebtorIDBetween { get; set; }
+        public virtual string[] DB_Main_DebtorIDIn { get; set; }
+        public virtual string DebtorAccountNo { get; set; }
+        public virtual string DebtorAccountNoStartsWith { get; set; }
+        public virtual string DebtorAccountNoEndsWith { get; set; }
+        public virtual string DebtorAccountNoContains { get; set; }
+        public virtual string DebtorAccountNoLike { get; set; }
+        public virtual string[] DebtorAccountNoBetween { get; set; }
+        public virtual string[] DebtorAccountNoIn { get; set; }
+        public virtual string DebtorName { get; set; }
+        public virtual string DebtorNameStartsWith { get; set; }
+        public virtual string DebtorNameEndsWith { get; set; }
+        public virtual string DebtorNameContains { get; set; }
+        public virtual string DebtorNameLike { get; set; }
+        public virtual string[] DebtorNameBetween { get; set; }
+        public virtual string[] DebtorNameIn { get; set; }
+        public virtual string DebtorClassification { get; set; }
+        public virtual string DebtorClassificationStartsWith { get; set; }
+        public virtual string DebtorClassificationEndsWith { get; set; }
+        public virtual string DebtorClassificationContains { get; set; }
+        public virtual string DebtorClassificationLike { get; set; }
+        public virtual string[] DebtorClassificationBetween { get; set; }
+        public virtual string[] DebtorClassificationIn { get; set; }
+        public virtual string DeliveryAddressee { get; set; }
+        public virtual string DeliveryAddresseeStartsWith { get; set; }
+        public virtual string DeliveryAddresseeEndsWith { get; set; }
+        public virtual string DeliveryAddresseeContains { get; set; }
+        public virtual string DeliveryAddresseeLike { get; set; }
+        public virtual string[] DeliveryAddresseeBetween { get; set; }
+        public virtual string[] DeliveryAddresseeIn { get; set; }
+        public virtual string DeliveryAddress1 { get; set; }
+        public virtual string DeliveryAddress1StartsWith { get; set; }
+        public virtual string DeliveryAddress1EndsWith { get; set; }
+        public virtual string DeliveryAddress1Contains { get; set; }
+        public virtual string DeliveryAddress1Like { get; set; }
+        public virtual string[] DeliveryAddress1Between { get; set; }
+        public virtual string[] DeliveryAddress1In { get; set; }
+        public virtual string DeliveryAddress2 { get; set; }
+        public virtual string DeliveryAddress2StartsWith { get; set; }
+        public virtual string DeliveryAddress2EndsWith { get; set; }
+        public virtual string DeliveryAddress2Contains { get; set; }
+        public virtual string DeliveryAddress2Like { get; set; }
+        public virtual string[] DeliveryAddress2Between { get; set; }
+        public virtual string[] DeliveryAddress2In { get; set; }
+        public virtual string DeliveryAddressSuburb { get; set; }
+        public virtual string DeliveryAddressSuburbStartsWith { get; set; }
+        public virtual string DeliveryAddressSuburbEndsWith { get; set; }
+        public virtual string DeliveryAddressSuburbContains { get; set; }
+        public virtual string DeliveryAddressSuburbLike { get; set; }
+        public virtual string[] DeliveryAddressSuburbBetween { get; set; }
+        public virtual string[] DeliveryAddressSuburbIn { get; set; }
+        public virtual string DeliveryAddressState { get; set; }
+        public virtual string DeliveryAddressStateStartsWith { get; set; }
+        public virtual string DeliveryAddressStateEndsWith { get; set; }
+        public virtual string DeliveryAddressStateContains { get; set; }
+        public virtual string DeliveryAddressStateLike { get; set; }
+        public virtual string[] DeliveryAddressStateBetween { get; set; }
+        public virtual string[] DeliveryAddressStateIn { get; set; }
+        public virtual string DeliveryAddressPostCode { get; set; }
+        public virtual string DeliveryAddressPostCodeStartsWith { get; set; }
+        public virtual string DeliveryAddressPostCodeEndsWith { get; set; }
+        public virtual string DeliveryAddressPostCodeContains { get; set; }
+        public virtual string DeliveryAddressPostCodeLike { get; set; }
+        public virtual string[] DeliveryAddressPostCodeBetween { get; set; }
+        public virtual string[] DeliveryAddressPostCodeIn { get; set; }
+        public virtual string DeliveryAddressCountry { get; set; }
+        public virtual string DeliveryAddressCountryStartsWith { get; set; }
+        public virtual string DeliveryAddressCountryEndsWith { get; set; }
+        public virtual string DeliveryAddressCountryContains { get; set; }
+        public virtual string DeliveryAddressCountryLike { get; set; }
+        public virtual string[] DeliveryAddressCountryBetween { get; set; }
+        public virtual string[] DeliveryAddressCountryIn { get; set; }
+        public virtual string DeliveryAddressPhone { get; set; }
+        public virtual string DeliveryAddressPhoneStartsWith { get; set; }
+        public virtual string DeliveryAddressPhoneEndsWith { get; set; }
+        public virtual string DeliveryAddressPhoneContains { get; set; }
+        public virtual string DeliveryAddressPhoneLike { get; set; }
+        public virtual string[] DeliveryAddressPhoneBetween { get; set; }
+        public virtual string[] DeliveryAddressPhoneIn { get; set; }
+        public virtual decimal? DeliveryAddressLatitude { get; set; }
+        public virtual decimal? DeliveryAddressLatitudeGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? DeliveryAddressLatitudeGreaterThan { get; set; }
+        public virtual decimal? DeliveryAddressLatitudeLessThan { get; set; }
+        public virtual decimal? DeliveryAddressLatitudeLessThanOrEqualTo { get; set; }
+        public virtual decimal? DeliveryAddressLatitudeNotEqualTo { get; set; }
+        public virtual decimal?[] DeliveryAddressLatitudeBetween { get; set; }
+        public virtual decimal?[] DeliveryAddressLatitudeIn { get; set; }
+        public virtual decimal? DeliveryAddressLongitude { get; set; }
+        public virtual decimal? DeliveryAddressLongitudeGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? DeliveryAddressLongitudeGreaterThan { get; set; }
+        public virtual decimal? DeliveryAddressLongitudeLessThan { get; set; }
+        public virtual decimal? DeliveryAddressLongitudeLessThanOrEqualTo { get; set; }
+        public virtual decimal? DeliveryAddressLongitudeNotEqualTo { get; set; }
+        public virtual decimal?[] DeliveryAddressLongitudeBetween { get; set; }
+        public virtual decimal?[] DeliveryAddressLongitudeIn { get; set; }
+        public virtual string DeliveryCourierDetails { get; set; }
+        public virtual string DeliveryCourierDetailsStartsWith { get; set; }
+        public virtual string DeliveryCourierDetailsEndsWith { get; set; }
+        public virtual string DeliveryCourierDetailsContains { get; set; }
+        public virtual string DeliveryCourierDetailsLike { get; set; }
+        public virtual string[] DeliveryCourierDetailsBetween { get; set; }
+        public virtual string[] DeliveryCourierDetailsIn { get; set; }
+        public virtual decimal? LocalCartageCharge1Ex { get; set; }
+        public virtual decimal? LocalCartageCharge1ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1ExGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge1ExLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge1ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1ExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge1ExBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge1ExIn { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRateLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge1TaxRateBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge1TaxRateIn { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmountLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge1TaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge1TaxAmountIn { get; set; }
+        public virtual decimal? LocalCartageCharge1Inc { get; set; }
+        public virtual decimal? LocalCartageCharge1IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1IncGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge1IncLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge1IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1IncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge1IncBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge1IncIn { get; set; }
+        public virtual decimal? LocalCartageCharge2Ex { get; set; }
+        public virtual decimal? LocalCartageCharge2ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2ExGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge2ExLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge2ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2ExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge2ExBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge2ExIn { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRateLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge2TaxRateBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge2TaxRateIn { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmountLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge2TaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge2TaxAmountIn { get; set; }
+        public virtual decimal? LocalCartageCharge2Inc { get; set; }
+        public virtual decimal? LocalCartageCharge2IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2IncGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge2IncLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge2IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2IncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge2IncBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge2IncIn { get; set; }
+        public virtual decimal? LocalCartageCharge3Ex { get; set; }
+        public virtual decimal? LocalCartageCharge3ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3ExGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge3ExLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge3ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3ExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge3ExBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge3ExIn { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRateLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge3TaxRateBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge3TaxRateIn { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmountLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge3TaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge3TaxAmountIn { get; set; }
+        public virtual decimal? LocalCartageCharge3Inc { get; set; }
+        public virtual decimal? LocalCartageCharge3IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3IncGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge3IncLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge3IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3IncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge3IncBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge3IncIn { get; set; }
+        public virtual decimal? FXCartageCharge1Ex { get; set; }
+        public virtual decimal? FXCartageCharge1ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1ExGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge1ExLessThan { get; set; }
+        public virtual decimal? FXCartageCharge1ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1ExNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge1ExBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge1ExIn { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmountLessThan { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge1TaxAmountBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge1TaxAmountIn { get; set; }
+        public virtual decimal? FXCartageCharge1Inc { get; set; }
+        public virtual decimal? FXCartageCharge1IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1IncGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge1IncLessThan { get; set; }
+        public virtual decimal? FXCartageCharge1IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1IncNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge1IncBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge1IncIn { get; set; }
+        public virtual decimal? FXCartageCharge2Ex { get; set; }
+        public virtual decimal? FXCartageCharge2ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2ExGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge2ExLessThan { get; set; }
+        public virtual decimal? FXCartageCharge2ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2ExNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge2ExBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge2ExIn { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmountLessThan { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge2TaxAmountBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge2TaxAmountIn { get; set; }
+        public virtual decimal? FXCartageCharge2Inc { get; set; }
+        public virtual decimal? FXCartageCharge2IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2IncGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge2IncLessThan { get; set; }
+        public virtual decimal? FXCartageCharge2IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2IncNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge2IncBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge2IncIn { get; set; }
+        public virtual decimal? FXCartageCharge3Ex { get; set; }
+        public virtual decimal? FXCartageCharge3ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3ExGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge3ExLessThan { get; set; }
+        public virtual decimal? FXCartageCharge3ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3ExNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge3ExBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge3ExIn { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmountLessThan { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge3TaxAmountBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge3TaxAmountIn { get; set; }
+        public virtual decimal? FXCartageCharge3Inc { get; set; }
+        public virtual decimal? FXCartageCharge3IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3IncGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge3IncLessThan { get; set; }
+        public virtual decimal? FXCartageCharge3IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3IncNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge3IncBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge3IncIn { get; set; }
+        public virtual decimal? LocalAmountPaid { get; set; }
+        public virtual decimal? LocalAmountPaidGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalAmountPaidGreaterThan { get; set; }
+        public virtual decimal? LocalAmountPaidLessThan { get; set; }
+        public virtual decimal? LocalAmountPaidLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalAmountPaidNotEqualTo { get; set; }
+        public virtual decimal?[] LocalAmountPaidBetween { get; set; }
+        public virtual decimal?[] LocalAmountPaidIn { get; set; }
+        public virtual decimal? FXAmountPaid { get; set; }
+        public virtual decimal? FXAmountPaidGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXAmountPaidGreaterThan { get; set; }
+        public virtual decimal? FXAmountPaidLessThan { get; set; }
+        public virtual decimal? FXAmountPaidLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXAmountPaidNotEqualTo { get; set; }
+        public virtual decimal?[] FXAmountPaidBetween { get; set; }
+        public virtual decimal?[] FXAmountPaidIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncIn { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExIn { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncIn { get; set; }
     }
 
     public partial class v_Jiwa_SalesQuote_List
@@ -139314,6 +143825,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string Description { get; set; }
     }
 
+    [Route("/Queries/OR/CR_BatchTrans", "GET")]
     [ApiResponse(Description = "Read OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
@@ -150367,37 +154879,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string ItemNoLike { get; set; }
         public virtual string[] ItemNoBetween { get; set; }
         public virtual string[] ItemNoIn { get; set; }
-    }
-
-    public partial class fn_splitOR
-    {
-        [Required]
-        public virtual short idx { get; set; }
-
-        public virtual string value { get; set; }
-    }
-
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    public partial class fn_splitORQuery
-        : QueryDb<fn_splitOR>, IReturn<QueryResponse<fn_splitOR>>
-    {
-        public virtual short? idx { get; set; }
-        public virtual short? idxGreaterThanOrEqualTo { get; set; }
-        public virtual short? idxGreaterThan { get; set; }
-        public virtual short? idxLessThan { get; set; }
-        public virtual short? idxLessThanOrEqualTo { get; set; }
-        public virtual short? idxNotEqualTo { get; set; }
-        public virtual short[] idxBetween { get; set; }
-        public virtual short[] idxIn { get; set; }
-        public virtual string value { get; set; }
-        public virtual string valueStartsWith { get; set; }
-        public virtual string valueEndsWith { get; set; }
-        public virtual string valueContains { get; set; }
-        public virtual string valueLike { get; set; }
-        public virtual string[] valueBetween { get; set; }
-        public virtual string[] valueIn { get; set; }
     }
 
     public partial class FR_CarrierFreightDescriptionsCustomFieldsOR
@@ -202154,6 +206635,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual int? ChangeTrackingRetentionDays { get; set; }
     }
 
+    [Route("/Queries/OR/SY_Forms", "GET")]
     [ApiResponse(Description = "Read OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
@@ -208217,78 +212699,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual int?[] BASCodeBetween { get; set; }
         public virtual int?[] BASCodeIn { get; set; }
         public virtual bool? Disabled { get; set; }
-    }
-
-    public partial class udf_JIWA_WorkOrderPutIntoStockItemNosOR
-    {
-        public virtual int? ItemNo { get; set; }
-    }
-
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    public partial class udf_JIWA_WorkOrderPutIntoStockItemNosORQuery
-        : QueryDb<udf_JIWA_WorkOrderPutIntoStockItemNosOR>, IReturn<QueryResponse<udf_JIWA_WorkOrderPutIntoStockItemNosOR>>
-    {
-        public virtual int? ItemNo { get; set; }
-        public virtual int? ItemNoGreaterThanOrEqualTo { get; set; }
-        public virtual int? ItemNoGreaterThan { get; set; }
-        public virtual int? ItemNoLessThan { get; set; }
-        public virtual int? ItemNoLessThanOrEqualTo { get; set; }
-        public virtual int? ItemNoNotEqualTo { get; set; }
-        public virtual int?[] ItemNoBetween { get; set; }
-        public virtual int?[] ItemNoIn { get; set; }
-    }
-
-    public partial class udf_JIWA_WorkOrderPutIntoStockRecIDsOR
-    {
-        public virtual Guid? RecID { get; set; }
-    }
-
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    public partial class udf_JIWA_WorkOrderPutIntoStockRecIDsORQuery
-        : QueryDb<udf_JIWA_WorkOrderPutIntoStockRecIDsOR>, IReturn<QueryResponse<udf_JIWA_WorkOrderPutIntoStockRecIDsOR>>
-    {
-        public virtual Guid? RecID { get; set; }
-        public virtual Guid?[] RecIDIn { get; set; }
-    }
-
-    public partial class udf_JIWA_WorkOrderTakeStockItemNosOR
-    {
-        public virtual int? ItemNo { get; set; }
-    }
-
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    public partial class udf_JIWA_WorkOrderTakeStockItemNosORQuery
-        : QueryDb<udf_JIWA_WorkOrderTakeStockItemNosOR>, IReturn<QueryResponse<udf_JIWA_WorkOrderTakeStockItemNosOR>>
-    {
-        public virtual int? ItemNo { get; set; }
-        public virtual int? ItemNoGreaterThanOrEqualTo { get; set; }
-        public virtual int? ItemNoGreaterThan { get; set; }
-        public virtual int? ItemNoLessThan { get; set; }
-        public virtual int? ItemNoLessThanOrEqualTo { get; set; }
-        public virtual int? ItemNoNotEqualTo { get; set; }
-        public virtual int?[] ItemNoBetween { get; set; }
-        public virtual int?[] ItemNoIn { get; set; }
-    }
-
-    public partial class udf_JIWA_WorkOrderTakeStockRecIDsOR
-    {
-        public virtual Guid? RecID { get; set; }
-    }
-
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    public partial class udf_JIWA_WorkOrderTakeStockRecIDsORQuery
-        : QueryDb<udf_JIWA_WorkOrderTakeStockRecIDsOR>, IReturn<QueryResponse<udf_JIWA_WorkOrderTakeStockRecIDsOR>>
-    {
-        public virtual Guid? RecID { get; set; }
-        public virtual Guid?[] RecIDIn { get; set; }
     }
 
     public partial class v_AllWarehousesOR
@@ -215803,6 +220213,788 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual decimal?[] RealisedGainIn { get; set; }
     }
 
+    public partial class v_Jiwa_CreditorSummaryOR
+    {
+        [Required]
+        public virtual string CreditorID { get; set; }
+
+        [Required]
+        public virtual string AccountNo { get; set; }
+
+        public virtual string Name { get; set; }
+        public virtual string TradingName { get; set; }
+        public virtual string CompanyName { get; set; }
+        [Required]
+        public virtual bool AccountOnHold { get; set; }
+
+        public virtual decimal? CreditLimit { get; set; }
+        public virtual string DefaultCurrencyShortName { get; set; }
+        public virtual string Phone { get; set; }
+        public virtual string Fax { get; set; }
+        public virtual string EmailAddress { get; set; }
+        public virtual string AlternativeAccountNo { get; set; }
+        public virtual string MailingAddress1 { get; set; }
+        public virtual string MailingAddress2 { get; set; }
+        public virtual string MailingAddress3 { get; set; }
+        public virtual string MailingAddress4 { get; set; }
+        public virtual string MailingPostCode { get; set; }
+        public virtual string MailingCountry { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifier { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlan { get; set; }
+        public virtual string ABN { get; set; }
+        public virtual string ACN { get; set; }
+        public virtual DateTime? CommenceDate { get; set; }
+        public virtual short? TermsDays { get; set; }
+        [Required]
+        public virtual string TermsType { get; set; }
+
+        [Required]
+        public virtual decimal MinimumPurchaseOrderValue { get; set; }
+
+        [Required]
+        public virtual decimal MaximumPurchaseOrderValue { get; set; }
+
+        public virtual short? StatementDiscountDays { get; set; }
+        [Required]
+        public virtual decimal StatementDiscountPercentage { get; set; }
+
+        public virtual string LedgerIDCreditorControl { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorControl_Description { get; set; }
+        public virtual string LedgerIDCreditorPurchases { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorPurchases_Description { get; set; }
+        public virtual string LedgerIDCreditorDiscounts { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_Description { get; set; }
+        public virtual string LedgerIDCreditorFreight { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorFreight_Description { get; set; }
+        public virtual string LedgerIDCreditorInsurance { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorInsurance_Description { get; set; }
+        public virtual string LedgerIDCreditorDuty { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorDuty_Description { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_Description { get; set; }
+        public virtual byte? TradingStatusCode { get; set; }
+        [Required]
+        public virtual string TradingStatus { get; set; }
+
+        public virtual string ProprietorName { get; set; }
+        public virtual string SupplierBankName { get; set; }
+        public virtual string SupplierBankAccountNo { get; set; }
+        public virtual string SupplierBSBN { get; set; }
+        public virtual string SupplierBankAccountName { get; set; }
+        public virtual Guid? DefaultPaymentBankAccountRecID { get; set; }
+        public virtual string DefaultPaymentBankName { get; set; }
+        public virtual string DefaultPaymentBankAccountNo { get; set; }
+        public virtual string DefaultPaymentBSBN { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountName { get; set; }
+        public virtual string DefaultWarehouseID { get; set; }
+        public virtual string DefaultWarehouseDescription { get; set; }
+        public virtual string DefaultWarehouseAddress1 { get; set; }
+        public virtual string DefaultWarehouseAddress2 { get; set; }
+        public virtual string DefaultWarehouseAddress3 { get; set; }
+        public virtual string DefaultWarehouseAddress4 { get; set; }
+        public virtual string DefaultWarehousePostCode { get; set; }
+        public virtual string DefaultWarehouseCountry { get; set; }
+        public virtual string DefaultWarehouseCourierDetails { get; set; }
+        public virtual string DefaultWarehouseNotes { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDays { get; set; }
+        public virtual string PurchaseOrderWorkflowID { get; set; }
+        public virtual string PurchaseOrderWorkflowName { get; set; }
+        public virtual short? PeriodTypeCode { get; set; }
+        [Required]
+        public virtual string PeriodType { get; set; }
+
+        [Required]
+        public virtual decimal Period1Balance { get; set; }
+
+        [Required]
+        public virtual decimal Period2Balance { get; set; }
+
+        [Required]
+        public virtual decimal Period3Balance { get; set; }
+
+        [Required]
+        public virtual decimal Period4Balance { get; set; }
+
+        [Required]
+        public virtual decimal TotalBalance { get; set; }
+
+        [Required]
+        public virtual string CreditorTags { get; set; }
+    }
+
+    [Route("/Queries/OR/v_Jiwa_CreditorSummary", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class v_Jiwa_CreditorSummaryORQuery
+        : QueryDb<v_Jiwa_CreditorSummaryOR>, IReturn<QueryResponse<v_Jiwa_CreditorSummaryOR>>
+    {
+        public virtual string CreditorID { get; set; }
+        public virtual string CreditorIDStartsWith { get; set; }
+        public virtual string CreditorIDEndsWith { get; set; }
+        public virtual string CreditorIDContains { get; set; }
+        public virtual string CreditorIDLike { get; set; }
+        public virtual string[] CreditorIDBetween { get; set; }
+        public virtual string[] CreditorIDIn { get; set; }
+        public virtual string AccountNo { get; set; }
+        public virtual string AccountNoStartsWith { get; set; }
+        public virtual string AccountNoEndsWith { get; set; }
+        public virtual string AccountNoContains { get; set; }
+        public virtual string AccountNoLike { get; set; }
+        public virtual string[] AccountNoBetween { get; set; }
+        public virtual string[] AccountNoIn { get; set; }
+        public virtual string Name { get; set; }
+        public virtual string NameStartsWith { get; set; }
+        public virtual string NameEndsWith { get; set; }
+        public virtual string NameContains { get; set; }
+        public virtual string NameLike { get; set; }
+        public virtual string[] NameBetween { get; set; }
+        public virtual string[] NameIn { get; set; }
+        public virtual string TradingName { get; set; }
+        public virtual string TradingNameStartsWith { get; set; }
+        public virtual string TradingNameEndsWith { get; set; }
+        public virtual string TradingNameContains { get; set; }
+        public virtual string TradingNameLike { get; set; }
+        public virtual string[] TradingNameBetween { get; set; }
+        public virtual string[] TradingNameIn { get; set; }
+        public virtual string CompanyName { get; set; }
+        public virtual string CompanyNameStartsWith { get; set; }
+        public virtual string CompanyNameEndsWith { get; set; }
+        public virtual string CompanyNameContains { get; set; }
+        public virtual string CompanyNameLike { get; set; }
+        public virtual string[] CompanyNameBetween { get; set; }
+        public virtual string[] CompanyNameIn { get; set; }
+        public virtual bool? AccountOnHold { get; set; }
+        public virtual decimal? CreditLimit { get; set; }
+        public virtual decimal? CreditLimitGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? CreditLimitGreaterThan { get; set; }
+        public virtual decimal? CreditLimitLessThan { get; set; }
+        public virtual decimal? CreditLimitLessThanOrEqualTo { get; set; }
+        public virtual decimal? CreditLimitNotEqualTo { get; set; }
+        public virtual decimal?[] CreditLimitBetween { get; set; }
+        public virtual decimal?[] CreditLimitIn { get; set; }
+        public virtual string DefaultCurrencyShortName { get; set; }
+        public virtual string DefaultCurrencyShortNameStartsWith { get; set; }
+        public virtual string DefaultCurrencyShortNameEndsWith { get; set; }
+        public virtual string DefaultCurrencyShortNameContains { get; set; }
+        public virtual string DefaultCurrencyShortNameLike { get; set; }
+        public virtual string[] DefaultCurrencyShortNameBetween { get; set; }
+        public virtual string[] DefaultCurrencyShortNameIn { get; set; }
+        public virtual string Phone { get; set; }
+        public virtual string PhoneStartsWith { get; set; }
+        public virtual string PhoneEndsWith { get; set; }
+        public virtual string PhoneContains { get; set; }
+        public virtual string PhoneLike { get; set; }
+        public virtual string[] PhoneBetween { get; set; }
+        public virtual string[] PhoneIn { get; set; }
+        public virtual string Fax { get; set; }
+        public virtual string FaxStartsWith { get; set; }
+        public virtual string FaxEndsWith { get; set; }
+        public virtual string FaxContains { get; set; }
+        public virtual string FaxLike { get; set; }
+        public virtual string[] FaxBetween { get; set; }
+        public virtual string[] FaxIn { get; set; }
+        public virtual string EmailAddress { get; set; }
+        public virtual string EmailAddressStartsWith { get; set; }
+        public virtual string EmailAddressEndsWith { get; set; }
+        public virtual string EmailAddressContains { get; set; }
+        public virtual string EmailAddressLike { get; set; }
+        public virtual string[] EmailAddressBetween { get; set; }
+        public virtual string[] EmailAddressIn { get; set; }
+        public virtual string AlternativeAccountNo { get; set; }
+        public virtual string AlternativeAccountNoStartsWith { get; set; }
+        public virtual string AlternativeAccountNoEndsWith { get; set; }
+        public virtual string AlternativeAccountNoContains { get; set; }
+        public virtual string AlternativeAccountNoLike { get; set; }
+        public virtual string[] AlternativeAccountNoBetween { get; set; }
+        public virtual string[] AlternativeAccountNoIn { get; set; }
+        public virtual string MailingAddress1 { get; set; }
+        public virtual string MailingAddress1StartsWith { get; set; }
+        public virtual string MailingAddress1EndsWith { get; set; }
+        public virtual string MailingAddress1Contains { get; set; }
+        public virtual string MailingAddress1Like { get; set; }
+        public virtual string[] MailingAddress1Between { get; set; }
+        public virtual string[] MailingAddress1In { get; set; }
+        public virtual string MailingAddress2 { get; set; }
+        public virtual string MailingAddress2StartsWith { get; set; }
+        public virtual string MailingAddress2EndsWith { get; set; }
+        public virtual string MailingAddress2Contains { get; set; }
+        public virtual string MailingAddress2Like { get; set; }
+        public virtual string[] MailingAddress2Between { get; set; }
+        public virtual string[] MailingAddress2In { get; set; }
+        public virtual string MailingAddress3 { get; set; }
+        public virtual string MailingAddress3StartsWith { get; set; }
+        public virtual string MailingAddress3EndsWith { get; set; }
+        public virtual string MailingAddress3Contains { get; set; }
+        public virtual string MailingAddress3Like { get; set; }
+        public virtual string[] MailingAddress3Between { get; set; }
+        public virtual string[] MailingAddress3In { get; set; }
+        public virtual string MailingAddress4 { get; set; }
+        public virtual string MailingAddress4StartsWith { get; set; }
+        public virtual string MailingAddress4EndsWith { get; set; }
+        public virtual string MailingAddress4Contains { get; set; }
+        public virtual string MailingAddress4Like { get; set; }
+        public virtual string[] MailingAddress4Between { get; set; }
+        public virtual string[] MailingAddress4In { get; set; }
+        public virtual string MailingPostCode { get; set; }
+        public virtual string MailingPostCodeStartsWith { get; set; }
+        public virtual string MailingPostCodeEndsWith { get; set; }
+        public virtual string MailingPostCodeContains { get; set; }
+        public virtual string MailingPostCodeLike { get; set; }
+        public virtual string[] MailingPostCodeBetween { get; set; }
+        public virtual string[] MailingPostCodeIn { get; set; }
+        public virtual string MailingCountry { get; set; }
+        public virtual string MailingCountryStartsWith { get; set; }
+        public virtual string MailingCountryEndsWith { get; set; }
+        public virtual string MailingCountryContains { get; set; }
+        public virtual string MailingCountryLike { get; set; }
+        public virtual string[] MailingCountryBetween { get; set; }
+        public virtual string[] MailingCountryIn { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifier { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifierStartsWith { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifierEndsWith { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifierContains { get; set; }
+        public virtual string MailingAustraliaPostDeliveryPointIdentifierLike { get; set; }
+        public virtual string[] MailingAustraliaPostDeliveryPointIdentifierBetween { get; set; }
+        public virtual string[] MailingAustraliaPostDeliveryPointIdentifierIn { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlan { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlanStartsWith { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlanEndsWith { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlanContains { get; set; }
+        public virtual string MailingAustraliaPostBarcodeSortPlanLike { get; set; }
+        public virtual string[] MailingAustraliaPostBarcodeSortPlanBetween { get; set; }
+        public virtual string[] MailingAustraliaPostBarcodeSortPlanIn { get; set; }
+        public virtual string ABN { get; set; }
+        public virtual string ABNStartsWith { get; set; }
+        public virtual string ABNEndsWith { get; set; }
+        public virtual string ABNContains { get; set; }
+        public virtual string ABNLike { get; set; }
+        public virtual string[] ABNBetween { get; set; }
+        public virtual string[] ABNIn { get; set; }
+        public virtual string ACN { get; set; }
+        public virtual string ACNStartsWith { get; set; }
+        public virtual string ACNEndsWith { get; set; }
+        public virtual string ACNContains { get; set; }
+        public virtual string ACNLike { get; set; }
+        public virtual string[] ACNBetween { get; set; }
+        public virtual string[] ACNIn { get; set; }
+        public virtual DateTime? CommenceDate { get; set; }
+        public virtual DateTime? CommenceDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? CommenceDateGreaterThan { get; set; }
+        public virtual DateTime? CommenceDateLessThan { get; set; }
+        public virtual DateTime? CommenceDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? CommenceDateNotEqualTo { get; set; }
+        public virtual DateTime?[] CommenceDateBetween { get; set; }
+        public virtual DateTime?[] CommenceDateIn { get; set; }
+        public virtual short? TermsDays { get; set; }
+        public virtual short? TermsDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? TermsDaysGreaterThan { get; set; }
+        public virtual short? TermsDaysLessThan { get; set; }
+        public virtual short? TermsDaysLessThanOrEqualTo { get; set; }
+        public virtual short? TermsDaysNotEqualTo { get; set; }
+        public virtual short?[] TermsDaysBetween { get; set; }
+        public virtual short?[] TermsDaysIn { get; set; }
+        public virtual string TermsType { get; set; }
+        public virtual string TermsTypeStartsWith { get; set; }
+        public virtual string TermsTypeEndsWith { get; set; }
+        public virtual string TermsTypeContains { get; set; }
+        public virtual string TermsTypeLike { get; set; }
+        public virtual string[] TermsTypeBetween { get; set; }
+        public virtual string[] TermsTypeIn { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValue { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValueGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValueGreaterThan { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValueLessThan { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValueLessThanOrEqualTo { get; set; }
+        public virtual decimal? MinimumPurchaseOrderValueNotEqualTo { get; set; }
+        public virtual decimal[] MinimumPurchaseOrderValueBetween { get; set; }
+        public virtual decimal[] MinimumPurchaseOrderValueIn { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValue { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValueGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValueGreaterThan { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValueLessThan { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValueLessThanOrEqualTo { get; set; }
+        public virtual decimal? MaximumPurchaseOrderValueNotEqualTo { get; set; }
+        public virtual decimal[] MaximumPurchaseOrderValueBetween { get; set; }
+        public virtual decimal[] MaximumPurchaseOrderValueIn { get; set; }
+        public virtual short? StatementDiscountDays { get; set; }
+        public virtual short? StatementDiscountDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? StatementDiscountDaysGreaterThan { get; set; }
+        public virtual short? StatementDiscountDaysLessThan { get; set; }
+        public virtual short? StatementDiscountDaysLessThanOrEqualTo { get; set; }
+        public virtual short? StatementDiscountDaysNotEqualTo { get; set; }
+        public virtual short?[] StatementDiscountDaysBetween { get; set; }
+        public virtual short?[] StatementDiscountDaysIn { get; set; }
+        public virtual decimal? StatementDiscountPercentage { get; set; }
+        public virtual decimal? StatementDiscountPercentageGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? StatementDiscountPercentageGreaterThan { get; set; }
+        public virtual decimal? StatementDiscountPercentageLessThan { get; set; }
+        public virtual decimal? StatementDiscountPercentageLessThanOrEqualTo { get; set; }
+        public virtual decimal? StatementDiscountPercentageNotEqualTo { get; set; }
+        public virtual decimal[] StatementDiscountPercentageBetween { get; set; }
+        public virtual decimal[] StatementDiscountPercentageIn { get; set; }
+        public virtual string LedgerIDCreditorControl { get; set; }
+        public virtual string LedgerIDCreditorControlStartsWith { get; set; }
+        public virtual string LedgerIDCreditorControlEndsWith { get; set; }
+        public virtual string LedgerIDCreditorControlContains { get; set; }
+        public virtual string LedgerIDCreditorControlLike { get; set; }
+        public virtual string[] LedgerIDCreditorControlBetween { get; set; }
+        public virtual string[] LedgerIDCreditorControlIn { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorControl_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorControl_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorControl_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorControl_Description { get; set; }
+        public virtual string LedgerIDCreditorControl_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorControl_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorControl_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorControl_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorControl_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorControl_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorPurchases { get; set; }
+        public virtual string LedgerIDCreditorPurchasesStartsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchasesEndsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchasesContains { get; set; }
+        public virtual string LedgerIDCreditorPurchasesLike { get; set; }
+        public virtual string[] LedgerIDCreditorPurchasesBetween { get; set; }
+        public virtual string[] LedgerIDCreditorPurchasesIn { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorPurchases_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorPurchases_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorPurchases_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorPurchases_Description { get; set; }
+        public virtual string LedgerIDCreditorPurchases_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchases_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorPurchases_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorPurchases_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorPurchases_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorPurchases_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorDiscounts { get; set; }
+        public virtual string LedgerIDCreditorDiscountsStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscountsEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscountsContains { get; set; }
+        public virtual string LedgerIDCreditorDiscountsLike { get; set; }
+        public virtual string[] LedgerIDCreditorDiscountsBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDiscountsIn { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorDiscounts_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDiscounts_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_Description { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorDiscounts_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorDiscounts_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDiscounts_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustmentStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustmentEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustmentContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustmentLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustmentBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustmentIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustment_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustment_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedDebitAdjustment_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustment_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedDebitAdjustment_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchaseStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchaseEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchaseContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchaseLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchaseBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchaseIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchase_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchase_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedPurchase_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchase_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedPurchase_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustmentStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustmentEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustmentContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustmentLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustmentBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustmentIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustment_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustment_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_Description { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorSourcedCreditAdjustment_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustment_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorSourcedCreditAdjustment_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorFreight { get; set; }
+        public virtual string LedgerIDCreditorFreightStartsWith { get; set; }
+        public virtual string LedgerIDCreditorFreightEndsWith { get; set; }
+        public virtual string LedgerIDCreditorFreightContains { get; set; }
+        public virtual string LedgerIDCreditorFreightLike { get; set; }
+        public virtual string[] LedgerIDCreditorFreightBetween { get; set; }
+        public virtual string[] LedgerIDCreditorFreightIn { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorFreight_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorFreight_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorFreight_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorFreight_Description { get; set; }
+        public virtual string LedgerIDCreditorFreight_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorFreight_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorFreight_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorFreight_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorFreight_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorFreight_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorInsurance { get; set; }
+        public virtual string LedgerIDCreditorInsuranceStartsWith { get; set; }
+        public virtual string LedgerIDCreditorInsuranceEndsWith { get; set; }
+        public virtual string LedgerIDCreditorInsuranceContains { get; set; }
+        public virtual string LedgerIDCreditorInsuranceLike { get; set; }
+        public virtual string[] LedgerIDCreditorInsuranceBetween { get; set; }
+        public virtual string[] LedgerIDCreditorInsuranceIn { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorInsurance_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorInsurance_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorInsurance_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorInsurance_Description { get; set; }
+        public virtual string LedgerIDCreditorInsurance_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorInsurance_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorInsurance_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorInsurance_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorInsurance_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorInsurance_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorDuty { get; set; }
+        public virtual string LedgerIDCreditorDutyStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDutyEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDutyContains { get; set; }
+        public virtual string LedgerIDCreditorDutyLike { get; set; }
+        public virtual string[] LedgerIDCreditorDutyBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDutyIn { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorDuty_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorDuty_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDuty_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorDuty_Description { get; set; }
+        public virtual string LedgerIDCreditorDuty_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorDuty_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorDuty_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorDuty_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorDuty_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorDuty_DescriptionIn { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLossStartsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLossEndsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLossContains { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLossLike { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLossBetween { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLossIn { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNo { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNoStartsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNoEndsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNoContains { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_AccountNoLike { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLoss_AccountNoBetween { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLoss_AccountNoIn { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_Description { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_DescriptionStartsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_DescriptionEndsWith { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_DescriptionContains { get; set; }
+        public virtual string LedgerIDCreditorRealisedGainLoss_DescriptionLike { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLoss_DescriptionBetween { get; set; }
+        public virtual string[] LedgerIDCreditorRealisedGainLoss_DescriptionIn { get; set; }
+        public virtual byte? TradingStatusCode { get; set; }
+        public virtual byte? TradingStatusCodeGreaterThanOrEqualTo { get; set; }
+        public virtual byte? TradingStatusCodeGreaterThan { get; set; }
+        public virtual byte? TradingStatusCodeLessThan { get; set; }
+        public virtual byte? TradingStatusCodeLessThanOrEqualTo { get; set; }
+        public virtual byte? TradingStatusCodeNotEqualTo { get; set; }
+        public virtual byte?[] TradingStatusCodeBetween { get; set; }
+        public virtual byte?[] TradingStatusCodeIn { get; set; }
+        public virtual string TradingStatus { get; set; }
+        public virtual string TradingStatusStartsWith { get; set; }
+        public virtual string TradingStatusEndsWith { get; set; }
+        public virtual string TradingStatusContains { get; set; }
+        public virtual string TradingStatusLike { get; set; }
+        public virtual string[] TradingStatusBetween { get; set; }
+        public virtual string[] TradingStatusIn { get; set; }
+        public virtual string ProprietorName { get; set; }
+        public virtual string ProprietorNameStartsWith { get; set; }
+        public virtual string ProprietorNameEndsWith { get; set; }
+        public virtual string ProprietorNameContains { get; set; }
+        public virtual string ProprietorNameLike { get; set; }
+        public virtual string[] ProprietorNameBetween { get; set; }
+        public virtual string[] ProprietorNameIn { get; set; }
+        public virtual string SupplierBankName { get; set; }
+        public virtual string SupplierBankNameStartsWith { get; set; }
+        public virtual string SupplierBankNameEndsWith { get; set; }
+        public virtual string SupplierBankNameContains { get; set; }
+        public virtual string SupplierBankNameLike { get; set; }
+        public virtual string[] SupplierBankNameBetween { get; set; }
+        public virtual string[] SupplierBankNameIn { get; set; }
+        public virtual string SupplierBankAccountNo { get; set; }
+        public virtual string SupplierBankAccountNoStartsWith { get; set; }
+        public virtual string SupplierBankAccountNoEndsWith { get; set; }
+        public virtual string SupplierBankAccountNoContains { get; set; }
+        public virtual string SupplierBankAccountNoLike { get; set; }
+        public virtual string[] SupplierBankAccountNoBetween { get; set; }
+        public virtual string[] SupplierBankAccountNoIn { get; set; }
+        public virtual string SupplierBSBN { get; set; }
+        public virtual string SupplierBSBNStartsWith { get; set; }
+        public virtual string SupplierBSBNEndsWith { get; set; }
+        public virtual string SupplierBSBNContains { get; set; }
+        public virtual string SupplierBSBNLike { get; set; }
+        public virtual string[] SupplierBSBNBetween { get; set; }
+        public virtual string[] SupplierBSBNIn { get; set; }
+        public virtual string SupplierBankAccountName { get; set; }
+        public virtual string SupplierBankAccountNameStartsWith { get; set; }
+        public virtual string SupplierBankAccountNameEndsWith { get; set; }
+        public virtual string SupplierBankAccountNameContains { get; set; }
+        public virtual string SupplierBankAccountNameLike { get; set; }
+        public virtual string[] SupplierBankAccountNameBetween { get; set; }
+        public virtual string[] SupplierBankAccountNameIn { get; set; }
+        public virtual Guid? DefaultPaymentBankAccountRecID { get; set; }
+        public virtual Guid?[] DefaultPaymentBankAccountRecIDIn { get; set; }
+        public virtual string DefaultPaymentBankName { get; set; }
+        public virtual string DefaultPaymentBankNameStartsWith { get; set; }
+        public virtual string DefaultPaymentBankNameEndsWith { get; set; }
+        public virtual string DefaultPaymentBankNameContains { get; set; }
+        public virtual string DefaultPaymentBankNameLike { get; set; }
+        public virtual string[] DefaultPaymentBankNameBetween { get; set; }
+        public virtual string[] DefaultPaymentBankNameIn { get; set; }
+        public virtual string DefaultPaymentBankAccountNo { get; set; }
+        public virtual string DefaultPaymentBankAccountNoStartsWith { get; set; }
+        public virtual string DefaultPaymentBankAccountNoEndsWith { get; set; }
+        public virtual string DefaultPaymentBankAccountNoContains { get; set; }
+        public virtual string DefaultPaymentBankAccountNoLike { get; set; }
+        public virtual string[] DefaultPaymentBankAccountNoBetween { get; set; }
+        public virtual string[] DefaultPaymentBankAccountNoIn { get; set; }
+        public virtual string DefaultPaymentBSBN { get; set; }
+        public virtual string DefaultPaymentBSBNStartsWith { get; set; }
+        public virtual string DefaultPaymentBSBNEndsWith { get; set; }
+        public virtual string DefaultPaymentBSBNContains { get; set; }
+        public virtual string DefaultPaymentBSBNLike { get; set; }
+        public virtual string[] DefaultPaymentBSBNBetween { get; set; }
+        public virtual string[] DefaultPaymentBSBNIn { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountName { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountNameStartsWith { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountNameEndsWith { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountNameContains { get; set; }
+        public virtual string DefaultPaymentBankAccountAccountNameLike { get; set; }
+        public virtual string[] DefaultPaymentBankAccountAccountNameBetween { get; set; }
+        public virtual string[] DefaultPaymentBankAccountAccountNameIn { get; set; }
+        public virtual string DefaultWarehouseID { get; set; }
+        public virtual string DefaultWarehouseIDStartsWith { get; set; }
+        public virtual string DefaultWarehouseIDEndsWith { get; set; }
+        public virtual string DefaultWarehouseIDContains { get; set; }
+        public virtual string DefaultWarehouseIDLike { get; set; }
+        public virtual string[] DefaultWarehouseIDBetween { get; set; }
+        public virtual string[] DefaultWarehouseIDIn { get; set; }
+        public virtual string DefaultWarehouseDescription { get; set; }
+        public virtual string DefaultWarehouseDescriptionStartsWith { get; set; }
+        public virtual string DefaultWarehouseDescriptionEndsWith { get; set; }
+        public virtual string DefaultWarehouseDescriptionContains { get; set; }
+        public virtual string DefaultWarehouseDescriptionLike { get; set; }
+        public virtual string[] DefaultWarehouseDescriptionBetween { get; set; }
+        public virtual string[] DefaultWarehouseDescriptionIn { get; set; }
+        public virtual string DefaultWarehouseAddress1 { get; set; }
+        public virtual string DefaultWarehouseAddress1StartsWith { get; set; }
+        public virtual string DefaultWarehouseAddress1EndsWith { get; set; }
+        public virtual string DefaultWarehouseAddress1Contains { get; set; }
+        public virtual string DefaultWarehouseAddress1Like { get; set; }
+        public virtual string[] DefaultWarehouseAddress1Between { get; set; }
+        public virtual string[] DefaultWarehouseAddress1In { get; set; }
+        public virtual string DefaultWarehouseAddress2 { get; set; }
+        public virtual string DefaultWarehouseAddress2StartsWith { get; set; }
+        public virtual string DefaultWarehouseAddress2EndsWith { get; set; }
+        public virtual string DefaultWarehouseAddress2Contains { get; set; }
+        public virtual string DefaultWarehouseAddress2Like { get; set; }
+        public virtual string[] DefaultWarehouseAddress2Between { get; set; }
+        public virtual string[] DefaultWarehouseAddress2In { get; set; }
+        public virtual string DefaultWarehouseAddress3 { get; set; }
+        public virtual string DefaultWarehouseAddress3StartsWith { get; set; }
+        public virtual string DefaultWarehouseAddress3EndsWith { get; set; }
+        public virtual string DefaultWarehouseAddress3Contains { get; set; }
+        public virtual string DefaultWarehouseAddress3Like { get; set; }
+        public virtual string[] DefaultWarehouseAddress3Between { get; set; }
+        public virtual string[] DefaultWarehouseAddress3In { get; set; }
+        public virtual string DefaultWarehouseAddress4 { get; set; }
+        public virtual string DefaultWarehouseAddress4StartsWith { get; set; }
+        public virtual string DefaultWarehouseAddress4EndsWith { get; set; }
+        public virtual string DefaultWarehouseAddress4Contains { get; set; }
+        public virtual string DefaultWarehouseAddress4Like { get; set; }
+        public virtual string[] DefaultWarehouseAddress4Between { get; set; }
+        public virtual string[] DefaultWarehouseAddress4In { get; set; }
+        public virtual string DefaultWarehousePostCode { get; set; }
+        public virtual string DefaultWarehousePostCodeStartsWith { get; set; }
+        public virtual string DefaultWarehousePostCodeEndsWith { get; set; }
+        public virtual string DefaultWarehousePostCodeContains { get; set; }
+        public virtual string DefaultWarehousePostCodeLike { get; set; }
+        public virtual string[] DefaultWarehousePostCodeBetween { get; set; }
+        public virtual string[] DefaultWarehousePostCodeIn { get; set; }
+        public virtual string DefaultWarehouseCountry { get; set; }
+        public virtual string DefaultWarehouseCountryStartsWith { get; set; }
+        public virtual string DefaultWarehouseCountryEndsWith { get; set; }
+        public virtual string DefaultWarehouseCountryContains { get; set; }
+        public virtual string DefaultWarehouseCountryLike { get; set; }
+        public virtual string[] DefaultWarehouseCountryBetween { get; set; }
+        public virtual string[] DefaultWarehouseCountryIn { get; set; }
+        public virtual string DefaultWarehouseCourierDetails { get; set; }
+        public virtual string DefaultWarehouseCourierDetailsStartsWith { get; set; }
+        public virtual string DefaultWarehouseCourierDetailsEndsWith { get; set; }
+        public virtual string DefaultWarehouseCourierDetailsContains { get; set; }
+        public virtual string DefaultWarehouseCourierDetailsLike { get; set; }
+        public virtual string[] DefaultWarehouseCourierDetailsBetween { get; set; }
+        public virtual string[] DefaultWarehouseCourierDetailsIn { get; set; }
+        public virtual string DefaultWarehouseNotes { get; set; }
+        public virtual string DefaultWarehouseNotesStartsWith { get; set; }
+        public virtual string DefaultWarehouseNotesEndsWith { get; set; }
+        public virtual string DefaultWarehouseNotesContains { get; set; }
+        public virtual string DefaultWarehouseNotesLike { get; set; }
+        public virtual string[] DefaultWarehouseNotesBetween { get; set; }
+        public virtual string[] DefaultWarehouseNotesIn { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDays { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDaysGreaterThan { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDaysLessThan { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDaysLessThanOrEqualTo { get; set; }
+        public virtual short? DefaultWarehouseDefaultDeliveryDaysNotEqualTo { get; set; }
+        public virtual short?[] DefaultWarehouseDefaultDeliveryDaysBetween { get; set; }
+        public virtual short?[] DefaultWarehouseDefaultDeliveryDaysIn { get; set; }
+        public virtual string PurchaseOrderWorkflowID { get; set; }
+        public virtual string PurchaseOrderWorkflowIDStartsWith { get; set; }
+        public virtual string PurchaseOrderWorkflowIDEndsWith { get; set; }
+        public virtual string PurchaseOrderWorkflowIDContains { get; set; }
+        public virtual string PurchaseOrderWorkflowIDLike { get; set; }
+        public virtual string[] PurchaseOrderWorkflowIDBetween { get; set; }
+        public virtual string[] PurchaseOrderWorkflowIDIn { get; set; }
+        public virtual string PurchaseOrderWorkflowName { get; set; }
+        public virtual string PurchaseOrderWorkflowNameStartsWith { get; set; }
+        public virtual string PurchaseOrderWorkflowNameEndsWith { get; set; }
+        public virtual string PurchaseOrderWorkflowNameContains { get; set; }
+        public virtual string PurchaseOrderWorkflowNameLike { get; set; }
+        public virtual string[] PurchaseOrderWorkflowNameBetween { get; set; }
+        public virtual string[] PurchaseOrderWorkflowNameIn { get; set; }
+        public virtual short? PeriodTypeCode { get; set; }
+        public virtual short? PeriodTypeCodeGreaterThanOrEqualTo { get; set; }
+        public virtual short? PeriodTypeCodeGreaterThan { get; set; }
+        public virtual short? PeriodTypeCodeLessThan { get; set; }
+        public virtual short? PeriodTypeCodeLessThanOrEqualTo { get; set; }
+        public virtual short? PeriodTypeCodeNotEqualTo { get; set; }
+        public virtual short?[] PeriodTypeCodeBetween { get; set; }
+        public virtual short?[] PeriodTypeCodeIn { get; set; }
+        public virtual string PeriodType { get; set; }
+        public virtual string PeriodTypeStartsWith { get; set; }
+        public virtual string PeriodTypeEndsWith { get; set; }
+        public virtual string PeriodTypeContains { get; set; }
+        public virtual string PeriodTypeLike { get; set; }
+        public virtual string[] PeriodTypeBetween { get; set; }
+        public virtual string[] PeriodTypeIn { get; set; }
+        public virtual decimal? Period1Balance { get; set; }
+        public virtual decimal? Period1BalanceGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? Period1BalanceGreaterThan { get; set; }
+        public virtual decimal? Period1BalanceLessThan { get; set; }
+        public virtual decimal? Period1BalanceLessThanOrEqualTo { get; set; }
+        public virtual decimal? Period1BalanceNotEqualTo { get; set; }
+        public virtual decimal[] Period1BalanceBetween { get; set; }
+        public virtual decimal[] Period1BalanceIn { get; set; }
+        public virtual decimal? Period2Balance { get; set; }
+        public virtual decimal? Period2BalanceGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? Period2BalanceGreaterThan { get; set; }
+        public virtual decimal? Period2BalanceLessThan { get; set; }
+        public virtual decimal? Period2BalanceLessThanOrEqualTo { get; set; }
+        public virtual decimal? Period2BalanceNotEqualTo { get; set; }
+        public virtual decimal[] Period2BalanceBetween { get; set; }
+        public virtual decimal[] Period2BalanceIn { get; set; }
+        public virtual decimal? Period3Balance { get; set; }
+        public virtual decimal? Period3BalanceGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? Period3BalanceGreaterThan { get; set; }
+        public virtual decimal? Period3BalanceLessThan { get; set; }
+        public virtual decimal? Period3BalanceLessThanOrEqualTo { get; set; }
+        public virtual decimal? Period3BalanceNotEqualTo { get; set; }
+        public virtual decimal[] Period3BalanceBetween { get; set; }
+        public virtual decimal[] Period3BalanceIn { get; set; }
+        public virtual decimal? Period4Balance { get; set; }
+        public virtual decimal? Period4BalanceGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? Period4BalanceGreaterThan { get; set; }
+        public virtual decimal? Period4BalanceLessThan { get; set; }
+        public virtual decimal? Period4BalanceLessThanOrEqualTo { get; set; }
+        public virtual decimal? Period4BalanceNotEqualTo { get; set; }
+        public virtual decimal[] Period4BalanceBetween { get; set; }
+        public virtual decimal[] Period4BalanceIn { get; set; }
+        public virtual decimal? TotalBalance { get; set; }
+        public virtual decimal? TotalBalanceGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? TotalBalanceGreaterThan { get; set; }
+        public virtual decimal? TotalBalanceLessThan { get; set; }
+        public virtual decimal? TotalBalanceLessThanOrEqualTo { get; set; }
+        public virtual decimal? TotalBalanceNotEqualTo { get; set; }
+        public virtual decimal[] TotalBalanceBetween { get; set; }
+        public virtual decimal[] TotalBalanceIn { get; set; }
+        public virtual string CreditorTags { get; set; }
+        public virtual string CreditorTagsStartsWith { get; set; }
+        public virtual string CreditorTagsEndsWith { get; set; }
+        public virtual string CreditorTagsContains { get; set; }
+        public virtual string CreditorTagsLike { get; set; }
+        public virtual string[] CreditorTagsBetween { get; set; }
+        public virtual string[] CreditorTagsIn { get; set; }
+    }
+
     public partial class v_Jiwa_DB_ContactNameMultipleOR
     {
         [Required]
@@ -220090,6 +225282,1510 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string[] SignatureIn { get; set; }
     }
 
+    public partial class v_Jiwa_PurchaseInformationOR
+    {
+        [Required]
+        public virtual string OrderID { get; set; }
+
+        [Required]
+        public virtual string OrderNo { get; set; }
+
+        [Required]
+        public virtual string OrderTypeCode { get; set; }
+
+        [Required]
+        public virtual string OrderType { get; set; }
+
+        [Required]
+        public virtual string OrderSupplierTypeCode { get; set; }
+
+        [Required]
+        public virtual string OrderSupplierType { get; set; }
+
+        [Required]
+        public virtual string OrderStatusCode { get; set; }
+
+        [Required]
+        public virtual string OrderStatus { get; set; }
+
+        [Required]
+        public virtual string FX_Currency_RecID { get; set; }
+
+        public virtual string Currency { get; set; }
+        [Required]
+        public virtual decimal CurrencyRate { get; set; }
+
+        public virtual string Reference { get; set; }
+        public virtual string Workflow { get; set; }
+        [Required]
+        public virtual DateTime OrderDate { get; set; }
+
+        [Required]
+        public virtual DateTimeOffset PurchaseOrderLastModifiedDate { get; set; }
+
+        public virtual string Staff { get; set; }
+        public virtual string Attention { get; set; }
+        public virtual string ContactBy { get; set; }
+        [Required]
+        public virtual string UseInTransit { get; set; }
+
+        [Required]
+        public virtual string CR_Main_CreditorID { get; set; }
+
+        public virtual string CreditorAccountNo { get; set; }
+        public virtual string CreditorName { get; set; }
+        public virtual string CreditorClassification { get; set; }
+        [Required]
+        public virtual string InTransitWarehouse_IN_LogicalID { get; set; }
+
+        public virtual string InTransitPhysicalWarehouse { get; set; }
+        public virtual string InTransitLogicalWarehouse { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalID { get; set; }
+        public virtual string SupplyingPhysicalWarehouse { get; set; }
+        public virtual string SupplyingLogicalWarehouse { get; set; }
+        [Required]
+        public virtual string ResidingInWarehouse_IN_LogicalID { get; set; }
+
+        public virtual string ResidingInPhysicalWarehouse { get; set; }
+        public virtual string ResidingInLogicalWarehouse { get; set; }
+        public virtual string BackToBackInvoiceID { get; set; }
+        public virtual string BackToBackInvoiceNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorName { get; set; }
+        public virtual string ShippingContactName { get; set; }
+        public virtual string ShippingAddress1 { get; set; }
+        public virtual string ShippingAddress2 { get; set; }
+        public virtual string ShippingAddressSuburb { get; set; }
+        public virtual string ShippingAddressState { get; set; }
+        public virtual string ShippingAddressPostCode { get; set; }
+        public virtual string ShippingAddressCountry { get; set; }
+        public virtual string ShippingAddressPhone { get; set; }
+        public virtual string ShippingAddressFax { get; set; }
+        public virtual string Spare1 { get; set; }
+        public virtual string Spare2 { get; set; }
+        public virtual string Spare3 { get; set; }
+        public virtual string Spare4 { get; set; }
+        public virtual string Spare5 { get; set; }
+        [Required]
+        public virtual string OrderLineID { get; set; }
+
+        public virtual short? LineNumber { get; set; }
+        [Required]
+        public virtual string LineTypeCode { get; set; }
+
+        [Required]
+        public virtual string LineType { get; set; }
+
+        public virtual string CommentText { get; set; }
+        public virtual decimal? Quantity { get; set; }
+        public virtual string Unit { get; set; }
+        public virtual DateTime? DeliveryDate { get; set; }
+        public virtual decimal? QuantityDelivered { get; set; }
+        public virtual short? QuantityDecimalPlaces { get; set; }
+        public virtual string SupplierPartNo { get; set; }
+        [Required]
+        public virtual DateTimeOffset LineLastModifiedDate { get; set; }
+
+        public virtual decimal? OrderUnits { get; set; }
+        public virtual short? DeliveryDays { get; set; }
+        public virtual string TaxID { get; set; }
+        public virtual string TaxRateDescription { get; set; }
+        public virtual decimal? TaxRate { get; set; }
+        public virtual Guid? IN_UnitOfMeasure_RecID { get; set; }
+        public virtual string UnitOfMeasureName { get; set; }
+        public virtual decimal? QuantityUnitOfMeasure { get; set; }
+        public virtual decimal? LocalUnitBuyPriceEx { get; set; }
+        public virtual decimal? FXUnitBuyPriceEx { get; set; }
+        public virtual decimal? LocalUnitBuyPriceInc { get; set; }
+        public virtual decimal? FXUnitBuyPriceInc { get; set; }
+        [Required]
+        public virtual decimal LocalLineTotalEx { get; set; }
+
+        public virtual decimal? FXLineTotalEx { get; set; }
+        public virtual decimal? LocalLineTax { get; set; }
+        public virtual decimal? FXLineTax { get; set; }
+        public virtual decimal? LocalLineTotalInc { get; set; }
+        public virtual decimal? FxLineTotalInc { get; set; }
+        [Required]
+        public virtual string IN_Main_InventoryID { get; set; }
+
+        public virtual string PartNo { get; set; }
+        public virtual string Description { get; set; }
+        public virtual bool? IsSerialised { get; set; }
+        public virtual bool? IsPhysicalItem { get; set; }
+        public virtual bool? IsExpiryItem { get; set; }
+        [Required]
+        public virtual string InventoryClassificationID { get; set; }
+
+        public virtual string InventoryClassification { get; set; }
+        public virtual string Category1 { get; set; }
+        public virtual string Category2 { get; set; }
+        public virtual string Category3 { get; set; }
+        public virtual string Category4 { get; set; }
+        public virtual string Category5 { get; set; }
+        public virtual string PurchasingClassificationID { get; set; }
+        public virtual string PurchasingClassificationDescription { get; set; }
+        public virtual string SupplierWarehouseID { get; set; }
+        public virtual string SupplierWarehouseDescription { get; set; }
+        public virtual string SupplierWarehouseAddress1 { get; set; }
+        public virtual string SupplierWarehouseAddress2 { get; set; }
+        public virtual string SupplierWarehouseAddress3 { get; set; }
+        public virtual string SupplierWarehouseAddress4 { get; set; }
+        public virtual string SupplierWarehousePostCode { get; set; }
+        public virtual string SupplierWarehouseCountry { get; set; }
+        public virtual string SuppliertWarehouseCourierDetails { get; set; }
+        public virtual string SupplierWarehouseNotes { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDays { get; set; }
+        public virtual bool? SupplierWarehouseIsDefault { get; set; }
+        public virtual DateTime? UserDefinedDate1 { get; set; }
+        public virtual DateTime? UserDefinedDate2 { get; set; }
+        public virtual DateTime? UserDefinedDate3 { get; set; }
+        public virtual string UserDefinedString1 { get; set; }
+        public virtual string UserDefinedString2 { get; set; }
+        public virtual string UserDefinedString3 { get; set; }
+        public virtual decimal? UserDefinedFloat1 { get; set; }
+        public virtual decimal? UserDefinedFloat2 { get; set; }
+        public virtual decimal? UserDefinedFloat3 { get; set; }
+        public virtual string ServiceManagerTaskRecID { get; set; }
+        public virtual int? ServiceManagerTaskTaskNo { get; set; }
+        public virtual string ServiceManagerJobRecID { get; set; }
+        public virtual string ServiceManagerJobJobNo { get; set; }
+        public virtual string JobCostingJobRecID { get; set; }
+        public virtual string JobCostingStageNo { get; set; }
+        public virtual string JobCostingStageName { get; set; }
+        public virtual string JobCostingStageClassificationRecID { get; set; }
+        public virtual string JobCostingCostCentreRecID { get; set; }
+        public virtual string JobCostingCostCentreNo { get; set; }
+        public virtual string JobCostingCostCentreName { get; set; }
+        public virtual string JobCostingJobID { get; set; }
+        public virtual string JobCostingJobNo { get; set; }
+        public virtual string JobCostingJobDescription { get; set; }
+        public virtual string Category1Label { get; set; }
+        public virtual string Category2Label { get; set; }
+        public virtual string Category3Label { get; set; }
+        public virtual string Category4Label { get; set; }
+        public virtual string Category5Label { get; set; }
+        [Required]
+        public virtual decimal LocalFreightEx { get; set; }
+
+        [Required]
+        public virtual decimal LocalFreightTaxRate { get; set; }
+
+        public virtual string LocalFreightTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal LocalFreightTaxAmount { get; set; }
+
+        public virtual decimal? LocalFreightInc { get; set; }
+        [Required]
+        public virtual decimal LocalDutyEx { get; set; }
+
+        [Required]
+        public virtual decimal LocalDutyTaxRate { get; set; }
+
+        public virtual string LocalDutyTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal LocalDutyTaxAmount { get; set; }
+
+        public virtual decimal? LocalDutyInc { get; set; }
+        [Required]
+        public virtual decimal LocalInsuranceEx { get; set; }
+
+        [Required]
+        public virtual decimal LocalInsuranceTaxRate { get; set; }
+
+        public virtual string LocalInsuranceTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal LocalInsuranceTaxAmount { get; set; }
+
+        public virtual decimal? LocalInsuranceInc { get; set; }
+        [Required]
+        public virtual decimal FXFreightEx { get; set; }
+
+        [Required]
+        public virtual decimal FXFreightTaxRate { get; set; }
+
+        public virtual string FXFreightTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal FXFreightTaxAmount { get; set; }
+
+        public virtual decimal? FXFreightInc { get; set; }
+        [Required]
+        public virtual decimal FXDutyEx { get; set; }
+
+        [Required]
+        public virtual decimal FXDutyTaxRate { get; set; }
+
+        public virtual string FXDutyTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal FXDutyTaxAmount { get; set; }
+
+        public virtual decimal? FXDutyInc { get; set; }
+        [Required]
+        public virtual decimal FXInsuranceEx { get; set; }
+
+        [Required]
+        public virtual decimal FXInsuranceTaxRate { get; set; }
+
+        public virtual string FXInsuranceTaxRateDescription { get; set; }
+        [Required]
+        public virtual decimal FXInsuranceTaxAmount { get; set; }
+
+        public virtual decimal? FXInsuranceInc { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+        [Required]
+        public virtual string ReceivedOn { get; set; }
+    }
+
+    [Route("/Queries/OR/v_Jiwa_PurchaseInformation", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class v_Jiwa_PurchaseInformationORQuery
+        : QueryDb<v_Jiwa_PurchaseInformationOR>, IReturn<QueryResponse<v_Jiwa_PurchaseInformationOR>>
+    {
+        public virtual string OrderID { get; set; }
+        public virtual string OrderIDStartsWith { get; set; }
+        public virtual string OrderIDEndsWith { get; set; }
+        public virtual string OrderIDContains { get; set; }
+        public virtual string OrderIDLike { get; set; }
+        public virtual string[] OrderIDBetween { get; set; }
+        public virtual string[] OrderIDIn { get; set; }
+        public virtual string OrderNo { get; set; }
+        public virtual string OrderNoStartsWith { get; set; }
+        public virtual string OrderNoEndsWith { get; set; }
+        public virtual string OrderNoContains { get; set; }
+        public virtual string OrderNoLike { get; set; }
+        public virtual string[] OrderNoBetween { get; set; }
+        public virtual string[] OrderNoIn { get; set; }
+        public virtual string OrderTypeCode { get; set; }
+        public virtual string OrderTypeCodeStartsWith { get; set; }
+        public virtual string OrderTypeCodeEndsWith { get; set; }
+        public virtual string OrderTypeCodeContains { get; set; }
+        public virtual string OrderTypeCodeLike { get; set; }
+        public virtual string[] OrderTypeCodeBetween { get; set; }
+        public virtual string[] OrderTypeCodeIn { get; set; }
+        public virtual string OrderType { get; set; }
+        public virtual string OrderTypeStartsWith { get; set; }
+        public virtual string OrderTypeEndsWith { get; set; }
+        public virtual string OrderTypeContains { get; set; }
+        public virtual string OrderTypeLike { get; set; }
+        public virtual string[] OrderTypeBetween { get; set; }
+        public virtual string[] OrderTypeIn { get; set; }
+        public virtual string OrderSupplierTypeCode { get; set; }
+        public virtual string OrderSupplierTypeCodeStartsWith { get; set; }
+        public virtual string OrderSupplierTypeCodeEndsWith { get; set; }
+        public virtual string OrderSupplierTypeCodeContains { get; set; }
+        public virtual string OrderSupplierTypeCodeLike { get; set; }
+        public virtual string[] OrderSupplierTypeCodeBetween { get; set; }
+        public virtual string[] OrderSupplierTypeCodeIn { get; set; }
+        public virtual string OrderSupplierType { get; set; }
+        public virtual string OrderSupplierTypeStartsWith { get; set; }
+        public virtual string OrderSupplierTypeEndsWith { get; set; }
+        public virtual string OrderSupplierTypeContains { get; set; }
+        public virtual string OrderSupplierTypeLike { get; set; }
+        public virtual string[] OrderSupplierTypeBetween { get; set; }
+        public virtual string[] OrderSupplierTypeIn { get; set; }
+        public virtual string OrderStatusCode { get; set; }
+        public virtual string OrderStatusCodeStartsWith { get; set; }
+        public virtual string OrderStatusCodeEndsWith { get; set; }
+        public virtual string OrderStatusCodeContains { get; set; }
+        public virtual string OrderStatusCodeLike { get; set; }
+        public virtual string[] OrderStatusCodeBetween { get; set; }
+        public virtual string[] OrderStatusCodeIn { get; set; }
+        public virtual string OrderStatus { get; set; }
+        public virtual string OrderStatusStartsWith { get; set; }
+        public virtual string OrderStatusEndsWith { get; set; }
+        public virtual string OrderStatusContains { get; set; }
+        public virtual string OrderStatusLike { get; set; }
+        public virtual string[] OrderStatusBetween { get; set; }
+        public virtual string[] OrderStatusIn { get; set; }
+        public virtual string FX_Currency_RecID { get; set; }
+        public virtual string FX_Currency_RecIDStartsWith { get; set; }
+        public virtual string FX_Currency_RecIDEndsWith { get; set; }
+        public virtual string FX_Currency_RecIDContains { get; set; }
+        public virtual string FX_Currency_RecIDLike { get; set; }
+        public virtual string[] FX_Currency_RecIDBetween { get; set; }
+        public virtual string[] FX_Currency_RecIDIn { get; set; }
+        public virtual string Currency { get; set; }
+        public virtual string CurrencyStartsWith { get; set; }
+        public virtual string CurrencyEndsWith { get; set; }
+        public virtual string CurrencyContains { get; set; }
+        public virtual string CurrencyLike { get; set; }
+        public virtual string[] CurrencyBetween { get; set; }
+        public virtual string[] CurrencyIn { get; set; }
+        public virtual decimal? CurrencyRate { get; set; }
+        public virtual decimal? CurrencyRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateGreaterThan { get; set; }
+        public virtual decimal? CurrencyRateLessThan { get; set; }
+        public virtual decimal? CurrencyRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateNotEqualTo { get; set; }
+        public virtual decimal[] CurrencyRateBetween { get; set; }
+        public virtual decimal[] CurrencyRateIn { get; set; }
+        public virtual string Reference { get; set; }
+        public virtual string ReferenceStartsWith { get; set; }
+        public virtual string ReferenceEndsWith { get; set; }
+        public virtual string ReferenceContains { get; set; }
+        public virtual string ReferenceLike { get; set; }
+        public virtual string[] ReferenceBetween { get; set; }
+        public virtual string[] ReferenceIn { get; set; }
+        public virtual string Workflow { get; set; }
+        public virtual string WorkflowStartsWith { get; set; }
+        public virtual string WorkflowEndsWith { get; set; }
+        public virtual string WorkflowContains { get; set; }
+        public virtual string WorkflowLike { get; set; }
+        public virtual string[] WorkflowBetween { get; set; }
+        public virtual string[] WorkflowIn { get; set; }
+        public virtual DateTime? OrderDate { get; set; }
+        public virtual DateTime? OrderDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? OrderDateGreaterThan { get; set; }
+        public virtual DateTime? OrderDateLessThan { get; set; }
+        public virtual DateTime? OrderDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? OrderDateNotEqualTo { get; set; }
+        public virtual DateTime[] OrderDateBetween { get; set; }
+        public virtual DateTime[] OrderDateIn { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDate { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateGreaterThan { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateLessThan { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateLessThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateNotEqualTo { get; set; }
+        public virtual DateTimeOffset[] PurchaseOrderLastModifiedDateBetween { get; set; }
+        public virtual DateTimeOffset[] PurchaseOrderLastModifiedDateIn { get; set; }
+        public virtual string Staff { get; set; }
+        public virtual string StaffStartsWith { get; set; }
+        public virtual string StaffEndsWith { get; set; }
+        public virtual string StaffContains { get; set; }
+        public virtual string StaffLike { get; set; }
+        public virtual string[] StaffBetween { get; set; }
+        public virtual string[] StaffIn { get; set; }
+        public virtual string Attention { get; set; }
+        public virtual string AttentionStartsWith { get; set; }
+        public virtual string AttentionEndsWith { get; set; }
+        public virtual string AttentionContains { get; set; }
+        public virtual string AttentionLike { get; set; }
+        public virtual string[] AttentionBetween { get; set; }
+        public virtual string[] AttentionIn { get; set; }
+        public virtual string ContactBy { get; set; }
+        public virtual string ContactByStartsWith { get; set; }
+        public virtual string ContactByEndsWith { get; set; }
+        public virtual string ContactByContains { get; set; }
+        public virtual string ContactByLike { get; set; }
+        public virtual string[] ContactByBetween { get; set; }
+        public virtual string[] ContactByIn { get; set; }
+        public virtual string UseInTransit { get; set; }
+        public virtual string UseInTransitStartsWith { get; set; }
+        public virtual string UseInTransitEndsWith { get; set; }
+        public virtual string UseInTransitContains { get; set; }
+        public virtual string UseInTransitLike { get; set; }
+        public virtual string[] UseInTransitBetween { get; set; }
+        public virtual string[] UseInTransitIn { get; set; }
+        public virtual string CR_Main_CreditorID { get; set; }
+        public virtual string CR_Main_CreditorIDStartsWith { get; set; }
+        public virtual string CR_Main_CreditorIDEndsWith { get; set; }
+        public virtual string CR_Main_CreditorIDContains { get; set; }
+        public virtual string CR_Main_CreditorIDLike { get; set; }
+        public virtual string[] CR_Main_CreditorIDBetween { get; set; }
+        public virtual string[] CR_Main_CreditorIDIn { get; set; }
+        public virtual string CreditorAccountNo { get; set; }
+        public virtual string CreditorAccountNoStartsWith { get; set; }
+        public virtual string CreditorAccountNoEndsWith { get; set; }
+        public virtual string CreditorAccountNoContains { get; set; }
+        public virtual string CreditorAccountNoLike { get; set; }
+        public virtual string[] CreditorAccountNoBetween { get; set; }
+        public virtual string[] CreditorAccountNoIn { get; set; }
+        public virtual string CreditorName { get; set; }
+        public virtual string CreditorNameStartsWith { get; set; }
+        public virtual string CreditorNameEndsWith { get; set; }
+        public virtual string CreditorNameContains { get; set; }
+        public virtual string CreditorNameLike { get; set; }
+        public virtual string[] CreditorNameBetween { get; set; }
+        public virtual string[] CreditorNameIn { get; set; }
+        public virtual string CreditorClassification { get; set; }
+        public virtual string CreditorClassificationStartsWith { get; set; }
+        public virtual string CreditorClassificationEndsWith { get; set; }
+        public virtual string CreditorClassificationContains { get; set; }
+        public virtual string CreditorClassificationLike { get; set; }
+        public virtual string[] CreditorClassificationBetween { get; set; }
+        public virtual string[] CreditorClassificationIn { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalID { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] InTransitWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] InTransitWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string InTransitPhysicalWarehouse { get; set; }
+        public virtual string InTransitPhysicalWarehouseStartsWith { get; set; }
+        public virtual string InTransitPhysicalWarehouseEndsWith { get; set; }
+        public virtual string InTransitPhysicalWarehouseContains { get; set; }
+        public virtual string InTransitPhysicalWarehouseLike { get; set; }
+        public virtual string[] InTransitPhysicalWarehouseBetween { get; set; }
+        public virtual string[] InTransitPhysicalWarehouseIn { get; set; }
+        public virtual string InTransitLogicalWarehouse { get; set; }
+        public virtual string InTransitLogicalWarehouseStartsWith { get; set; }
+        public virtual string InTransitLogicalWarehouseEndsWith { get; set; }
+        public virtual string InTransitLogicalWarehouseContains { get; set; }
+        public virtual string InTransitLogicalWarehouseLike { get; set; }
+        public virtual string[] InTransitLogicalWarehouseBetween { get; set; }
+        public virtual string[] InTransitLogicalWarehouseIn { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalID { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] SupplyingWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] SupplyingWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string SupplyingPhysicalWarehouse { get; set; }
+        public virtual string SupplyingPhysicalWarehouseStartsWith { get; set; }
+        public virtual string SupplyingPhysicalWarehouseEndsWith { get; set; }
+        public virtual string SupplyingPhysicalWarehouseContains { get; set; }
+        public virtual string SupplyingPhysicalWarehouseLike { get; set; }
+        public virtual string[] SupplyingPhysicalWarehouseBetween { get; set; }
+        public virtual string[] SupplyingPhysicalWarehouseIn { get; set; }
+        public virtual string SupplyingLogicalWarehouse { get; set; }
+        public virtual string SupplyingLogicalWarehouseStartsWith { get; set; }
+        public virtual string SupplyingLogicalWarehouseEndsWith { get; set; }
+        public virtual string SupplyingLogicalWarehouseContains { get; set; }
+        public virtual string SupplyingLogicalWarehouseLike { get; set; }
+        public virtual string[] SupplyingLogicalWarehouseBetween { get; set; }
+        public virtual string[] SupplyingLogicalWarehouseIn { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalID { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] ResidingInWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] ResidingInWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string ResidingInPhysicalWarehouse { get; set; }
+        public virtual string ResidingInPhysicalWarehouseStartsWith { get; set; }
+        public virtual string ResidingInPhysicalWarehouseEndsWith { get; set; }
+        public virtual string ResidingInPhysicalWarehouseContains { get; set; }
+        public virtual string ResidingInPhysicalWarehouseLike { get; set; }
+        public virtual string[] ResidingInPhysicalWarehouseBetween { get; set; }
+        public virtual string[] ResidingInPhysicalWarehouseIn { get; set; }
+        public virtual string ResidingInLogicalWarehouse { get; set; }
+        public virtual string ResidingInLogicalWarehouseStartsWith { get; set; }
+        public virtual string ResidingInLogicalWarehouseEndsWith { get; set; }
+        public virtual string ResidingInLogicalWarehouseContains { get; set; }
+        public virtual string ResidingInLogicalWarehouseLike { get; set; }
+        public virtual string[] ResidingInLogicalWarehouseBetween { get; set; }
+        public virtual string[] ResidingInLogicalWarehouseIn { get; set; }
+        public virtual string BackToBackInvoiceID { get; set; }
+        public virtual string BackToBackInvoiceIDStartsWith { get; set; }
+        public virtual string BackToBackInvoiceIDEndsWith { get; set; }
+        public virtual string BackToBackInvoiceIDContains { get; set; }
+        public virtual string BackToBackInvoiceIDLike { get; set; }
+        public virtual string[] BackToBackInvoiceIDBetween { get; set; }
+        public virtual string[] BackToBackInvoiceIDIn { get; set; }
+        public virtual string BackToBackInvoiceNo { get; set; }
+        public virtual string BackToBackInvoiceNoStartsWith { get; set; }
+        public virtual string BackToBackInvoiceNoEndsWith { get; set; }
+        public virtual string BackToBackInvoiceNoContains { get; set; }
+        public virtual string BackToBackInvoiceNoLike { get; set; }
+        public virtual string[] BackToBackInvoiceNoBetween { get; set; }
+        public virtual string[] BackToBackInvoiceNoIn { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoStartsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoEndsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoContains { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoLike { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorAccountNoBetween { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorAccountNoIn { get; set; }
+        public virtual string BackToBackInvoiceDebtorName { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameStartsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameEndsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameContains { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameLike { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorNameBetween { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorNameIn { get; set; }
+        public virtual string ShippingContactName { get; set; }
+        public virtual string ShippingContactNameStartsWith { get; set; }
+        public virtual string ShippingContactNameEndsWith { get; set; }
+        public virtual string ShippingContactNameContains { get; set; }
+        public virtual string ShippingContactNameLike { get; set; }
+        public virtual string[] ShippingContactNameBetween { get; set; }
+        public virtual string[] ShippingContactNameIn { get; set; }
+        public virtual string ShippingAddress1 { get; set; }
+        public virtual string ShippingAddress1StartsWith { get; set; }
+        public virtual string ShippingAddress1EndsWith { get; set; }
+        public virtual string ShippingAddress1Contains { get; set; }
+        public virtual string ShippingAddress1Like { get; set; }
+        public virtual string[] ShippingAddress1Between { get; set; }
+        public virtual string[] ShippingAddress1In { get; set; }
+        public virtual string ShippingAddress2 { get; set; }
+        public virtual string ShippingAddress2StartsWith { get; set; }
+        public virtual string ShippingAddress2EndsWith { get; set; }
+        public virtual string ShippingAddress2Contains { get; set; }
+        public virtual string ShippingAddress2Like { get; set; }
+        public virtual string[] ShippingAddress2Between { get; set; }
+        public virtual string[] ShippingAddress2In { get; set; }
+        public virtual string ShippingAddressSuburb { get; set; }
+        public virtual string ShippingAddressSuburbStartsWith { get; set; }
+        public virtual string ShippingAddressSuburbEndsWith { get; set; }
+        public virtual string ShippingAddressSuburbContains { get; set; }
+        public virtual string ShippingAddressSuburbLike { get; set; }
+        public virtual string[] ShippingAddressSuburbBetween { get; set; }
+        public virtual string[] ShippingAddressSuburbIn { get; set; }
+        public virtual string ShippingAddressState { get; set; }
+        public virtual string ShippingAddressStateStartsWith { get; set; }
+        public virtual string ShippingAddressStateEndsWith { get; set; }
+        public virtual string ShippingAddressStateContains { get; set; }
+        public virtual string ShippingAddressStateLike { get; set; }
+        public virtual string[] ShippingAddressStateBetween { get; set; }
+        public virtual string[] ShippingAddressStateIn { get; set; }
+        public virtual string ShippingAddressPostCode { get; set; }
+        public virtual string ShippingAddressPostCodeStartsWith { get; set; }
+        public virtual string ShippingAddressPostCodeEndsWith { get; set; }
+        public virtual string ShippingAddressPostCodeContains { get; set; }
+        public virtual string ShippingAddressPostCodeLike { get; set; }
+        public virtual string[] ShippingAddressPostCodeBetween { get; set; }
+        public virtual string[] ShippingAddressPostCodeIn { get; set; }
+        public virtual string ShippingAddressCountry { get; set; }
+        public virtual string ShippingAddressCountryStartsWith { get; set; }
+        public virtual string ShippingAddressCountryEndsWith { get; set; }
+        public virtual string ShippingAddressCountryContains { get; set; }
+        public virtual string ShippingAddressCountryLike { get; set; }
+        public virtual string[] ShippingAddressCountryBetween { get; set; }
+        public virtual string[] ShippingAddressCountryIn { get; set; }
+        public virtual string ShippingAddressPhone { get; set; }
+        public virtual string ShippingAddressPhoneStartsWith { get; set; }
+        public virtual string ShippingAddressPhoneEndsWith { get; set; }
+        public virtual string ShippingAddressPhoneContains { get; set; }
+        public virtual string ShippingAddressPhoneLike { get; set; }
+        public virtual string[] ShippingAddressPhoneBetween { get; set; }
+        public virtual string[] ShippingAddressPhoneIn { get; set; }
+        public virtual string ShippingAddressFax { get; set; }
+        public virtual string ShippingAddressFaxStartsWith { get; set; }
+        public virtual string ShippingAddressFaxEndsWith { get; set; }
+        public virtual string ShippingAddressFaxContains { get; set; }
+        public virtual string ShippingAddressFaxLike { get; set; }
+        public virtual string[] ShippingAddressFaxBetween { get; set; }
+        public virtual string[] ShippingAddressFaxIn { get; set; }
+        public virtual string Spare1 { get; set; }
+        public virtual string Spare1StartsWith { get; set; }
+        public virtual string Spare1EndsWith { get; set; }
+        public virtual string Spare1Contains { get; set; }
+        public virtual string Spare1Like { get; set; }
+        public virtual string[] Spare1Between { get; set; }
+        public virtual string[] Spare1In { get; set; }
+        public virtual string Spare2 { get; set; }
+        public virtual string Spare2StartsWith { get; set; }
+        public virtual string Spare2EndsWith { get; set; }
+        public virtual string Spare2Contains { get; set; }
+        public virtual string Spare2Like { get; set; }
+        public virtual string[] Spare2Between { get; set; }
+        public virtual string[] Spare2In { get; set; }
+        public virtual string Spare3 { get; set; }
+        public virtual string Spare3StartsWith { get; set; }
+        public virtual string Spare3EndsWith { get; set; }
+        public virtual string Spare3Contains { get; set; }
+        public virtual string Spare3Like { get; set; }
+        public virtual string[] Spare3Between { get; set; }
+        public virtual string[] Spare3In { get; set; }
+        public virtual string Spare4 { get; set; }
+        public virtual string Spare4StartsWith { get; set; }
+        public virtual string Spare4EndsWith { get; set; }
+        public virtual string Spare4Contains { get; set; }
+        public virtual string Spare4Like { get; set; }
+        public virtual string[] Spare4Between { get; set; }
+        public virtual string[] Spare4In { get; set; }
+        public virtual string Spare5 { get; set; }
+        public virtual string Spare5StartsWith { get; set; }
+        public virtual string Spare5EndsWith { get; set; }
+        public virtual string Spare5Contains { get; set; }
+        public virtual string Spare5Like { get; set; }
+        public virtual string[] Spare5Between { get; set; }
+        public virtual string[] Spare5In { get; set; }
+        public virtual string OrderLineID { get; set; }
+        public virtual string OrderLineIDStartsWith { get; set; }
+        public virtual string OrderLineIDEndsWith { get; set; }
+        public virtual string OrderLineIDContains { get; set; }
+        public virtual string OrderLineIDLike { get; set; }
+        public virtual string[] OrderLineIDBetween { get; set; }
+        public virtual string[] OrderLineIDIn { get; set; }
+        public virtual short? LineNumber { get; set; }
+        public virtual short? LineNumberGreaterThanOrEqualTo { get; set; }
+        public virtual short? LineNumberGreaterThan { get; set; }
+        public virtual short? LineNumberLessThan { get; set; }
+        public virtual short? LineNumberLessThanOrEqualTo { get; set; }
+        public virtual short? LineNumberNotEqualTo { get; set; }
+        public virtual short?[] LineNumberBetween { get; set; }
+        public virtual short?[] LineNumberIn { get; set; }
+        public virtual string LineTypeCode { get; set; }
+        public virtual string LineTypeCodeStartsWith { get; set; }
+        public virtual string LineTypeCodeEndsWith { get; set; }
+        public virtual string LineTypeCodeContains { get; set; }
+        public virtual string LineTypeCodeLike { get; set; }
+        public virtual string[] LineTypeCodeBetween { get; set; }
+        public virtual string[] LineTypeCodeIn { get; set; }
+        public virtual string LineType { get; set; }
+        public virtual string LineTypeStartsWith { get; set; }
+        public virtual string LineTypeEndsWith { get; set; }
+        public virtual string LineTypeContains { get; set; }
+        public virtual string LineTypeLike { get; set; }
+        public virtual string[] LineTypeBetween { get; set; }
+        public virtual string[] LineTypeIn { get; set; }
+        public virtual string CommentText { get; set; }
+        public virtual string CommentTextStartsWith { get; set; }
+        public virtual string CommentTextEndsWith { get; set; }
+        public virtual string CommentTextContains { get; set; }
+        public virtual string CommentTextLike { get; set; }
+        public virtual string[] CommentTextBetween { get; set; }
+        public virtual string[] CommentTextIn { get; set; }
+        public virtual decimal? Quantity { get; set; }
+        public virtual decimal? QuantityGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityGreaterThan { get; set; }
+        public virtual decimal? QuantityLessThan { get; set; }
+        public virtual decimal? QuantityLessThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityNotEqualTo { get; set; }
+        public virtual decimal?[] QuantityBetween { get; set; }
+        public virtual decimal?[] QuantityIn { get; set; }
+        public virtual string Unit { get; set; }
+        public virtual string UnitStartsWith { get; set; }
+        public virtual string UnitEndsWith { get; set; }
+        public virtual string UnitContains { get; set; }
+        public virtual string UnitLike { get; set; }
+        public virtual string[] UnitBetween { get; set; }
+        public virtual string[] UnitIn { get; set; }
+        public virtual DateTime? DeliveryDate { get; set; }
+        public virtual DateTime? DeliveryDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? DeliveryDateGreaterThan { get; set; }
+        public virtual DateTime? DeliveryDateLessThan { get; set; }
+        public virtual DateTime? DeliveryDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? DeliveryDateNotEqualTo { get; set; }
+        public virtual DateTime?[] DeliveryDateBetween { get; set; }
+        public virtual DateTime?[] DeliveryDateIn { get; set; }
+        public virtual decimal? QuantityDelivered { get; set; }
+        public virtual decimal? QuantityDeliveredGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityDeliveredGreaterThan { get; set; }
+        public virtual decimal? QuantityDeliveredLessThan { get; set; }
+        public virtual decimal? QuantityDeliveredLessThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityDeliveredNotEqualTo { get; set; }
+        public virtual decimal?[] QuantityDeliveredBetween { get; set; }
+        public virtual decimal?[] QuantityDeliveredIn { get; set; }
+        public virtual short? QuantityDecimalPlaces { get; set; }
+        public virtual short? QuantityDecimalPlacesGreaterThanOrEqualTo { get; set; }
+        public virtual short? QuantityDecimalPlacesGreaterThan { get; set; }
+        public virtual short? QuantityDecimalPlacesLessThan { get; set; }
+        public virtual short? QuantityDecimalPlacesLessThanOrEqualTo { get; set; }
+        public virtual short? QuantityDecimalPlacesNotEqualTo { get; set; }
+        public virtual short?[] QuantityDecimalPlacesBetween { get; set; }
+        public virtual short?[] QuantityDecimalPlacesIn { get; set; }
+        public virtual string SupplierPartNo { get; set; }
+        public virtual string SupplierPartNoStartsWith { get; set; }
+        public virtual string SupplierPartNoEndsWith { get; set; }
+        public virtual string SupplierPartNoContains { get; set; }
+        public virtual string SupplierPartNoLike { get; set; }
+        public virtual string[] SupplierPartNoBetween { get; set; }
+        public virtual string[] SupplierPartNoIn { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDate { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDateGreaterThan { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDateLessThan { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDateLessThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? LineLastModifiedDateNotEqualTo { get; set; }
+        public virtual DateTimeOffset[] LineLastModifiedDateBetween { get; set; }
+        public virtual DateTimeOffset[] LineLastModifiedDateIn { get; set; }
+        public virtual decimal? OrderUnits { get; set; }
+        public virtual decimal? OrderUnitsGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? OrderUnitsGreaterThan { get; set; }
+        public virtual decimal? OrderUnitsLessThan { get; set; }
+        public virtual decimal? OrderUnitsLessThanOrEqualTo { get; set; }
+        public virtual decimal? OrderUnitsNotEqualTo { get; set; }
+        public virtual decimal?[] OrderUnitsBetween { get; set; }
+        public virtual decimal?[] OrderUnitsIn { get; set; }
+        public virtual short? DeliveryDays { get; set; }
+        public virtual short? DeliveryDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? DeliveryDaysGreaterThan { get; set; }
+        public virtual short? DeliveryDaysLessThan { get; set; }
+        public virtual short? DeliveryDaysLessThanOrEqualTo { get; set; }
+        public virtual short? DeliveryDaysNotEqualTo { get; set; }
+        public virtual short?[] DeliveryDaysBetween { get; set; }
+        public virtual short?[] DeliveryDaysIn { get; set; }
+        public virtual string TaxID { get; set; }
+        public virtual string TaxIDStartsWith { get; set; }
+        public virtual string TaxIDEndsWith { get; set; }
+        public virtual string TaxIDContains { get; set; }
+        public virtual string TaxIDLike { get; set; }
+        public virtual string[] TaxIDBetween { get; set; }
+        public virtual string[] TaxIDIn { get; set; }
+        public virtual string TaxRateDescription { get; set; }
+        public virtual string TaxRateDescriptionStartsWith { get; set; }
+        public virtual string TaxRateDescriptionEndsWith { get; set; }
+        public virtual string TaxRateDescriptionContains { get; set; }
+        public virtual string TaxRateDescriptionLike { get; set; }
+        public virtual string[] TaxRateDescriptionBetween { get; set; }
+        public virtual string[] TaxRateDescriptionIn { get; set; }
+        public virtual decimal? TaxRate { get; set; }
+        public virtual decimal? TaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? TaxRateGreaterThan { get; set; }
+        public virtual decimal? TaxRateLessThan { get; set; }
+        public virtual decimal? TaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? TaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] TaxRateBetween { get; set; }
+        public virtual decimal?[] TaxRateIn { get; set; }
+        public virtual Guid? IN_UnitOfMeasure_RecID { get; set; }
+        public virtual Guid?[] IN_UnitOfMeasure_RecIDIn { get; set; }
+        public virtual string UnitOfMeasureName { get; set; }
+        public virtual string UnitOfMeasureNameStartsWith { get; set; }
+        public virtual string UnitOfMeasureNameEndsWith { get; set; }
+        public virtual string UnitOfMeasureNameContains { get; set; }
+        public virtual string UnitOfMeasureNameLike { get; set; }
+        public virtual string[] UnitOfMeasureNameBetween { get; set; }
+        public virtual string[] UnitOfMeasureNameIn { get; set; }
+        public virtual decimal? QuantityUnitOfMeasure { get; set; }
+        public virtual decimal? QuantityUnitOfMeasureGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityUnitOfMeasureGreaterThan { get; set; }
+        public virtual decimal? QuantityUnitOfMeasureLessThan { get; set; }
+        public virtual decimal? QuantityUnitOfMeasureLessThanOrEqualTo { get; set; }
+        public virtual decimal? QuantityUnitOfMeasureNotEqualTo { get; set; }
+        public virtual decimal?[] QuantityUnitOfMeasureBetween { get; set; }
+        public virtual decimal?[] QuantityUnitOfMeasureIn { get; set; }
+        public virtual decimal? LocalUnitBuyPriceEx { get; set; }
+        public virtual decimal? LocalUnitBuyPriceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalUnitBuyPriceExGreaterThan { get; set; }
+        public virtual decimal? LocalUnitBuyPriceExLessThan { get; set; }
+        public virtual decimal? LocalUnitBuyPriceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalUnitBuyPriceExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalUnitBuyPriceExBetween { get; set; }
+        public virtual decimal?[] LocalUnitBuyPriceExIn { get; set; }
+        public virtual decimal? FXUnitBuyPriceEx { get; set; }
+        public virtual decimal? FXUnitBuyPriceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXUnitBuyPriceExGreaterThan { get; set; }
+        public virtual decimal? FXUnitBuyPriceExLessThan { get; set; }
+        public virtual decimal? FXUnitBuyPriceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXUnitBuyPriceExNotEqualTo { get; set; }
+        public virtual decimal?[] FXUnitBuyPriceExBetween { get; set; }
+        public virtual decimal?[] FXUnitBuyPriceExIn { get; set; }
+        public virtual decimal? LocalUnitBuyPriceInc { get; set; }
+        public virtual decimal? LocalUnitBuyPriceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalUnitBuyPriceIncGreaterThan { get; set; }
+        public virtual decimal? LocalUnitBuyPriceIncLessThan { get; set; }
+        public virtual decimal? LocalUnitBuyPriceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalUnitBuyPriceIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalUnitBuyPriceIncBetween { get; set; }
+        public virtual decimal?[] LocalUnitBuyPriceIncIn { get; set; }
+        public virtual decimal? FXUnitBuyPriceInc { get; set; }
+        public virtual decimal? FXUnitBuyPriceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXUnitBuyPriceIncGreaterThan { get; set; }
+        public virtual decimal? FXUnitBuyPriceIncLessThan { get; set; }
+        public virtual decimal? FXUnitBuyPriceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXUnitBuyPriceIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXUnitBuyPriceIncBetween { get; set; }
+        public virtual decimal?[] FXUnitBuyPriceIncIn { get; set; }
+        public virtual decimal? LocalLineTotalEx { get; set; }
+        public virtual decimal? LocalLineTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTotalExGreaterThan { get; set; }
+        public virtual decimal? LocalLineTotalExLessThan { get; set; }
+        public virtual decimal? LocalLineTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTotalExNotEqualTo { get; set; }
+        public virtual decimal[] LocalLineTotalExBetween { get; set; }
+        public virtual decimal[] LocalLineTotalExIn { get; set; }
+        public virtual decimal? FXLineTotalEx { get; set; }
+        public virtual decimal? FXLineTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXLineTotalExGreaterThan { get; set; }
+        public virtual decimal? FXLineTotalExLessThan { get; set; }
+        public virtual decimal? FXLineTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXLineTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] FXLineTotalExBetween { get; set; }
+        public virtual decimal?[] FXLineTotalExIn { get; set; }
+        public virtual decimal? LocalLineTax { get; set; }
+        public virtual decimal? LocalLineTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTaxGreaterThan { get; set; }
+        public virtual decimal? LocalLineTaxLessThan { get; set; }
+        public virtual decimal? LocalLineTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTaxNotEqualTo { get; set; }
+        public virtual decimal?[] LocalLineTaxBetween { get; set; }
+        public virtual decimal?[] LocalLineTaxIn { get; set; }
+        public virtual decimal? FXLineTax { get; set; }
+        public virtual decimal? FXLineTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXLineTaxGreaterThan { get; set; }
+        public virtual decimal? FXLineTaxLessThan { get; set; }
+        public virtual decimal? FXLineTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXLineTaxNotEqualTo { get; set; }
+        public virtual decimal?[] FXLineTaxBetween { get; set; }
+        public virtual decimal?[] FXLineTaxIn { get; set; }
+        public virtual decimal? LocalLineTotalInc { get; set; }
+        public virtual decimal? LocalLineTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTotalIncGreaterThan { get; set; }
+        public virtual decimal? LocalLineTotalIncLessThan { get; set; }
+        public virtual decimal? LocalLineTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalLineTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalLineTotalIncBetween { get; set; }
+        public virtual decimal?[] LocalLineTotalIncIn { get; set; }
+        public virtual decimal? FxLineTotalInc { get; set; }
+        public virtual decimal? FxLineTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FxLineTotalIncGreaterThan { get; set; }
+        public virtual decimal? FxLineTotalIncLessThan { get; set; }
+        public virtual decimal? FxLineTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FxLineTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] FxLineTotalIncBetween { get; set; }
+        public virtual decimal?[] FxLineTotalIncIn { get; set; }
+        public virtual string IN_Main_InventoryID { get; set; }
+        public virtual string IN_Main_InventoryIDStartsWith { get; set; }
+        public virtual string IN_Main_InventoryIDEndsWith { get; set; }
+        public virtual string IN_Main_InventoryIDContains { get; set; }
+        public virtual string IN_Main_InventoryIDLike { get; set; }
+        public virtual string[] IN_Main_InventoryIDBetween { get; set; }
+        public virtual string[] IN_Main_InventoryIDIn { get; set; }
+        public virtual string PartNo { get; set; }
+        public virtual string PartNoStartsWith { get; set; }
+        public virtual string PartNoEndsWith { get; set; }
+        public virtual string PartNoContains { get; set; }
+        public virtual string PartNoLike { get; set; }
+        public virtual string[] PartNoBetween { get; set; }
+        public virtual string[] PartNoIn { get; set; }
+        public virtual string Description { get; set; }
+        public virtual string DescriptionStartsWith { get; set; }
+        public virtual string DescriptionEndsWith { get; set; }
+        public virtual string DescriptionContains { get; set; }
+        public virtual string DescriptionLike { get; set; }
+        public virtual string[] DescriptionBetween { get; set; }
+        public virtual string[] DescriptionIn { get; set; }
+        public virtual bool? IsSerialised { get; set; }
+        public virtual bool? IsPhysicalItem { get; set; }
+        public virtual bool? IsExpiryItem { get; set; }
+        public virtual string InventoryClassificationID { get; set; }
+        public virtual string InventoryClassificationIDStartsWith { get; set; }
+        public virtual string InventoryClassificationIDEndsWith { get; set; }
+        public virtual string InventoryClassificationIDContains { get; set; }
+        public virtual string InventoryClassificationIDLike { get; set; }
+        public virtual string[] InventoryClassificationIDBetween { get; set; }
+        public virtual string[] InventoryClassificationIDIn { get; set; }
+        public virtual string InventoryClassification { get; set; }
+        public virtual string InventoryClassificationStartsWith { get; set; }
+        public virtual string InventoryClassificationEndsWith { get; set; }
+        public virtual string InventoryClassificationContains { get; set; }
+        public virtual string InventoryClassificationLike { get; set; }
+        public virtual string[] InventoryClassificationBetween { get; set; }
+        public virtual string[] InventoryClassificationIn { get; set; }
+        public virtual string Category1 { get; set; }
+        public virtual string Category1StartsWith { get; set; }
+        public virtual string Category1EndsWith { get; set; }
+        public virtual string Category1Contains { get; set; }
+        public virtual string Category1Like { get; set; }
+        public virtual string[] Category1Between { get; set; }
+        public virtual string[] Category1In { get; set; }
+        public virtual string Category2 { get; set; }
+        public virtual string Category2StartsWith { get; set; }
+        public virtual string Category2EndsWith { get; set; }
+        public virtual string Category2Contains { get; set; }
+        public virtual string Category2Like { get; set; }
+        public virtual string[] Category2Between { get; set; }
+        public virtual string[] Category2In { get; set; }
+        public virtual string Category3 { get; set; }
+        public virtual string Category3StartsWith { get; set; }
+        public virtual string Category3EndsWith { get; set; }
+        public virtual string Category3Contains { get; set; }
+        public virtual string Category3Like { get; set; }
+        public virtual string[] Category3Between { get; set; }
+        public virtual string[] Category3In { get; set; }
+        public virtual string Category4 { get; set; }
+        public virtual string Category4StartsWith { get; set; }
+        public virtual string Category4EndsWith { get; set; }
+        public virtual string Category4Contains { get; set; }
+        public virtual string Category4Like { get; set; }
+        public virtual string[] Category4Between { get; set; }
+        public virtual string[] Category4In { get; set; }
+        public virtual string Category5 { get; set; }
+        public virtual string Category5StartsWith { get; set; }
+        public virtual string Category5EndsWith { get; set; }
+        public virtual string Category5Contains { get; set; }
+        public virtual string Category5Like { get; set; }
+        public virtual string[] Category5Between { get; set; }
+        public virtual string[] Category5In { get; set; }
+        public virtual string PurchasingClassificationID { get; set; }
+        public virtual string PurchasingClassificationIDStartsWith { get; set; }
+        public virtual string PurchasingClassificationIDEndsWith { get; set; }
+        public virtual string PurchasingClassificationIDContains { get; set; }
+        public virtual string PurchasingClassificationIDLike { get; set; }
+        public virtual string[] PurchasingClassificationIDBetween { get; set; }
+        public virtual string[] PurchasingClassificationIDIn { get; set; }
+        public virtual string PurchasingClassificationDescription { get; set; }
+        public virtual string PurchasingClassificationDescriptionStartsWith { get; set; }
+        public virtual string PurchasingClassificationDescriptionEndsWith { get; set; }
+        public virtual string PurchasingClassificationDescriptionContains { get; set; }
+        public virtual string PurchasingClassificationDescriptionLike { get; set; }
+        public virtual string[] PurchasingClassificationDescriptionBetween { get; set; }
+        public virtual string[] PurchasingClassificationDescriptionIn { get; set; }
+        public virtual string SupplierWarehouseID { get; set; }
+        public virtual string SupplierWarehouseIDStartsWith { get; set; }
+        public virtual string SupplierWarehouseIDEndsWith { get; set; }
+        public virtual string SupplierWarehouseIDContains { get; set; }
+        public virtual string SupplierWarehouseIDLike { get; set; }
+        public virtual string[] SupplierWarehouseIDBetween { get; set; }
+        public virtual string[] SupplierWarehouseIDIn { get; set; }
+        public virtual string SupplierWarehouseDescription { get; set; }
+        public virtual string SupplierWarehouseDescriptionStartsWith { get; set; }
+        public virtual string SupplierWarehouseDescriptionEndsWith { get; set; }
+        public virtual string SupplierWarehouseDescriptionContains { get; set; }
+        public virtual string SupplierWarehouseDescriptionLike { get; set; }
+        public virtual string[] SupplierWarehouseDescriptionBetween { get; set; }
+        public virtual string[] SupplierWarehouseDescriptionIn { get; set; }
+        public virtual string SupplierWarehouseAddress1 { get; set; }
+        public virtual string SupplierWarehouseAddress1StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress1EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress1Contains { get; set; }
+        public virtual string SupplierWarehouseAddress1Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress1Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress1In { get; set; }
+        public virtual string SupplierWarehouseAddress2 { get; set; }
+        public virtual string SupplierWarehouseAddress2StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress2EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress2Contains { get; set; }
+        public virtual string SupplierWarehouseAddress2Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress2Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress2In { get; set; }
+        public virtual string SupplierWarehouseAddress3 { get; set; }
+        public virtual string SupplierWarehouseAddress3StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress3EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress3Contains { get; set; }
+        public virtual string SupplierWarehouseAddress3Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress3Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress3In { get; set; }
+        public virtual string SupplierWarehouseAddress4 { get; set; }
+        public virtual string SupplierWarehouseAddress4StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress4EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress4Contains { get; set; }
+        public virtual string SupplierWarehouseAddress4Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress4Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress4In { get; set; }
+        public virtual string SupplierWarehousePostCode { get; set; }
+        public virtual string SupplierWarehousePostCodeStartsWith { get; set; }
+        public virtual string SupplierWarehousePostCodeEndsWith { get; set; }
+        public virtual string SupplierWarehousePostCodeContains { get; set; }
+        public virtual string SupplierWarehousePostCodeLike { get; set; }
+        public virtual string[] SupplierWarehousePostCodeBetween { get; set; }
+        public virtual string[] SupplierWarehousePostCodeIn { get; set; }
+        public virtual string SupplierWarehouseCountry { get; set; }
+        public virtual string SupplierWarehouseCountryStartsWith { get; set; }
+        public virtual string SupplierWarehouseCountryEndsWith { get; set; }
+        public virtual string SupplierWarehouseCountryContains { get; set; }
+        public virtual string SupplierWarehouseCountryLike { get; set; }
+        public virtual string[] SupplierWarehouseCountryBetween { get; set; }
+        public virtual string[] SupplierWarehouseCountryIn { get; set; }
+        public virtual string SuppliertWarehouseCourierDetails { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsStartsWith { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsEndsWith { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsContains { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsLike { get; set; }
+        public virtual string[] SuppliertWarehouseCourierDetailsBetween { get; set; }
+        public virtual string[] SuppliertWarehouseCourierDetailsIn { get; set; }
+        public virtual string SupplierWarehouseNotes { get; set; }
+        public virtual string SupplierWarehouseNotesStartsWith { get; set; }
+        public virtual string SupplierWarehouseNotesEndsWith { get; set; }
+        public virtual string SupplierWarehouseNotesContains { get; set; }
+        public virtual string SupplierWarehouseNotesLike { get; set; }
+        public virtual string[] SupplierWarehouseNotesBetween { get; set; }
+        public virtual string[] SupplierWarehouseNotesIn { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDays { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysGreaterThan { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysLessThan { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysLessThanOrEqualTo { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysNotEqualTo { get; set; }
+        public virtual short?[] SupplierWarehouseDefaultDeliveryDaysBetween { get; set; }
+        public virtual short?[] SupplierWarehouseDefaultDeliveryDaysIn { get; set; }
+        public virtual bool? SupplierWarehouseIsDefault { get; set; }
+        public virtual DateTime? UserDefinedDate1 { get; set; }
+        public virtual DateTime? UserDefinedDate1GreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate1GreaterThan { get; set; }
+        public virtual DateTime? UserDefinedDate1LessThan { get; set; }
+        public virtual DateTime? UserDefinedDate1LessThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate1NotEqualTo { get; set; }
+        public virtual DateTime?[] UserDefinedDate1Between { get; set; }
+        public virtual DateTime?[] UserDefinedDate1In { get; set; }
+        public virtual DateTime? UserDefinedDate2 { get; set; }
+        public virtual DateTime? UserDefinedDate2GreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate2GreaterThan { get; set; }
+        public virtual DateTime? UserDefinedDate2LessThan { get; set; }
+        public virtual DateTime? UserDefinedDate2LessThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate2NotEqualTo { get; set; }
+        public virtual DateTime?[] UserDefinedDate2Between { get; set; }
+        public virtual DateTime?[] UserDefinedDate2In { get; set; }
+        public virtual DateTime? UserDefinedDate3 { get; set; }
+        public virtual DateTime? UserDefinedDate3GreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate3GreaterThan { get; set; }
+        public virtual DateTime? UserDefinedDate3LessThan { get; set; }
+        public virtual DateTime? UserDefinedDate3LessThanOrEqualTo { get; set; }
+        public virtual DateTime? UserDefinedDate3NotEqualTo { get; set; }
+        public virtual DateTime?[] UserDefinedDate3Between { get; set; }
+        public virtual DateTime?[] UserDefinedDate3In { get; set; }
+        public virtual string UserDefinedString1 { get; set; }
+        public virtual string UserDefinedString1StartsWith { get; set; }
+        public virtual string UserDefinedString1EndsWith { get; set; }
+        public virtual string UserDefinedString1Contains { get; set; }
+        public virtual string UserDefinedString1Like { get; set; }
+        public virtual string[] UserDefinedString1Between { get; set; }
+        public virtual string[] UserDefinedString1In { get; set; }
+        public virtual string UserDefinedString2 { get; set; }
+        public virtual string UserDefinedString2StartsWith { get; set; }
+        public virtual string UserDefinedString2EndsWith { get; set; }
+        public virtual string UserDefinedString2Contains { get; set; }
+        public virtual string UserDefinedString2Like { get; set; }
+        public virtual string[] UserDefinedString2Between { get; set; }
+        public virtual string[] UserDefinedString2In { get; set; }
+        public virtual string UserDefinedString3 { get; set; }
+        public virtual string UserDefinedString3StartsWith { get; set; }
+        public virtual string UserDefinedString3EndsWith { get; set; }
+        public virtual string UserDefinedString3Contains { get; set; }
+        public virtual string UserDefinedString3Like { get; set; }
+        public virtual string[] UserDefinedString3Between { get; set; }
+        public virtual string[] UserDefinedString3In { get; set; }
+        public virtual decimal? UserDefinedFloat1 { get; set; }
+        public virtual decimal? UserDefinedFloat1GreaterThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat1GreaterThan { get; set; }
+        public virtual decimal? UserDefinedFloat1LessThan { get; set; }
+        public virtual decimal? UserDefinedFloat1LessThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat1NotEqualTo { get; set; }
+        public virtual decimal?[] UserDefinedFloat1Between { get; set; }
+        public virtual decimal?[] UserDefinedFloat1In { get; set; }
+        public virtual decimal? UserDefinedFloat2 { get; set; }
+        public virtual decimal? UserDefinedFloat2GreaterThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat2GreaterThan { get; set; }
+        public virtual decimal? UserDefinedFloat2LessThan { get; set; }
+        public virtual decimal? UserDefinedFloat2LessThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat2NotEqualTo { get; set; }
+        public virtual decimal?[] UserDefinedFloat2Between { get; set; }
+        public virtual decimal?[] UserDefinedFloat2In { get; set; }
+        public virtual decimal? UserDefinedFloat3 { get; set; }
+        public virtual decimal? UserDefinedFloat3GreaterThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat3GreaterThan { get; set; }
+        public virtual decimal? UserDefinedFloat3LessThan { get; set; }
+        public virtual decimal? UserDefinedFloat3LessThanOrEqualTo { get; set; }
+        public virtual decimal? UserDefinedFloat3NotEqualTo { get; set; }
+        public virtual decimal?[] UserDefinedFloat3Between { get; set; }
+        public virtual decimal?[] UserDefinedFloat3In { get; set; }
+        public virtual string ServiceManagerTaskRecID { get; set; }
+        public virtual string ServiceManagerTaskRecIDStartsWith { get; set; }
+        public virtual string ServiceManagerTaskRecIDEndsWith { get; set; }
+        public virtual string ServiceManagerTaskRecIDContains { get; set; }
+        public virtual string ServiceManagerTaskRecIDLike { get; set; }
+        public virtual string[] ServiceManagerTaskRecIDBetween { get; set; }
+        public virtual string[] ServiceManagerTaskRecIDIn { get; set; }
+        public virtual int? ServiceManagerTaskTaskNo { get; set; }
+        public virtual int? ServiceManagerTaskTaskNoGreaterThanOrEqualTo { get; set; }
+        public virtual int? ServiceManagerTaskTaskNoGreaterThan { get; set; }
+        public virtual int? ServiceManagerTaskTaskNoLessThan { get; set; }
+        public virtual int? ServiceManagerTaskTaskNoLessThanOrEqualTo { get; set; }
+        public virtual int? ServiceManagerTaskTaskNoNotEqualTo { get; set; }
+        public virtual int?[] ServiceManagerTaskTaskNoBetween { get; set; }
+        public virtual int?[] ServiceManagerTaskTaskNoIn { get; set; }
+        public virtual string ServiceManagerJobRecID { get; set; }
+        public virtual string ServiceManagerJobRecIDStartsWith { get; set; }
+        public virtual string ServiceManagerJobRecIDEndsWith { get; set; }
+        public virtual string ServiceManagerJobRecIDContains { get; set; }
+        public virtual string ServiceManagerJobRecIDLike { get; set; }
+        public virtual string[] ServiceManagerJobRecIDBetween { get; set; }
+        public virtual string[] ServiceManagerJobRecIDIn { get; set; }
+        public virtual string ServiceManagerJobJobNo { get; set; }
+        public virtual string ServiceManagerJobJobNoStartsWith { get; set; }
+        public virtual string ServiceManagerJobJobNoEndsWith { get; set; }
+        public virtual string ServiceManagerJobJobNoContains { get; set; }
+        public virtual string ServiceManagerJobJobNoLike { get; set; }
+        public virtual string[] ServiceManagerJobJobNoBetween { get; set; }
+        public virtual string[] ServiceManagerJobJobNoIn { get; set; }
+        public virtual string JobCostingJobRecID { get; set; }
+        public virtual string JobCostingJobRecIDStartsWith { get; set; }
+        public virtual string JobCostingJobRecIDEndsWith { get; set; }
+        public virtual string JobCostingJobRecIDContains { get; set; }
+        public virtual string JobCostingJobRecIDLike { get; set; }
+        public virtual string[] JobCostingJobRecIDBetween { get; set; }
+        public virtual string[] JobCostingJobRecIDIn { get; set; }
+        public virtual string JobCostingStageNo { get; set; }
+        public virtual string JobCostingStageNoStartsWith { get; set; }
+        public virtual string JobCostingStageNoEndsWith { get; set; }
+        public virtual string JobCostingStageNoContains { get; set; }
+        public virtual string JobCostingStageNoLike { get; set; }
+        public virtual string[] JobCostingStageNoBetween { get; set; }
+        public virtual string[] JobCostingStageNoIn { get; set; }
+        public virtual string JobCostingStageName { get; set; }
+        public virtual string JobCostingStageNameStartsWith { get; set; }
+        public virtual string JobCostingStageNameEndsWith { get; set; }
+        public virtual string JobCostingStageNameContains { get; set; }
+        public virtual string JobCostingStageNameLike { get; set; }
+        public virtual string[] JobCostingStageNameBetween { get; set; }
+        public virtual string[] JobCostingStageNameIn { get; set; }
+        public virtual string JobCostingStageClassificationRecID { get; set; }
+        public virtual string JobCostingStageClassificationRecIDStartsWith { get; set; }
+        public virtual string JobCostingStageClassificationRecIDEndsWith { get; set; }
+        public virtual string JobCostingStageClassificationRecIDContains { get; set; }
+        public virtual string JobCostingStageClassificationRecIDLike { get; set; }
+        public virtual string[] JobCostingStageClassificationRecIDBetween { get; set; }
+        public virtual string[] JobCostingStageClassificationRecIDIn { get; set; }
+        public virtual string JobCostingCostCentreRecID { get; set; }
+        public virtual string JobCostingCostCentreRecIDStartsWith { get; set; }
+        public virtual string JobCostingCostCentreRecIDEndsWith { get; set; }
+        public virtual string JobCostingCostCentreRecIDContains { get; set; }
+        public virtual string JobCostingCostCentreRecIDLike { get; set; }
+        public virtual string[] JobCostingCostCentreRecIDBetween { get; set; }
+        public virtual string[] JobCostingCostCentreRecIDIn { get; set; }
+        public virtual string JobCostingCostCentreNo { get; set; }
+        public virtual string JobCostingCostCentreNoStartsWith { get; set; }
+        public virtual string JobCostingCostCentreNoEndsWith { get; set; }
+        public virtual string JobCostingCostCentreNoContains { get; set; }
+        public virtual string JobCostingCostCentreNoLike { get; set; }
+        public virtual string[] JobCostingCostCentreNoBetween { get; set; }
+        public virtual string[] JobCostingCostCentreNoIn { get; set; }
+        public virtual string JobCostingCostCentreName { get; set; }
+        public virtual string JobCostingCostCentreNameStartsWith { get; set; }
+        public virtual string JobCostingCostCentreNameEndsWith { get; set; }
+        public virtual string JobCostingCostCentreNameContains { get; set; }
+        public virtual string JobCostingCostCentreNameLike { get; set; }
+        public virtual string[] JobCostingCostCentreNameBetween { get; set; }
+        public virtual string[] JobCostingCostCentreNameIn { get; set; }
+        public virtual string JobCostingJobID { get; set; }
+        public virtual string JobCostingJobIDStartsWith { get; set; }
+        public virtual string JobCostingJobIDEndsWith { get; set; }
+        public virtual string JobCostingJobIDContains { get; set; }
+        public virtual string JobCostingJobIDLike { get; set; }
+        public virtual string[] JobCostingJobIDBetween { get; set; }
+        public virtual string[] JobCostingJobIDIn { get; set; }
+        public virtual string JobCostingJobNo { get; set; }
+        public virtual string JobCostingJobNoStartsWith { get; set; }
+        public virtual string JobCostingJobNoEndsWith { get; set; }
+        public virtual string JobCostingJobNoContains { get; set; }
+        public virtual string JobCostingJobNoLike { get; set; }
+        public virtual string[] JobCostingJobNoBetween { get; set; }
+        public virtual string[] JobCostingJobNoIn { get; set; }
+        public virtual string JobCostingJobDescription { get; set; }
+        public virtual string JobCostingJobDescriptionStartsWith { get; set; }
+        public virtual string JobCostingJobDescriptionEndsWith { get; set; }
+        public virtual string JobCostingJobDescriptionContains { get; set; }
+        public virtual string JobCostingJobDescriptionLike { get; set; }
+        public virtual string[] JobCostingJobDescriptionBetween { get; set; }
+        public virtual string[] JobCostingJobDescriptionIn { get; set; }
+        public virtual string Category1Label { get; set; }
+        public virtual string Category1LabelStartsWith { get; set; }
+        public virtual string Category1LabelEndsWith { get; set; }
+        public virtual string Category1LabelContains { get; set; }
+        public virtual string Category1LabelLike { get; set; }
+        public virtual string[] Category1LabelBetween { get; set; }
+        public virtual string[] Category1LabelIn { get; set; }
+        public virtual string Category2Label { get; set; }
+        public virtual string Category2LabelStartsWith { get; set; }
+        public virtual string Category2LabelEndsWith { get; set; }
+        public virtual string Category2LabelContains { get; set; }
+        public virtual string Category2LabelLike { get; set; }
+        public virtual string[] Category2LabelBetween { get; set; }
+        public virtual string[] Category2LabelIn { get; set; }
+        public virtual string Category3Label { get; set; }
+        public virtual string Category3LabelStartsWith { get; set; }
+        public virtual string Category3LabelEndsWith { get; set; }
+        public virtual string Category3LabelContains { get; set; }
+        public virtual string Category3LabelLike { get; set; }
+        public virtual string[] Category3LabelBetween { get; set; }
+        public virtual string[] Category3LabelIn { get; set; }
+        public virtual string Category4Label { get; set; }
+        public virtual string Category4LabelStartsWith { get; set; }
+        public virtual string Category4LabelEndsWith { get; set; }
+        public virtual string Category4LabelContains { get; set; }
+        public virtual string Category4LabelLike { get; set; }
+        public virtual string[] Category4LabelBetween { get; set; }
+        public virtual string[] Category4LabelIn { get; set; }
+        public virtual string Category5Label { get; set; }
+        public virtual string Category5LabelStartsWith { get; set; }
+        public virtual string Category5LabelEndsWith { get; set; }
+        public virtual string Category5LabelContains { get; set; }
+        public virtual string Category5LabelLike { get; set; }
+        public virtual string[] Category5LabelBetween { get; set; }
+        public virtual string[] Category5LabelIn { get; set; }
+        public virtual decimal? LocalFreightEx { get; set; }
+        public virtual decimal? LocalFreightExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightExGreaterThan { get; set; }
+        public virtual decimal? LocalFreightExLessThan { get; set; }
+        public virtual decimal? LocalFreightExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightExNotEqualTo { get; set; }
+        public virtual decimal[] LocalFreightExBetween { get; set; }
+        public virtual decimal[] LocalFreightExIn { get; set; }
+        public virtual decimal? LocalFreightTaxRate { get; set; }
+        public virtual decimal? LocalFreightTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalFreightTaxRateLessThan { get; set; }
+        public virtual decimal? LocalFreightTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] LocalFreightTaxRateBetween { get; set; }
+        public virtual decimal[] LocalFreightTaxRateIn { get; set; }
+        public virtual string LocalFreightTaxRateDescription { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionContains { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalFreightTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalFreightTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalFreightTaxAmount { get; set; }
+        public virtual decimal? LocalFreightTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalFreightTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalFreightTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] LocalFreightTaxAmountBetween { get; set; }
+        public virtual decimal[] LocalFreightTaxAmountIn { get; set; }
+        public virtual decimal? LocalFreightInc { get; set; }
+        public virtual decimal? LocalFreightIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightIncGreaterThan { get; set; }
+        public virtual decimal? LocalFreightIncLessThan { get; set; }
+        public virtual decimal? LocalFreightIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalFreightIncBetween { get; set; }
+        public virtual decimal?[] LocalFreightIncIn { get; set; }
+        public virtual decimal? LocalDutyEx { get; set; }
+        public virtual decimal? LocalDutyExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyExGreaterThan { get; set; }
+        public virtual decimal? LocalDutyExLessThan { get; set; }
+        public virtual decimal? LocalDutyExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyExNotEqualTo { get; set; }
+        public virtual decimal[] LocalDutyExBetween { get; set; }
+        public virtual decimal[] LocalDutyExIn { get; set; }
+        public virtual decimal? LocalDutyTaxRate { get; set; }
+        public virtual decimal? LocalDutyTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalDutyTaxRateLessThan { get; set; }
+        public virtual decimal? LocalDutyTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] LocalDutyTaxRateBetween { get; set; }
+        public virtual decimal[] LocalDutyTaxRateIn { get; set; }
+        public virtual string LocalDutyTaxRateDescription { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionContains { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalDutyTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalDutyTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalDutyTaxAmount { get; set; }
+        public virtual decimal? LocalDutyTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalDutyTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalDutyTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] LocalDutyTaxAmountBetween { get; set; }
+        public virtual decimal[] LocalDutyTaxAmountIn { get; set; }
+        public virtual decimal? LocalDutyInc { get; set; }
+        public virtual decimal? LocalDutyIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyIncGreaterThan { get; set; }
+        public virtual decimal? LocalDutyIncLessThan { get; set; }
+        public virtual decimal? LocalDutyIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalDutyIncBetween { get; set; }
+        public virtual decimal?[] LocalDutyIncIn { get; set; }
+        public virtual decimal? LocalInsuranceEx { get; set; }
+        public virtual decimal? LocalInsuranceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceExGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceExLessThan { get; set; }
+        public virtual decimal? LocalInsuranceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceExNotEqualTo { get; set; }
+        public virtual decimal[] LocalInsuranceExBetween { get; set; }
+        public virtual decimal[] LocalInsuranceExIn { get; set; }
+        public virtual decimal? LocalInsuranceTaxRate { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateLessThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] LocalInsuranceTaxRateBetween { get; set; }
+        public virtual decimal[] LocalInsuranceTaxRateIn { get; set; }
+        public virtual string LocalInsuranceTaxRateDescription { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionContains { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalInsuranceTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalInsuranceTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmount { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] LocalInsuranceTaxAmountBetween { get; set; }
+        public virtual decimal[] LocalInsuranceTaxAmountIn { get; set; }
+        public virtual decimal? LocalInsuranceInc { get; set; }
+        public virtual decimal? LocalInsuranceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceIncGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceIncLessThan { get; set; }
+        public virtual decimal? LocalInsuranceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInsuranceIncBetween { get; set; }
+        public virtual decimal?[] LocalInsuranceIncIn { get; set; }
+        public virtual decimal? FXFreightEx { get; set; }
+        public virtual decimal? FXFreightExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightExGreaterThan { get; set; }
+        public virtual decimal? FXFreightExLessThan { get; set; }
+        public virtual decimal? FXFreightExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightExNotEqualTo { get; set; }
+        public virtual decimal[] FXFreightExBetween { get; set; }
+        public virtual decimal[] FXFreightExIn { get; set; }
+        public virtual decimal? FXFreightTaxRate { get; set; }
+        public virtual decimal? FXFreightTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXFreightTaxRateLessThan { get; set; }
+        public virtual decimal? FXFreightTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] FXFreightTaxRateBetween { get; set; }
+        public virtual decimal[] FXFreightTaxRateIn { get; set; }
+        public virtual string FXFreightTaxRateDescription { get; set; }
+        public virtual string FXFreightTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXFreightTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXFreightTaxRateDescriptionContains { get; set; }
+        public virtual string FXFreightTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXFreightTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXFreightTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXFreightTaxAmount { get; set; }
+        public virtual decimal? FXFreightTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXFreightTaxAmountLessThan { get; set; }
+        public virtual decimal? FXFreightTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] FXFreightTaxAmountBetween { get; set; }
+        public virtual decimal[] FXFreightTaxAmountIn { get; set; }
+        public virtual decimal? FXFreightInc { get; set; }
+        public virtual decimal? FXFreightIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightIncGreaterThan { get; set; }
+        public virtual decimal? FXFreightIncLessThan { get; set; }
+        public virtual decimal? FXFreightIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXFreightIncBetween { get; set; }
+        public virtual decimal?[] FXFreightIncIn { get; set; }
+        public virtual decimal? FXDutyEx { get; set; }
+        public virtual decimal? FXDutyExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyExGreaterThan { get; set; }
+        public virtual decimal? FXDutyExLessThan { get; set; }
+        public virtual decimal? FXDutyExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyExNotEqualTo { get; set; }
+        public virtual decimal[] FXDutyExBetween { get; set; }
+        public virtual decimal[] FXDutyExIn { get; set; }
+        public virtual decimal? FXDutyTaxRate { get; set; }
+        public virtual decimal? FXDutyTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXDutyTaxRateLessThan { get; set; }
+        public virtual decimal? FXDutyTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] FXDutyTaxRateBetween { get; set; }
+        public virtual decimal[] FXDutyTaxRateIn { get; set; }
+        public virtual string FXDutyTaxRateDescription { get; set; }
+        public virtual string FXDutyTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXDutyTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXDutyTaxRateDescriptionContains { get; set; }
+        public virtual string FXDutyTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXDutyTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXDutyTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXDutyTaxAmount { get; set; }
+        public virtual decimal? FXDutyTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXDutyTaxAmountLessThan { get; set; }
+        public virtual decimal? FXDutyTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] FXDutyTaxAmountBetween { get; set; }
+        public virtual decimal[] FXDutyTaxAmountIn { get; set; }
+        public virtual decimal? FXDutyInc { get; set; }
+        public virtual decimal? FXDutyIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyIncGreaterThan { get; set; }
+        public virtual decimal? FXDutyIncLessThan { get; set; }
+        public virtual decimal? FXDutyIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXDutyIncBetween { get; set; }
+        public virtual decimal?[] FXDutyIncIn { get; set; }
+        public virtual decimal? FXInsuranceEx { get; set; }
+        public virtual decimal? FXInsuranceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceExGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceExLessThan { get; set; }
+        public virtual decimal? FXInsuranceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceExNotEqualTo { get; set; }
+        public virtual decimal[] FXInsuranceExBetween { get; set; }
+        public virtual decimal[] FXInsuranceExIn { get; set; }
+        public virtual decimal? FXInsuranceTaxRate { get; set; }
+        public virtual decimal? FXInsuranceTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceTaxRateLessThan { get; set; }
+        public virtual decimal? FXInsuranceTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxRateNotEqualTo { get; set; }
+        public virtual decimal[] FXInsuranceTaxRateBetween { get; set; }
+        public virtual decimal[] FXInsuranceTaxRateIn { get; set; }
+        public virtual string FXInsuranceTaxRateDescription { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionContains { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXInsuranceTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXInsuranceTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXInsuranceTaxAmount { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountLessThan { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountNotEqualTo { get; set; }
+        public virtual decimal[] FXInsuranceTaxAmountBetween { get; set; }
+        public virtual decimal[] FXInsuranceTaxAmountIn { get; set; }
+        public virtual decimal? FXInsuranceInc { get; set; }
+        public virtual decimal? FXInsuranceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceIncGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceIncLessThan { get; set; }
+        public virtual decimal? FXInsuranceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXInsuranceIncBetween { get; set; }
+        public virtual decimal?[] FXInsuranceIncIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncIn { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExIn { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncIn { get; set; }
+        public virtual string ReceivedOn { get; set; }
+        public virtual string ReceivedOnStartsWith { get; set; }
+        public virtual string ReceivedOnEndsWith { get; set; }
+        public virtual string ReceivedOnContains { get; set; }
+        public virtual string ReceivedOnLike { get; set; }
+        public virtual string[] ReceivedOnBetween { get; set; }
+        public virtual string[] ReceivedOnIn { get; set; }
+    }
+
     public partial class v_JIWA_PurchaseOrders_DeliveryNotesOR
     {
         [Required]
@@ -220157,6 +226853,862 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string NameLike { get; set; }
         public virtual string[] NameBetween { get; set; }
         public virtual string[] NameIn { get; set; }
+    }
+
+    public partial class v_Jiwa_PurchaseOrdersOR
+    {
+        [Required]
+        public virtual string OrderID { get; set; }
+
+        public virtual string OrderNo { get; set; }
+        [Required]
+        public virtual string OrderTypeCode { get; set; }
+
+        [Required]
+        public virtual string OrderType { get; set; }
+
+        [Required]
+        public virtual string OrderSupplierTypeCode { get; set; }
+
+        [Required]
+        public virtual string OrderSupplierType { get; set; }
+
+        [Required]
+        public virtual string OrderStatusCode { get; set; }
+
+        [Required]
+        public virtual string OrderStatus { get; set; }
+
+        public virtual string FX_Currency_RecID { get; set; }
+        public virtual string Currency { get; set; }
+        public virtual decimal? CurrencyRate { get; set; }
+        public virtual string Reference { get; set; }
+        public virtual string Workflow { get; set; }
+        public virtual DateTime? OrderDate { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDate { get; set; }
+        public virtual string Staff { get; set; }
+        public virtual string Attention { get; set; }
+        public virtual string ContactBy { get; set; }
+        [Required]
+        public virtual string UseInTransit { get; set; }
+
+        public virtual string CR_Main_CreditorID { get; set; }
+        public virtual string CreditorAccountNo { get; set; }
+        public virtual string CreditorName { get; set; }
+        public virtual string CreditorClassification { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalID { get; set; }
+        public virtual string InTransitPhysicalWarehouse { get; set; }
+        public virtual string InTransitLogicalWarehouse { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalID { get; set; }
+        public virtual string SupplyingPhysicalWarehouse { get; set; }
+        public virtual string SupplyingLogicalWarehouse { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalID { get; set; }
+        public virtual string ResidingInPhysicalWarehouse { get; set; }
+        public virtual string ResidingInLogicalWarehouse { get; set; }
+        public virtual string BackToBackInvoiceID { get; set; }
+        public virtual string BackToBackInvoiceNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorName { get; set; }
+        public virtual string ShippingContactName { get; set; }
+        public virtual string ShippingAddress1 { get; set; }
+        public virtual string ShippingAddress2 { get; set; }
+        public virtual string ShippingAddressSuburb { get; set; }
+        public virtual string ShippingAddressState { get; set; }
+        public virtual string ShippingAddressPostCode { get; set; }
+        public virtual string ShippingAddressCountry { get; set; }
+        public virtual string ShippingAddressPhone { get; set; }
+        public virtual string ShippingAddressFax { get; set; }
+        public virtual string Spare1 { get; set; }
+        public virtual string Spare2 { get; set; }
+        public virtual string Spare3 { get; set; }
+        public virtual string Spare4 { get; set; }
+        public virtual string Spare5 { get; set; }
+        public virtual string SupplierWarehouseID { get; set; }
+        public virtual string SupplierWarehouseDescription { get; set; }
+        public virtual string SupplierWarehouseAddress1 { get; set; }
+        public virtual string SupplierWarehouseAddress2 { get; set; }
+        public virtual string SupplierWarehouseAddress3 { get; set; }
+        public virtual string SupplierWarehouseAddress4 { get; set; }
+        public virtual string SupplierWarehousePostCode { get; set; }
+        public virtual string SupplierWarehouseCountry { get; set; }
+        public virtual string SuppliertWarehouseCourierDetails { get; set; }
+        public virtual string SupplierWarehouseNotes { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDays { get; set; }
+        public virtual byte? SupplierWarehouseIsDefault { get; set; }
+        public virtual decimal? LocalFreightEx { get; set; }
+        public virtual decimal? LocalFreightTaxRate { get; set; }
+        public virtual string LocalFreightTaxRateDescription { get; set; }
+        public virtual decimal? LocalFreightTaxAmount { get; set; }
+        public virtual decimal? LocalFreightInc { get; set; }
+        public virtual decimal? LocalDutyEx { get; set; }
+        public virtual decimal? LocalDutyTaxRate { get; set; }
+        public virtual string LocalDutyTaxRateDescription { get; set; }
+        public virtual decimal? LocalDutyTaxAmount { get; set; }
+        public virtual decimal? LocalDutyInc { get; set; }
+        public virtual decimal? LocalInsuranceEx { get; set; }
+        public virtual decimal? LocalInsuranceTaxRate { get; set; }
+        public virtual string LocalInsuranceTaxRateDescription { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmount { get; set; }
+        public virtual decimal? LocalInsuranceInc { get; set; }
+        public virtual decimal? FXFreightEx { get; set; }
+        public virtual decimal? FXFreightTaxRate { get; set; }
+        public virtual string FXFreightTaxRateDescription { get; set; }
+        public virtual decimal? FXFreightTaxAmount { get; set; }
+        public virtual decimal? FXFreightInc { get; set; }
+        public virtual decimal? FXDutyEx { get; set; }
+        public virtual decimal? FXDutyTaxRate { get; set; }
+        public virtual string FXDutyTaxRateDescription { get; set; }
+        public virtual decimal? FXDutyTaxAmount { get; set; }
+        public virtual decimal? FXDutyInc { get; set; }
+        public virtual decimal? FXInsuranceEx { get; set; }
+        public virtual decimal? FXInsuranceTaxRate { get; set; }
+        public virtual string FXInsuranceTaxRateDescription { get; set; }
+        public virtual decimal? FXInsuranceTaxAmount { get; set; }
+        public virtual decimal? FXInsuranceInc { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+        public virtual string ReceivedOn { get; set; }
+    }
+
+    [Route("/Queries/OR/v_Jiwa_PurchaseOrders", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class v_Jiwa_PurchaseOrdersORQuery
+        : QueryDb<v_Jiwa_PurchaseOrdersOR>, IReturn<QueryResponse<v_Jiwa_PurchaseOrdersOR>>
+    {
+        public virtual string OrderID { get; set; }
+        public virtual string OrderIDStartsWith { get; set; }
+        public virtual string OrderIDEndsWith { get; set; }
+        public virtual string OrderIDContains { get; set; }
+        public virtual string OrderIDLike { get; set; }
+        public virtual string[] OrderIDBetween { get; set; }
+        public virtual string[] OrderIDIn { get; set; }
+        public virtual string OrderNo { get; set; }
+        public virtual string OrderNoStartsWith { get; set; }
+        public virtual string OrderNoEndsWith { get; set; }
+        public virtual string OrderNoContains { get; set; }
+        public virtual string OrderNoLike { get; set; }
+        public virtual string[] OrderNoBetween { get; set; }
+        public virtual string[] OrderNoIn { get; set; }
+        public virtual string OrderTypeCode { get; set; }
+        public virtual string OrderTypeCodeStartsWith { get; set; }
+        public virtual string OrderTypeCodeEndsWith { get; set; }
+        public virtual string OrderTypeCodeContains { get; set; }
+        public virtual string OrderTypeCodeLike { get; set; }
+        public virtual string[] OrderTypeCodeBetween { get; set; }
+        public virtual string[] OrderTypeCodeIn { get; set; }
+        public virtual string OrderType { get; set; }
+        public virtual string OrderTypeStartsWith { get; set; }
+        public virtual string OrderTypeEndsWith { get; set; }
+        public virtual string OrderTypeContains { get; set; }
+        public virtual string OrderTypeLike { get; set; }
+        public virtual string[] OrderTypeBetween { get; set; }
+        public virtual string[] OrderTypeIn { get; set; }
+        public virtual string OrderSupplierTypeCode { get; set; }
+        public virtual string OrderSupplierTypeCodeStartsWith { get; set; }
+        public virtual string OrderSupplierTypeCodeEndsWith { get; set; }
+        public virtual string OrderSupplierTypeCodeContains { get; set; }
+        public virtual string OrderSupplierTypeCodeLike { get; set; }
+        public virtual string[] OrderSupplierTypeCodeBetween { get; set; }
+        public virtual string[] OrderSupplierTypeCodeIn { get; set; }
+        public virtual string OrderSupplierType { get; set; }
+        public virtual string OrderSupplierTypeStartsWith { get; set; }
+        public virtual string OrderSupplierTypeEndsWith { get; set; }
+        public virtual string OrderSupplierTypeContains { get; set; }
+        public virtual string OrderSupplierTypeLike { get; set; }
+        public virtual string[] OrderSupplierTypeBetween { get; set; }
+        public virtual string[] OrderSupplierTypeIn { get; set; }
+        public virtual string OrderStatusCode { get; set; }
+        public virtual string OrderStatusCodeStartsWith { get; set; }
+        public virtual string OrderStatusCodeEndsWith { get; set; }
+        public virtual string OrderStatusCodeContains { get; set; }
+        public virtual string OrderStatusCodeLike { get; set; }
+        public virtual string[] OrderStatusCodeBetween { get; set; }
+        public virtual string[] OrderStatusCodeIn { get; set; }
+        public virtual string OrderStatus { get; set; }
+        public virtual string OrderStatusStartsWith { get; set; }
+        public virtual string OrderStatusEndsWith { get; set; }
+        public virtual string OrderStatusContains { get; set; }
+        public virtual string OrderStatusLike { get; set; }
+        public virtual string[] OrderStatusBetween { get; set; }
+        public virtual string[] OrderStatusIn { get; set; }
+        public virtual string FX_Currency_RecID { get; set; }
+        public virtual string FX_Currency_RecIDStartsWith { get; set; }
+        public virtual string FX_Currency_RecIDEndsWith { get; set; }
+        public virtual string FX_Currency_RecIDContains { get; set; }
+        public virtual string FX_Currency_RecIDLike { get; set; }
+        public virtual string[] FX_Currency_RecIDBetween { get; set; }
+        public virtual string[] FX_Currency_RecIDIn { get; set; }
+        public virtual string Currency { get; set; }
+        public virtual string CurrencyStartsWith { get; set; }
+        public virtual string CurrencyEndsWith { get; set; }
+        public virtual string CurrencyContains { get; set; }
+        public virtual string CurrencyLike { get; set; }
+        public virtual string[] CurrencyBetween { get; set; }
+        public virtual string[] CurrencyIn { get; set; }
+        public virtual decimal? CurrencyRate { get; set; }
+        public virtual decimal? CurrencyRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateGreaterThan { get; set; }
+        public virtual decimal? CurrencyRateLessThan { get; set; }
+        public virtual decimal? CurrencyRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateNotEqualTo { get; set; }
+        public virtual decimal?[] CurrencyRateBetween { get; set; }
+        public virtual decimal?[] CurrencyRateIn { get; set; }
+        public virtual string Reference { get; set; }
+        public virtual string ReferenceStartsWith { get; set; }
+        public virtual string ReferenceEndsWith { get; set; }
+        public virtual string ReferenceContains { get; set; }
+        public virtual string ReferenceLike { get; set; }
+        public virtual string[] ReferenceBetween { get; set; }
+        public virtual string[] ReferenceIn { get; set; }
+        public virtual string Workflow { get; set; }
+        public virtual string WorkflowStartsWith { get; set; }
+        public virtual string WorkflowEndsWith { get; set; }
+        public virtual string WorkflowContains { get; set; }
+        public virtual string WorkflowLike { get; set; }
+        public virtual string[] WorkflowBetween { get; set; }
+        public virtual string[] WorkflowIn { get; set; }
+        public virtual DateTime? OrderDate { get; set; }
+        public virtual DateTime? OrderDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? OrderDateGreaterThan { get; set; }
+        public virtual DateTime? OrderDateLessThan { get; set; }
+        public virtual DateTime? OrderDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? OrderDateNotEqualTo { get; set; }
+        public virtual DateTime?[] OrderDateBetween { get; set; }
+        public virtual DateTime?[] OrderDateIn { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDate { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateGreaterThan { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateLessThan { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateLessThanOrEqualTo { get; set; }
+        public virtual DateTimeOffset? PurchaseOrderLastModifiedDateNotEqualTo { get; set; }
+        public virtual DateTimeOffset?[] PurchaseOrderLastModifiedDateBetween { get; set; }
+        public virtual DateTimeOffset?[] PurchaseOrderLastModifiedDateIn { get; set; }
+        public virtual string Staff { get; set; }
+        public virtual string StaffStartsWith { get; set; }
+        public virtual string StaffEndsWith { get; set; }
+        public virtual string StaffContains { get; set; }
+        public virtual string StaffLike { get; set; }
+        public virtual string[] StaffBetween { get; set; }
+        public virtual string[] StaffIn { get; set; }
+        public virtual string Attention { get; set; }
+        public virtual string AttentionStartsWith { get; set; }
+        public virtual string AttentionEndsWith { get; set; }
+        public virtual string AttentionContains { get; set; }
+        public virtual string AttentionLike { get; set; }
+        public virtual string[] AttentionBetween { get; set; }
+        public virtual string[] AttentionIn { get; set; }
+        public virtual string ContactBy { get; set; }
+        public virtual string ContactByStartsWith { get; set; }
+        public virtual string ContactByEndsWith { get; set; }
+        public virtual string ContactByContains { get; set; }
+        public virtual string ContactByLike { get; set; }
+        public virtual string[] ContactByBetween { get; set; }
+        public virtual string[] ContactByIn { get; set; }
+        public virtual string UseInTransit { get; set; }
+        public virtual string UseInTransitStartsWith { get; set; }
+        public virtual string UseInTransitEndsWith { get; set; }
+        public virtual string UseInTransitContains { get; set; }
+        public virtual string UseInTransitLike { get; set; }
+        public virtual string[] UseInTransitBetween { get; set; }
+        public virtual string[] UseInTransitIn { get; set; }
+        public virtual string CR_Main_CreditorID { get; set; }
+        public virtual string CR_Main_CreditorIDStartsWith { get; set; }
+        public virtual string CR_Main_CreditorIDEndsWith { get; set; }
+        public virtual string CR_Main_CreditorIDContains { get; set; }
+        public virtual string CR_Main_CreditorIDLike { get; set; }
+        public virtual string[] CR_Main_CreditorIDBetween { get; set; }
+        public virtual string[] CR_Main_CreditorIDIn { get; set; }
+        public virtual string CreditorAccountNo { get; set; }
+        public virtual string CreditorAccountNoStartsWith { get; set; }
+        public virtual string CreditorAccountNoEndsWith { get; set; }
+        public virtual string CreditorAccountNoContains { get; set; }
+        public virtual string CreditorAccountNoLike { get; set; }
+        public virtual string[] CreditorAccountNoBetween { get; set; }
+        public virtual string[] CreditorAccountNoIn { get; set; }
+        public virtual string CreditorName { get; set; }
+        public virtual string CreditorNameStartsWith { get; set; }
+        public virtual string CreditorNameEndsWith { get; set; }
+        public virtual string CreditorNameContains { get; set; }
+        public virtual string CreditorNameLike { get; set; }
+        public virtual string[] CreditorNameBetween { get; set; }
+        public virtual string[] CreditorNameIn { get; set; }
+        public virtual string CreditorClassification { get; set; }
+        public virtual string CreditorClassificationStartsWith { get; set; }
+        public virtual string CreditorClassificationEndsWith { get; set; }
+        public virtual string CreditorClassificationContains { get; set; }
+        public virtual string CreditorClassificationLike { get; set; }
+        public virtual string[] CreditorClassificationBetween { get; set; }
+        public virtual string[] CreditorClassificationIn { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalID { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string InTransitWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] InTransitWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] InTransitWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string InTransitPhysicalWarehouse { get; set; }
+        public virtual string InTransitPhysicalWarehouseStartsWith { get; set; }
+        public virtual string InTransitPhysicalWarehouseEndsWith { get; set; }
+        public virtual string InTransitPhysicalWarehouseContains { get; set; }
+        public virtual string InTransitPhysicalWarehouseLike { get; set; }
+        public virtual string[] InTransitPhysicalWarehouseBetween { get; set; }
+        public virtual string[] InTransitPhysicalWarehouseIn { get; set; }
+        public virtual string InTransitLogicalWarehouse { get; set; }
+        public virtual string InTransitLogicalWarehouseStartsWith { get; set; }
+        public virtual string InTransitLogicalWarehouseEndsWith { get; set; }
+        public virtual string InTransitLogicalWarehouseContains { get; set; }
+        public virtual string InTransitLogicalWarehouseLike { get; set; }
+        public virtual string[] InTransitLogicalWarehouseBetween { get; set; }
+        public virtual string[] InTransitLogicalWarehouseIn { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalID { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string SupplyingWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] SupplyingWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] SupplyingWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string SupplyingPhysicalWarehouse { get; set; }
+        public virtual string SupplyingPhysicalWarehouseStartsWith { get; set; }
+        public virtual string SupplyingPhysicalWarehouseEndsWith { get; set; }
+        public virtual string SupplyingPhysicalWarehouseContains { get; set; }
+        public virtual string SupplyingPhysicalWarehouseLike { get; set; }
+        public virtual string[] SupplyingPhysicalWarehouseBetween { get; set; }
+        public virtual string[] SupplyingPhysicalWarehouseIn { get; set; }
+        public virtual string SupplyingLogicalWarehouse { get; set; }
+        public virtual string SupplyingLogicalWarehouseStartsWith { get; set; }
+        public virtual string SupplyingLogicalWarehouseEndsWith { get; set; }
+        public virtual string SupplyingLogicalWarehouseContains { get; set; }
+        public virtual string SupplyingLogicalWarehouseLike { get; set; }
+        public virtual string[] SupplyingLogicalWarehouseBetween { get; set; }
+        public virtual string[] SupplyingLogicalWarehouseIn { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalID { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDStartsWith { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDEndsWith { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDContains { get; set; }
+        public virtual string ResidingInWarehouse_IN_LogicalIDLike { get; set; }
+        public virtual string[] ResidingInWarehouse_IN_LogicalIDBetween { get; set; }
+        public virtual string[] ResidingInWarehouse_IN_LogicalIDIn { get; set; }
+        public virtual string ResidingInPhysicalWarehouse { get; set; }
+        public virtual string ResidingInPhysicalWarehouseStartsWith { get; set; }
+        public virtual string ResidingInPhysicalWarehouseEndsWith { get; set; }
+        public virtual string ResidingInPhysicalWarehouseContains { get; set; }
+        public virtual string ResidingInPhysicalWarehouseLike { get; set; }
+        public virtual string[] ResidingInPhysicalWarehouseBetween { get; set; }
+        public virtual string[] ResidingInPhysicalWarehouseIn { get; set; }
+        public virtual string ResidingInLogicalWarehouse { get; set; }
+        public virtual string ResidingInLogicalWarehouseStartsWith { get; set; }
+        public virtual string ResidingInLogicalWarehouseEndsWith { get; set; }
+        public virtual string ResidingInLogicalWarehouseContains { get; set; }
+        public virtual string ResidingInLogicalWarehouseLike { get; set; }
+        public virtual string[] ResidingInLogicalWarehouseBetween { get; set; }
+        public virtual string[] ResidingInLogicalWarehouseIn { get; set; }
+        public virtual string BackToBackInvoiceID { get; set; }
+        public virtual string BackToBackInvoiceIDStartsWith { get; set; }
+        public virtual string BackToBackInvoiceIDEndsWith { get; set; }
+        public virtual string BackToBackInvoiceIDContains { get; set; }
+        public virtual string BackToBackInvoiceIDLike { get; set; }
+        public virtual string[] BackToBackInvoiceIDBetween { get; set; }
+        public virtual string[] BackToBackInvoiceIDIn { get; set; }
+        public virtual string BackToBackInvoiceNo { get; set; }
+        public virtual string BackToBackInvoiceNoStartsWith { get; set; }
+        public virtual string BackToBackInvoiceNoEndsWith { get; set; }
+        public virtual string BackToBackInvoiceNoContains { get; set; }
+        public virtual string BackToBackInvoiceNoLike { get; set; }
+        public virtual string[] BackToBackInvoiceNoBetween { get; set; }
+        public virtual string[] BackToBackInvoiceNoIn { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNo { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoStartsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoEndsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoContains { get; set; }
+        public virtual string BackToBackInvoiceDebtorAccountNoLike { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorAccountNoBetween { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorAccountNoIn { get; set; }
+        public virtual string BackToBackInvoiceDebtorName { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameStartsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameEndsWith { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameContains { get; set; }
+        public virtual string BackToBackInvoiceDebtorNameLike { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorNameBetween { get; set; }
+        public virtual string[] BackToBackInvoiceDebtorNameIn { get; set; }
+        public virtual string ShippingContactName { get; set; }
+        public virtual string ShippingContactNameStartsWith { get; set; }
+        public virtual string ShippingContactNameEndsWith { get; set; }
+        public virtual string ShippingContactNameContains { get; set; }
+        public virtual string ShippingContactNameLike { get; set; }
+        public virtual string[] ShippingContactNameBetween { get; set; }
+        public virtual string[] ShippingContactNameIn { get; set; }
+        public virtual string ShippingAddress1 { get; set; }
+        public virtual string ShippingAddress1StartsWith { get; set; }
+        public virtual string ShippingAddress1EndsWith { get; set; }
+        public virtual string ShippingAddress1Contains { get; set; }
+        public virtual string ShippingAddress1Like { get; set; }
+        public virtual string[] ShippingAddress1Between { get; set; }
+        public virtual string[] ShippingAddress1In { get; set; }
+        public virtual string ShippingAddress2 { get; set; }
+        public virtual string ShippingAddress2StartsWith { get; set; }
+        public virtual string ShippingAddress2EndsWith { get; set; }
+        public virtual string ShippingAddress2Contains { get; set; }
+        public virtual string ShippingAddress2Like { get; set; }
+        public virtual string[] ShippingAddress2Between { get; set; }
+        public virtual string[] ShippingAddress2In { get; set; }
+        public virtual string ShippingAddressSuburb { get; set; }
+        public virtual string ShippingAddressSuburbStartsWith { get; set; }
+        public virtual string ShippingAddressSuburbEndsWith { get; set; }
+        public virtual string ShippingAddressSuburbContains { get; set; }
+        public virtual string ShippingAddressSuburbLike { get; set; }
+        public virtual string[] ShippingAddressSuburbBetween { get; set; }
+        public virtual string[] ShippingAddressSuburbIn { get; set; }
+        public virtual string ShippingAddressState { get; set; }
+        public virtual string ShippingAddressStateStartsWith { get; set; }
+        public virtual string ShippingAddressStateEndsWith { get; set; }
+        public virtual string ShippingAddressStateContains { get; set; }
+        public virtual string ShippingAddressStateLike { get; set; }
+        public virtual string[] ShippingAddressStateBetween { get; set; }
+        public virtual string[] ShippingAddressStateIn { get; set; }
+        public virtual string ShippingAddressPostCode { get; set; }
+        public virtual string ShippingAddressPostCodeStartsWith { get; set; }
+        public virtual string ShippingAddressPostCodeEndsWith { get; set; }
+        public virtual string ShippingAddressPostCodeContains { get; set; }
+        public virtual string ShippingAddressPostCodeLike { get; set; }
+        public virtual string[] ShippingAddressPostCodeBetween { get; set; }
+        public virtual string[] ShippingAddressPostCodeIn { get; set; }
+        public virtual string ShippingAddressCountry { get; set; }
+        public virtual string ShippingAddressCountryStartsWith { get; set; }
+        public virtual string ShippingAddressCountryEndsWith { get; set; }
+        public virtual string ShippingAddressCountryContains { get; set; }
+        public virtual string ShippingAddressCountryLike { get; set; }
+        public virtual string[] ShippingAddressCountryBetween { get; set; }
+        public virtual string[] ShippingAddressCountryIn { get; set; }
+        public virtual string ShippingAddressPhone { get; set; }
+        public virtual string ShippingAddressPhoneStartsWith { get; set; }
+        public virtual string ShippingAddressPhoneEndsWith { get; set; }
+        public virtual string ShippingAddressPhoneContains { get; set; }
+        public virtual string ShippingAddressPhoneLike { get; set; }
+        public virtual string[] ShippingAddressPhoneBetween { get; set; }
+        public virtual string[] ShippingAddressPhoneIn { get; set; }
+        public virtual string ShippingAddressFax { get; set; }
+        public virtual string ShippingAddressFaxStartsWith { get; set; }
+        public virtual string ShippingAddressFaxEndsWith { get; set; }
+        public virtual string ShippingAddressFaxContains { get; set; }
+        public virtual string ShippingAddressFaxLike { get; set; }
+        public virtual string[] ShippingAddressFaxBetween { get; set; }
+        public virtual string[] ShippingAddressFaxIn { get; set; }
+        public virtual string Spare1 { get; set; }
+        public virtual string Spare1StartsWith { get; set; }
+        public virtual string Spare1EndsWith { get; set; }
+        public virtual string Spare1Contains { get; set; }
+        public virtual string Spare1Like { get; set; }
+        public virtual string[] Spare1Between { get; set; }
+        public virtual string[] Spare1In { get; set; }
+        public virtual string Spare2 { get; set; }
+        public virtual string Spare2StartsWith { get; set; }
+        public virtual string Spare2EndsWith { get; set; }
+        public virtual string Spare2Contains { get; set; }
+        public virtual string Spare2Like { get; set; }
+        public virtual string[] Spare2Between { get; set; }
+        public virtual string[] Spare2In { get; set; }
+        public virtual string Spare3 { get; set; }
+        public virtual string Spare3StartsWith { get; set; }
+        public virtual string Spare3EndsWith { get; set; }
+        public virtual string Spare3Contains { get; set; }
+        public virtual string Spare3Like { get; set; }
+        public virtual string[] Spare3Between { get; set; }
+        public virtual string[] Spare3In { get; set; }
+        public virtual string Spare4 { get; set; }
+        public virtual string Spare4StartsWith { get; set; }
+        public virtual string Spare4EndsWith { get; set; }
+        public virtual string Spare4Contains { get; set; }
+        public virtual string Spare4Like { get; set; }
+        public virtual string[] Spare4Between { get; set; }
+        public virtual string[] Spare4In { get; set; }
+        public virtual string Spare5 { get; set; }
+        public virtual string Spare5StartsWith { get; set; }
+        public virtual string Spare5EndsWith { get; set; }
+        public virtual string Spare5Contains { get; set; }
+        public virtual string Spare5Like { get; set; }
+        public virtual string[] Spare5Between { get; set; }
+        public virtual string[] Spare5In { get; set; }
+        public virtual string SupplierWarehouseID { get; set; }
+        public virtual string SupplierWarehouseIDStartsWith { get; set; }
+        public virtual string SupplierWarehouseIDEndsWith { get; set; }
+        public virtual string SupplierWarehouseIDContains { get; set; }
+        public virtual string SupplierWarehouseIDLike { get; set; }
+        public virtual string[] SupplierWarehouseIDBetween { get; set; }
+        public virtual string[] SupplierWarehouseIDIn { get; set; }
+        public virtual string SupplierWarehouseDescription { get; set; }
+        public virtual string SupplierWarehouseDescriptionStartsWith { get; set; }
+        public virtual string SupplierWarehouseDescriptionEndsWith { get; set; }
+        public virtual string SupplierWarehouseDescriptionContains { get; set; }
+        public virtual string SupplierWarehouseDescriptionLike { get; set; }
+        public virtual string[] SupplierWarehouseDescriptionBetween { get; set; }
+        public virtual string[] SupplierWarehouseDescriptionIn { get; set; }
+        public virtual string SupplierWarehouseAddress1 { get; set; }
+        public virtual string SupplierWarehouseAddress1StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress1EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress1Contains { get; set; }
+        public virtual string SupplierWarehouseAddress1Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress1Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress1In { get; set; }
+        public virtual string SupplierWarehouseAddress2 { get; set; }
+        public virtual string SupplierWarehouseAddress2StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress2EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress2Contains { get; set; }
+        public virtual string SupplierWarehouseAddress2Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress2Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress2In { get; set; }
+        public virtual string SupplierWarehouseAddress3 { get; set; }
+        public virtual string SupplierWarehouseAddress3StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress3EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress3Contains { get; set; }
+        public virtual string SupplierWarehouseAddress3Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress3Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress3In { get; set; }
+        public virtual string SupplierWarehouseAddress4 { get; set; }
+        public virtual string SupplierWarehouseAddress4StartsWith { get; set; }
+        public virtual string SupplierWarehouseAddress4EndsWith { get; set; }
+        public virtual string SupplierWarehouseAddress4Contains { get; set; }
+        public virtual string SupplierWarehouseAddress4Like { get; set; }
+        public virtual string[] SupplierWarehouseAddress4Between { get; set; }
+        public virtual string[] SupplierWarehouseAddress4In { get; set; }
+        public virtual string SupplierWarehousePostCode { get; set; }
+        public virtual string SupplierWarehousePostCodeStartsWith { get; set; }
+        public virtual string SupplierWarehousePostCodeEndsWith { get; set; }
+        public virtual string SupplierWarehousePostCodeContains { get; set; }
+        public virtual string SupplierWarehousePostCodeLike { get; set; }
+        public virtual string[] SupplierWarehousePostCodeBetween { get; set; }
+        public virtual string[] SupplierWarehousePostCodeIn { get; set; }
+        public virtual string SupplierWarehouseCountry { get; set; }
+        public virtual string SupplierWarehouseCountryStartsWith { get; set; }
+        public virtual string SupplierWarehouseCountryEndsWith { get; set; }
+        public virtual string SupplierWarehouseCountryContains { get; set; }
+        public virtual string SupplierWarehouseCountryLike { get; set; }
+        public virtual string[] SupplierWarehouseCountryBetween { get; set; }
+        public virtual string[] SupplierWarehouseCountryIn { get; set; }
+        public virtual string SuppliertWarehouseCourierDetails { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsStartsWith { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsEndsWith { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsContains { get; set; }
+        public virtual string SuppliertWarehouseCourierDetailsLike { get; set; }
+        public virtual string[] SuppliertWarehouseCourierDetailsBetween { get; set; }
+        public virtual string[] SuppliertWarehouseCourierDetailsIn { get; set; }
+        public virtual string SupplierWarehouseNotes { get; set; }
+        public virtual string SupplierWarehouseNotesStartsWith { get; set; }
+        public virtual string SupplierWarehouseNotesEndsWith { get; set; }
+        public virtual string SupplierWarehouseNotesContains { get; set; }
+        public virtual string SupplierWarehouseNotesLike { get; set; }
+        public virtual string[] SupplierWarehouseNotesBetween { get; set; }
+        public virtual string[] SupplierWarehouseNotesIn { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDays { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysGreaterThanOrEqualTo { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysGreaterThan { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysLessThan { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysLessThanOrEqualTo { get; set; }
+        public virtual short? SupplierWarehouseDefaultDeliveryDaysNotEqualTo { get; set; }
+        public virtual short?[] SupplierWarehouseDefaultDeliveryDaysBetween { get; set; }
+        public virtual short?[] SupplierWarehouseDefaultDeliveryDaysIn { get; set; }
+        public virtual byte? SupplierWarehouseIsDefault { get; set; }
+        public virtual byte? SupplierWarehouseIsDefaultGreaterThanOrEqualTo { get; set; }
+        public virtual byte? SupplierWarehouseIsDefaultGreaterThan { get; set; }
+        public virtual byte? SupplierWarehouseIsDefaultLessThan { get; set; }
+        public virtual byte? SupplierWarehouseIsDefaultLessThanOrEqualTo { get; set; }
+        public virtual byte? SupplierWarehouseIsDefaultNotEqualTo { get; set; }
+        public virtual byte?[] SupplierWarehouseIsDefaultBetween { get; set; }
+        public virtual byte?[] SupplierWarehouseIsDefaultIn { get; set; }
+        public virtual decimal? LocalFreightEx { get; set; }
+        public virtual decimal? LocalFreightExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightExGreaterThan { get; set; }
+        public virtual decimal? LocalFreightExLessThan { get; set; }
+        public virtual decimal? LocalFreightExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalFreightExBetween { get; set; }
+        public virtual decimal?[] LocalFreightExIn { get; set; }
+        public virtual decimal? LocalFreightTaxRate { get; set; }
+        public virtual decimal? LocalFreightTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalFreightTaxRateLessThan { get; set; }
+        public virtual decimal? LocalFreightTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalFreightTaxRateBetween { get; set; }
+        public virtual decimal?[] LocalFreightTaxRateIn { get; set; }
+        public virtual string LocalFreightTaxRateDescription { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionContains { get; set; }
+        public virtual string LocalFreightTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalFreightTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalFreightTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalFreightTaxAmount { get; set; }
+        public virtual decimal? LocalFreightTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalFreightTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalFreightTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalFreightTaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalFreightTaxAmountIn { get; set; }
+        public virtual decimal? LocalFreightInc { get; set; }
+        public virtual decimal? LocalFreightIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightIncGreaterThan { get; set; }
+        public virtual decimal? LocalFreightIncLessThan { get; set; }
+        public virtual decimal? LocalFreightIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalFreightIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalFreightIncBetween { get; set; }
+        public virtual decimal?[] LocalFreightIncIn { get; set; }
+        public virtual decimal? LocalDutyEx { get; set; }
+        public virtual decimal? LocalDutyExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyExGreaterThan { get; set; }
+        public virtual decimal? LocalDutyExLessThan { get; set; }
+        public virtual decimal? LocalDutyExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalDutyExBetween { get; set; }
+        public virtual decimal?[] LocalDutyExIn { get; set; }
+        public virtual decimal? LocalDutyTaxRate { get; set; }
+        public virtual decimal? LocalDutyTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalDutyTaxRateLessThan { get; set; }
+        public virtual decimal? LocalDutyTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalDutyTaxRateBetween { get; set; }
+        public virtual decimal?[] LocalDutyTaxRateIn { get; set; }
+        public virtual string LocalDutyTaxRateDescription { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionContains { get; set; }
+        public virtual string LocalDutyTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalDutyTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalDutyTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalDutyTaxAmount { get; set; }
+        public virtual decimal? LocalDutyTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalDutyTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalDutyTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalDutyTaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalDutyTaxAmountIn { get; set; }
+        public virtual decimal? LocalDutyInc { get; set; }
+        public virtual decimal? LocalDutyIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyIncGreaterThan { get; set; }
+        public virtual decimal? LocalDutyIncLessThan { get; set; }
+        public virtual decimal? LocalDutyIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalDutyIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalDutyIncBetween { get; set; }
+        public virtual decimal?[] LocalDutyIncIn { get; set; }
+        public virtual decimal? LocalInsuranceEx { get; set; }
+        public virtual decimal? LocalInsuranceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceExGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceExLessThan { get; set; }
+        public virtual decimal? LocalInsuranceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInsuranceExBetween { get; set; }
+        public virtual decimal?[] LocalInsuranceExIn { get; set; }
+        public virtual decimal? LocalInsuranceTaxRate { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateLessThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInsuranceTaxRateBetween { get; set; }
+        public virtual decimal?[] LocalInsuranceTaxRateIn { get; set; }
+        public virtual string LocalInsuranceTaxRateDescription { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionStartsWith { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionEndsWith { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionContains { get; set; }
+        public virtual string LocalInsuranceTaxRateDescriptionLike { get; set; }
+        public virtual string[] LocalInsuranceTaxRateDescriptionBetween { get; set; }
+        public virtual string[] LocalInsuranceTaxRateDescriptionIn { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmount { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountLessThan { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInsuranceTaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalInsuranceTaxAmountIn { get; set; }
+        public virtual decimal? LocalInsuranceInc { get; set; }
+        public virtual decimal? LocalInsuranceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceIncGreaterThan { get; set; }
+        public virtual decimal? LocalInsuranceIncLessThan { get; set; }
+        public virtual decimal? LocalInsuranceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInsuranceIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInsuranceIncBetween { get; set; }
+        public virtual decimal?[] LocalInsuranceIncIn { get; set; }
+        public virtual decimal? FXFreightEx { get; set; }
+        public virtual decimal? FXFreightExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightExGreaterThan { get; set; }
+        public virtual decimal? FXFreightExLessThan { get; set; }
+        public virtual decimal? FXFreightExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightExNotEqualTo { get; set; }
+        public virtual decimal?[] FXFreightExBetween { get; set; }
+        public virtual decimal?[] FXFreightExIn { get; set; }
+        public virtual decimal? FXFreightTaxRate { get; set; }
+        public virtual decimal? FXFreightTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXFreightTaxRateLessThan { get; set; }
+        public virtual decimal? FXFreightTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] FXFreightTaxRateBetween { get; set; }
+        public virtual decimal?[] FXFreightTaxRateIn { get; set; }
+        public virtual string FXFreightTaxRateDescription { get; set; }
+        public virtual string FXFreightTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXFreightTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXFreightTaxRateDescriptionContains { get; set; }
+        public virtual string FXFreightTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXFreightTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXFreightTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXFreightTaxAmount { get; set; }
+        public virtual decimal? FXFreightTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXFreightTaxAmountLessThan { get; set; }
+        public virtual decimal? FXFreightTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXFreightTaxAmountBetween { get; set; }
+        public virtual decimal?[] FXFreightTaxAmountIn { get; set; }
+        public virtual decimal? FXFreightInc { get; set; }
+        public virtual decimal? FXFreightIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightIncGreaterThan { get; set; }
+        public virtual decimal? FXFreightIncLessThan { get; set; }
+        public virtual decimal? FXFreightIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXFreightIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXFreightIncBetween { get; set; }
+        public virtual decimal?[] FXFreightIncIn { get; set; }
+        public virtual decimal? FXDutyEx { get; set; }
+        public virtual decimal? FXDutyExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyExGreaterThan { get; set; }
+        public virtual decimal? FXDutyExLessThan { get; set; }
+        public virtual decimal? FXDutyExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyExNotEqualTo { get; set; }
+        public virtual decimal?[] FXDutyExBetween { get; set; }
+        public virtual decimal?[] FXDutyExIn { get; set; }
+        public virtual decimal? FXDutyTaxRate { get; set; }
+        public virtual decimal? FXDutyTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXDutyTaxRateLessThan { get; set; }
+        public virtual decimal? FXDutyTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] FXDutyTaxRateBetween { get; set; }
+        public virtual decimal?[] FXDutyTaxRateIn { get; set; }
+        public virtual string FXDutyTaxRateDescription { get; set; }
+        public virtual string FXDutyTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXDutyTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXDutyTaxRateDescriptionContains { get; set; }
+        public virtual string FXDutyTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXDutyTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXDutyTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXDutyTaxAmount { get; set; }
+        public virtual decimal? FXDutyTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXDutyTaxAmountLessThan { get; set; }
+        public virtual decimal? FXDutyTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXDutyTaxAmountBetween { get; set; }
+        public virtual decimal?[] FXDutyTaxAmountIn { get; set; }
+        public virtual decimal? FXDutyInc { get; set; }
+        public virtual decimal? FXDutyIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyIncGreaterThan { get; set; }
+        public virtual decimal? FXDutyIncLessThan { get; set; }
+        public virtual decimal? FXDutyIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXDutyIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXDutyIncBetween { get; set; }
+        public virtual decimal?[] FXDutyIncIn { get; set; }
+        public virtual decimal? FXInsuranceEx { get; set; }
+        public virtual decimal? FXInsuranceExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceExGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceExLessThan { get; set; }
+        public virtual decimal? FXInsuranceExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceExNotEqualTo { get; set; }
+        public virtual decimal?[] FXInsuranceExBetween { get; set; }
+        public virtual decimal?[] FXInsuranceExIn { get; set; }
+        public virtual decimal? FXInsuranceTaxRate { get; set; }
+        public virtual decimal? FXInsuranceTaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxRateGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceTaxRateLessThan { get; set; }
+        public virtual decimal? FXInsuranceTaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] FXInsuranceTaxRateBetween { get; set; }
+        public virtual decimal?[] FXInsuranceTaxRateIn { get; set; }
+        public virtual string FXInsuranceTaxRateDescription { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionStartsWith { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionEndsWith { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionContains { get; set; }
+        public virtual string FXInsuranceTaxRateDescriptionLike { get; set; }
+        public virtual string[] FXInsuranceTaxRateDescriptionBetween { get; set; }
+        public virtual string[] FXInsuranceTaxRateDescriptionIn { get; set; }
+        public virtual decimal? FXInsuranceTaxAmount { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountLessThan { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceTaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXInsuranceTaxAmountBetween { get; set; }
+        public virtual decimal?[] FXInsuranceTaxAmountIn { get; set; }
+        public virtual decimal? FXInsuranceInc { get; set; }
+        public virtual decimal? FXInsuranceIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceIncGreaterThan { get; set; }
+        public virtual decimal? FXInsuranceIncLessThan { get; set; }
+        public virtual decimal? FXInsuranceIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInsuranceIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXInsuranceIncBetween { get; set; }
+        public virtual decimal?[] FXInsuranceIncIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncIn { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExIn { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncIn { get; set; }
+        public virtual string ReceivedOn { get; set; }
+        public virtual string ReceivedOnStartsWith { get; set; }
+        public virtual string ReceivedOnEndsWith { get; set; }
+        public virtual string ReceivedOnContains { get; set; }
+        public virtual string ReceivedOnLike { get; set; }
+        public virtual string[] ReceivedOnBetween { get; set; }
+        public virtual string[] ReceivedOnIn { get; set; }
     }
 
     public partial class v_Jiwa_RE_LinesOR
@@ -220492,6 +228044,9 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string InvoiceHistoryID { get; set; }
         public virtual short? HistoryNo { get; set; }
         [Required]
+        public virtual string OrderStatusCode { get; set; }
+
+        [Required]
         public virtual string OrderStatus { get; set; }
 
         [Required]
@@ -220503,6 +228058,9 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string OrderNo { get; set; }
         public virtual string InvoiceType { get; set; }
         [Required]
+        public virtual string BillingTypeCode { get; set; }
+
+        [Required]
         public virtual string BillingType { get; set; }
 
         public virtual string IN_PriceSchemes_PriceSchemeID { get; set; }
@@ -220512,6 +228070,9 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string TaxExemptNo { get; set; }
         [Required]
         public virtual string BackOrderMode { get; set; }
+
+        [Required]
+        public virtual string OrderTypeCode { get; set; }
 
         [Required]
         public virtual string OrderType { get; set; }
@@ -220561,7 +228122,9 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual decimal? ItemWeight { get; set; }
         public virtual decimal? ItemCubic { get; set; }
         public virtual bool? IsPicked { get; set; }
+        public virtual short? KitTypeCode { get; set; }
         public virtual string KitType { get; set; }
+        public virtual short? KitLineTypeCode { get; set; }
         public virtual string KitLineType { get; set; }
         public virtual string MyKitHeaderInvoiceLineID { get; set; }
         public virtual decimal? LocalUnitCost { get; set; }
@@ -220657,6 +228220,13 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual short? HistoryNoNotEqualTo { get; set; }
         public virtual short?[] HistoryNoBetween { get; set; }
         public virtual short?[] HistoryNoIn { get; set; }
+        public virtual string OrderStatusCode { get; set; }
+        public virtual string OrderStatusCodeStartsWith { get; set; }
+        public virtual string OrderStatusCodeEndsWith { get; set; }
+        public virtual string OrderStatusCodeContains { get; set; }
+        public virtual string OrderStatusCodeLike { get; set; }
+        public virtual string[] OrderStatusCodeBetween { get; set; }
+        public virtual string[] OrderStatusCodeIn { get; set; }
         public virtual string OrderStatus { get; set; }
         public virtual string OrderStatusStartsWith { get; set; }
         public virtual string OrderStatusEndsWith { get; set; }
@@ -220701,6 +228271,13 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string InvoiceTypeLike { get; set; }
         public virtual string[] InvoiceTypeBetween { get; set; }
         public virtual string[] InvoiceTypeIn { get; set; }
+        public virtual string BillingTypeCode { get; set; }
+        public virtual string BillingTypeCodeStartsWith { get; set; }
+        public virtual string BillingTypeCodeEndsWith { get; set; }
+        public virtual string BillingTypeCodeContains { get; set; }
+        public virtual string BillingTypeCodeLike { get; set; }
+        public virtual string[] BillingTypeCodeBetween { get; set; }
+        public virtual string[] BillingTypeCodeIn { get; set; }
         public virtual string BillingType { get; set; }
         public virtual string BillingTypeStartsWith { get; set; }
         public virtual string BillingTypeEndsWith { get; set; }
@@ -220736,6 +228313,13 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string BackOrderModeLike { get; set; }
         public virtual string[] BackOrderModeBetween { get; set; }
         public virtual string[] BackOrderModeIn { get; set; }
+        public virtual string OrderTypeCode { get; set; }
+        public virtual string OrderTypeCodeStartsWith { get; set; }
+        public virtual string OrderTypeCodeEndsWith { get; set; }
+        public virtual string OrderTypeCodeContains { get; set; }
+        public virtual string OrderTypeCodeLike { get; set; }
+        public virtual string[] OrderTypeCodeBetween { get; set; }
+        public virtual string[] OrderTypeCodeIn { get; set; }
         public virtual string OrderType { get; set; }
         public virtual string OrderTypeStartsWith { get; set; }
         public virtual string OrderTypeEndsWith { get; set; }
@@ -221000,6 +228584,14 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual decimal?[] ItemCubicBetween { get; set; }
         public virtual decimal?[] ItemCubicIn { get; set; }
         public virtual bool? IsPicked { get; set; }
+        public virtual short? KitTypeCode { get; set; }
+        public virtual short? KitTypeCodeGreaterThanOrEqualTo { get; set; }
+        public virtual short? KitTypeCodeGreaterThan { get; set; }
+        public virtual short? KitTypeCodeLessThan { get; set; }
+        public virtual short? KitTypeCodeLessThanOrEqualTo { get; set; }
+        public virtual short? KitTypeCodeNotEqualTo { get; set; }
+        public virtual short?[] KitTypeCodeBetween { get; set; }
+        public virtual short?[] KitTypeCodeIn { get; set; }
         public virtual string KitType { get; set; }
         public virtual string KitTypeStartsWith { get; set; }
         public virtual string KitTypeEndsWith { get; set; }
@@ -221007,6 +228599,14 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string KitTypeLike { get; set; }
         public virtual string[] KitTypeBetween { get; set; }
         public virtual string[] KitTypeIn { get; set; }
+        public virtual short? KitLineTypeCode { get; set; }
+        public virtual short? KitLineTypeCodeGreaterThanOrEqualTo { get; set; }
+        public virtual short? KitLineTypeCodeGreaterThan { get; set; }
+        public virtual short? KitLineTypeCodeLessThan { get; set; }
+        public virtual short? KitLineTypeCodeLessThanOrEqualTo { get; set; }
+        public virtual short? KitLineTypeCodeNotEqualTo { get; set; }
+        public virtual short?[] KitLineTypeCodeBetween { get; set; }
+        public virtual short?[] KitLineTypeCodeIn { get; set; }
         public virtual string KitLineType { get; set; }
         public virtual string KitLineTypeStartsWith { get; set; }
         public virtual string KitLineTypeEndsWith { get; set; }
@@ -222059,6 +229659,652 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or
         public virtual string StatusLike { get; set; }
         public virtual string[] StatusBetween { get; set; }
         public virtual string[] StatusIn { get; set; }
+    }
+
+    public partial class v_Jiwa_SalesOrdersOR
+    {
+        public virtual string InvoiceID { get; set; }
+        public virtual string InvoiceNo { get; set; }
+        [Required]
+        public virtual string InvoiceHistoryID { get; set; }
+
+        [Required]
+        public virtual string OrderStatusCode { get; set; }
+
+        [Required]
+        public virtual string OrderStatus { get; set; }
+
+        public virtual int? IsCreditNote { get; set; }
+        public virtual string FX_Currency_RecID { get; set; }
+        public virtual string Currency { get; set; }
+        public virtual decimal? CurrencyRate { get; set; }
+        public virtual string OrderNo { get; set; }
+        public virtual string InvoiceType { get; set; }
+        [Required]
+        public virtual string BillingTypeCode { get; set; }
+
+        [Required]
+        public virtual string BillingType { get; set; }
+
+        public virtual string IN_PriceSchemes_PriceSchemeID { get; set; }
+        public virtual string PriceScheme { get; set; }
+        public virtual string TaxExemptNo { get; set; }
+        [Required]
+        public virtual string BackOrderMode { get; set; }
+
+        [Required]
+        public virtual string OrderTypeCode { get; set; }
+
+        [Required]
+        public virtual string OrderType { get; set; }
+
+        [Required]
+        public virtual string PrintStatus { get; set; }
+
+        [Required]
+        public virtual string EmailStatus { get; set; }
+
+        public virtual string IN_Logical_IN_LogicalID { get; set; }
+        public virtual string PhysicalWarehouse { get; set; }
+        public virtual string LogicalWarehouse { get; set; }
+        public virtual DateTime? SalesOrderDate { get; set; }
+        public virtual DateTime? ExpectedDeliveryDate { get; set; }
+        public virtual DateTime? InvoiceDate { get; set; }
+        public virtual DateTime? DeliveredDate { get; set; }
+        public virtual string DB_Main_DebtorID { get; set; }
+        public virtual string DebtorAccountNo { get; set; }
+        public virtual string DebtorName { get; set; }
+        public virtual string DebtorClassification { get; set; }
+        public virtual string DeliveryAddressee { get; set; }
+        public virtual string DeliveryAddress1 { get; set; }
+        public virtual string DeliveryAddress2 { get; set; }
+        public virtual string DeliveryAddressSuburb { get; set; }
+        public virtual string DeliveryAddressState { get; set; }
+        public virtual string DeliveryAddressPostCode { get; set; }
+        public virtual string DeliveryAddressCountry { get; set; }
+        public virtual string DeliveryAddressPhone { get; set; }
+        public virtual decimal? DeliveryAddressLatitude { get; set; }
+        public virtual decimal? DeliveryAddressLongitude { get; set; }
+        public virtual string DeliveryCourierDetails { get; set; }
+        public virtual decimal? LocalCartageCharge1Ex { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge1Inc { get; set; }
+        public virtual decimal? LocalCartageCharge2Ex { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge2Inc { get; set; }
+        public virtual decimal? LocalCartageCharge3Ex { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge3Inc { get; set; }
+        public virtual decimal? FXCartageCharge1Ex { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge1Inc { get; set; }
+        public virtual decimal? FXCartageCharge2Ex { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge2Inc { get; set; }
+        public virtual decimal? FXCartageCharge3Ex { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge3Inc { get; set; }
+        public virtual decimal? LocalAmountPaid { get; set; }
+        public virtual decimal? FXAmountPaid { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+    }
+
+    [Route("/Queries/OR/v_Jiwa_SalesOrders", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class v_Jiwa_SalesOrdersORQuery
+        : QueryDb<v_Jiwa_SalesOrdersOR>, IReturn<QueryResponse<v_Jiwa_SalesOrdersOR>>
+    {
+        public virtual string InvoiceID { get; set; }
+        public virtual string InvoiceIDStartsWith { get; set; }
+        public virtual string InvoiceIDEndsWith { get; set; }
+        public virtual string InvoiceIDContains { get; set; }
+        public virtual string InvoiceIDLike { get; set; }
+        public virtual string[] InvoiceIDBetween { get; set; }
+        public virtual string[] InvoiceIDIn { get; set; }
+        public virtual string InvoiceNo { get; set; }
+        public virtual string InvoiceNoStartsWith { get; set; }
+        public virtual string InvoiceNoEndsWith { get; set; }
+        public virtual string InvoiceNoContains { get; set; }
+        public virtual string InvoiceNoLike { get; set; }
+        public virtual string[] InvoiceNoBetween { get; set; }
+        public virtual string[] InvoiceNoIn { get; set; }
+        public virtual string InvoiceHistoryID { get; set; }
+        public virtual string InvoiceHistoryIDStartsWith { get; set; }
+        public virtual string InvoiceHistoryIDEndsWith { get; set; }
+        public virtual string InvoiceHistoryIDContains { get; set; }
+        public virtual string InvoiceHistoryIDLike { get; set; }
+        public virtual string[] InvoiceHistoryIDBetween { get; set; }
+        public virtual string[] InvoiceHistoryIDIn { get; set; }
+        public virtual string OrderStatusCode { get; set; }
+        public virtual string OrderStatusCodeStartsWith { get; set; }
+        public virtual string OrderStatusCodeEndsWith { get; set; }
+        public virtual string OrderStatusCodeContains { get; set; }
+        public virtual string OrderStatusCodeLike { get; set; }
+        public virtual string[] OrderStatusCodeBetween { get; set; }
+        public virtual string[] OrderStatusCodeIn { get; set; }
+        public virtual string OrderStatus { get; set; }
+        public virtual string OrderStatusStartsWith { get; set; }
+        public virtual string OrderStatusEndsWith { get; set; }
+        public virtual string OrderStatusContains { get; set; }
+        public virtual string OrderStatusLike { get; set; }
+        public virtual string[] OrderStatusBetween { get; set; }
+        public virtual string[] OrderStatusIn { get; set; }
+        public virtual int? IsCreditNote { get; set; }
+        public virtual int? IsCreditNoteGreaterThanOrEqualTo { get; set; }
+        public virtual int? IsCreditNoteGreaterThan { get; set; }
+        public virtual int? IsCreditNoteLessThan { get; set; }
+        public virtual int? IsCreditNoteLessThanOrEqualTo { get; set; }
+        public virtual int? IsCreditNoteNotEqualTo { get; set; }
+        public virtual int?[] IsCreditNoteBetween { get; set; }
+        public virtual int?[] IsCreditNoteIn { get; set; }
+        public virtual string FX_Currency_RecID { get; set; }
+        public virtual string FX_Currency_RecIDStartsWith { get; set; }
+        public virtual string FX_Currency_RecIDEndsWith { get; set; }
+        public virtual string FX_Currency_RecIDContains { get; set; }
+        public virtual string FX_Currency_RecIDLike { get; set; }
+        public virtual string[] FX_Currency_RecIDBetween { get; set; }
+        public virtual string[] FX_Currency_RecIDIn { get; set; }
+        public virtual string Currency { get; set; }
+        public virtual string CurrencyStartsWith { get; set; }
+        public virtual string CurrencyEndsWith { get; set; }
+        public virtual string CurrencyContains { get; set; }
+        public virtual string CurrencyLike { get; set; }
+        public virtual string[] CurrencyBetween { get; set; }
+        public virtual string[] CurrencyIn { get; set; }
+        public virtual decimal? CurrencyRate { get; set; }
+        public virtual decimal? CurrencyRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateGreaterThan { get; set; }
+        public virtual decimal? CurrencyRateLessThan { get; set; }
+        public virtual decimal? CurrencyRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? CurrencyRateNotEqualTo { get; set; }
+        public virtual decimal?[] CurrencyRateBetween { get; set; }
+        public virtual decimal?[] CurrencyRateIn { get; set; }
+        public virtual string OrderNo { get; set; }
+        public virtual string OrderNoStartsWith { get; set; }
+        public virtual string OrderNoEndsWith { get; set; }
+        public virtual string OrderNoContains { get; set; }
+        public virtual string OrderNoLike { get; set; }
+        public virtual string[] OrderNoBetween { get; set; }
+        public virtual string[] OrderNoIn { get; set; }
+        public virtual string InvoiceType { get; set; }
+        public virtual string InvoiceTypeStartsWith { get; set; }
+        public virtual string InvoiceTypeEndsWith { get; set; }
+        public virtual string InvoiceTypeContains { get; set; }
+        public virtual string InvoiceTypeLike { get; set; }
+        public virtual string[] InvoiceTypeBetween { get; set; }
+        public virtual string[] InvoiceTypeIn { get; set; }
+        public virtual string BillingTypeCode { get; set; }
+        public virtual string BillingTypeCodeStartsWith { get; set; }
+        public virtual string BillingTypeCodeEndsWith { get; set; }
+        public virtual string BillingTypeCodeContains { get; set; }
+        public virtual string BillingTypeCodeLike { get; set; }
+        public virtual string[] BillingTypeCodeBetween { get; set; }
+        public virtual string[] BillingTypeCodeIn { get; set; }
+        public virtual string BillingType { get; set; }
+        public virtual string BillingTypeStartsWith { get; set; }
+        public virtual string BillingTypeEndsWith { get; set; }
+        public virtual string BillingTypeContains { get; set; }
+        public virtual string BillingTypeLike { get; set; }
+        public virtual string[] BillingTypeBetween { get; set; }
+        public virtual string[] BillingTypeIn { get; set; }
+        public virtual string IN_PriceSchemes_PriceSchemeID { get; set; }
+        public virtual string IN_PriceSchemes_PriceSchemeIDStartsWith { get; set; }
+        public virtual string IN_PriceSchemes_PriceSchemeIDEndsWith { get; set; }
+        public virtual string IN_PriceSchemes_PriceSchemeIDContains { get; set; }
+        public virtual string IN_PriceSchemes_PriceSchemeIDLike { get; set; }
+        public virtual string[] IN_PriceSchemes_PriceSchemeIDBetween { get; set; }
+        public virtual string[] IN_PriceSchemes_PriceSchemeIDIn { get; set; }
+        public virtual string PriceScheme { get; set; }
+        public virtual string PriceSchemeStartsWith { get; set; }
+        public virtual string PriceSchemeEndsWith { get; set; }
+        public virtual string PriceSchemeContains { get; set; }
+        public virtual string PriceSchemeLike { get; set; }
+        public virtual string[] PriceSchemeBetween { get; set; }
+        public virtual string[] PriceSchemeIn { get; set; }
+        public virtual string TaxExemptNo { get; set; }
+        public virtual string TaxExemptNoStartsWith { get; set; }
+        public virtual string TaxExemptNoEndsWith { get; set; }
+        public virtual string TaxExemptNoContains { get; set; }
+        public virtual string TaxExemptNoLike { get; set; }
+        public virtual string[] TaxExemptNoBetween { get; set; }
+        public virtual string[] TaxExemptNoIn { get; set; }
+        public virtual string BackOrderMode { get; set; }
+        public virtual string BackOrderModeStartsWith { get; set; }
+        public virtual string BackOrderModeEndsWith { get; set; }
+        public virtual string BackOrderModeContains { get; set; }
+        public virtual string BackOrderModeLike { get; set; }
+        public virtual string[] BackOrderModeBetween { get; set; }
+        public virtual string[] BackOrderModeIn { get; set; }
+        public virtual string OrderTypeCode { get; set; }
+        public virtual string OrderTypeCodeStartsWith { get; set; }
+        public virtual string OrderTypeCodeEndsWith { get; set; }
+        public virtual string OrderTypeCodeContains { get; set; }
+        public virtual string OrderTypeCodeLike { get; set; }
+        public virtual string[] OrderTypeCodeBetween { get; set; }
+        public virtual string[] OrderTypeCodeIn { get; set; }
+        public virtual string OrderType { get; set; }
+        public virtual string OrderTypeStartsWith { get; set; }
+        public virtual string OrderTypeEndsWith { get; set; }
+        public virtual string OrderTypeContains { get; set; }
+        public virtual string OrderTypeLike { get; set; }
+        public virtual string[] OrderTypeBetween { get; set; }
+        public virtual string[] OrderTypeIn { get; set; }
+        public virtual string PrintStatus { get; set; }
+        public virtual string PrintStatusStartsWith { get; set; }
+        public virtual string PrintStatusEndsWith { get; set; }
+        public virtual string PrintStatusContains { get; set; }
+        public virtual string PrintStatusLike { get; set; }
+        public virtual string[] PrintStatusBetween { get; set; }
+        public virtual string[] PrintStatusIn { get; set; }
+        public virtual string EmailStatus { get; set; }
+        public virtual string EmailStatusStartsWith { get; set; }
+        public virtual string EmailStatusEndsWith { get; set; }
+        public virtual string EmailStatusContains { get; set; }
+        public virtual string EmailStatusLike { get; set; }
+        public virtual string[] EmailStatusBetween { get; set; }
+        public virtual string[] EmailStatusIn { get; set; }
+        public virtual string IN_Logical_IN_LogicalID { get; set; }
+        public virtual string IN_Logical_IN_LogicalIDStartsWith { get; set; }
+        public virtual string IN_Logical_IN_LogicalIDEndsWith { get; set; }
+        public virtual string IN_Logical_IN_LogicalIDContains { get; set; }
+        public virtual string IN_Logical_IN_LogicalIDLike { get; set; }
+        public virtual string[] IN_Logical_IN_LogicalIDBetween { get; set; }
+        public virtual string[] IN_Logical_IN_LogicalIDIn { get; set; }
+        public virtual string PhysicalWarehouse { get; set; }
+        public virtual string PhysicalWarehouseStartsWith { get; set; }
+        public virtual string PhysicalWarehouseEndsWith { get; set; }
+        public virtual string PhysicalWarehouseContains { get; set; }
+        public virtual string PhysicalWarehouseLike { get; set; }
+        public virtual string[] PhysicalWarehouseBetween { get; set; }
+        public virtual string[] PhysicalWarehouseIn { get; set; }
+        public virtual string LogicalWarehouse { get; set; }
+        public virtual string LogicalWarehouseStartsWith { get; set; }
+        public virtual string LogicalWarehouseEndsWith { get; set; }
+        public virtual string LogicalWarehouseContains { get; set; }
+        public virtual string LogicalWarehouseLike { get; set; }
+        public virtual string[] LogicalWarehouseBetween { get; set; }
+        public virtual string[] LogicalWarehouseIn { get; set; }
+        public virtual DateTime? SalesOrderDate { get; set; }
+        public virtual DateTime? SalesOrderDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? SalesOrderDateGreaterThan { get; set; }
+        public virtual DateTime? SalesOrderDateLessThan { get; set; }
+        public virtual DateTime? SalesOrderDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? SalesOrderDateNotEqualTo { get; set; }
+        public virtual DateTime?[] SalesOrderDateBetween { get; set; }
+        public virtual DateTime?[] SalesOrderDateIn { get; set; }
+        public virtual DateTime? ExpectedDeliveryDate { get; set; }
+        public virtual DateTime? ExpectedDeliveryDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? ExpectedDeliveryDateGreaterThan { get; set; }
+        public virtual DateTime? ExpectedDeliveryDateLessThan { get; set; }
+        public virtual DateTime? ExpectedDeliveryDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? ExpectedDeliveryDateNotEqualTo { get; set; }
+        public virtual DateTime?[] ExpectedDeliveryDateBetween { get; set; }
+        public virtual DateTime?[] ExpectedDeliveryDateIn { get; set; }
+        public virtual DateTime? InvoiceDate { get; set; }
+        public virtual DateTime? InvoiceDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? InvoiceDateGreaterThan { get; set; }
+        public virtual DateTime? InvoiceDateLessThan { get; set; }
+        public virtual DateTime? InvoiceDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? InvoiceDateNotEqualTo { get; set; }
+        public virtual DateTime?[] InvoiceDateBetween { get; set; }
+        public virtual DateTime?[] InvoiceDateIn { get; set; }
+        public virtual DateTime? DeliveredDate { get; set; }
+        public virtual DateTime? DeliveredDateGreaterThanOrEqualTo { get; set; }
+        public virtual DateTime? DeliveredDateGreaterThan { get; set; }
+        public virtual DateTime? DeliveredDateLessThan { get; set; }
+        public virtual DateTime? DeliveredDateLessThanOrEqualTo { get; set; }
+        public virtual DateTime? DeliveredDateNotEqualTo { get; set; }
+        public virtual DateTime?[] DeliveredDateBetween { get; set; }
+        public virtual DateTime?[] DeliveredDateIn { get; set; }
+        public virtual string DB_Main_DebtorID { get; set; }
+        public virtual string DB_Main_DebtorIDStartsWith { get; set; }
+        public virtual string DB_Main_DebtorIDEndsWith { get; set; }
+        public virtual string DB_Main_DebtorIDContains { get; set; }
+        public virtual string DB_Main_DebtorIDLike { get; set; }
+        public virtual string[] DB_Main_DebtorIDBetween { get; set; }
+        public virtual string[] DB_Main_DebtorIDIn { get; set; }
+        public virtual string DebtorAccountNo { get; set; }
+        public virtual string DebtorAccountNoStartsWith { get; set; }
+        public virtual string DebtorAccountNoEndsWith { get; set; }
+        public virtual string DebtorAccountNoContains { get; set; }
+        public virtual string DebtorAccountNoLike { get; set; }
+        public virtual string[] DebtorAccountNoBetween { get; set; }
+        public virtual string[] DebtorAccountNoIn { get; set; }
+        public virtual string DebtorName { get; set; }
+        public virtual string DebtorNameStartsWith { get; set; }
+        public virtual string DebtorNameEndsWith { get; set; }
+        public virtual string DebtorNameContains { get; set; }
+        public virtual string DebtorNameLike { get; set; }
+        public virtual string[] DebtorNameBetween { get; set; }
+        public virtual string[] DebtorNameIn { get; set; }
+        public virtual string DebtorClassification { get; set; }
+        public virtual string DebtorClassificationStartsWith { get; set; }
+        public virtual string DebtorClassificationEndsWith { get; set; }
+        public virtual string DebtorClassificationContains { get; set; }
+        public virtual string DebtorClassificationLike { get; set; }
+        public virtual string[] DebtorClassificationBetween { get; set; }
+        public virtual string[] DebtorClassificationIn { get; set; }
+        public virtual string DeliveryAddressee { get; set; }
+        public virtual string DeliveryAddresseeStartsWith { get; set; }
+        public virtual string DeliveryAddresseeEndsWith { get; set; }
+        public virtual string DeliveryAddresseeContains { get; set; }
+        public virtual string DeliveryAddresseeLike { get; set; }
+        public virtual string[] DeliveryAddresseeBetween { get; set; }
+        public virtual string[] DeliveryAddresseeIn { get; set; }
+        public virtual string DeliveryAddress1 { get; set; }
+        public virtual string DeliveryAddress1StartsWith { get; set; }
+        public virtual string DeliveryAddress1EndsWith { get; set; }
+        public virtual string DeliveryAddress1Contains { get; set; }
+        public virtual string DeliveryAddress1Like { get; set; }
+        public virtual string[] DeliveryAddress1Between { get; set; }
+        public virtual string[] DeliveryAddress1In { get; set; }
+        public virtual string DeliveryAddress2 { get; set; }
+        public virtual string DeliveryAddress2StartsWith { get; set; }
+        public virtual string DeliveryAddress2EndsWith { get; set; }
+        public virtual string DeliveryAddress2Contains { get; set; }
+        public virtual string DeliveryAddress2Like { get; set; }
+        public virtual string[] DeliveryAddress2Between { get; set; }
+        public virtual string[] DeliveryAddress2In { get; set; }
+        public virtual string DeliveryAddressSuburb { get; set; }
+        public virtual string DeliveryAddressSuburbStartsWith { get; set; }
+        public virtual string DeliveryAddressSuburbEndsWith { get; set; }
+        public virtual string DeliveryAddressSuburbContains { get; set; }
+        public virtual string DeliveryAddressSuburbLike { get; set; }
+        public virtual string[] DeliveryAddressSuburbBetween { get; set; }
+        public virtual string[] DeliveryAddressSuburbIn { get; set; }
+        public virtual string DeliveryAddressState { get; set; }
+        public virtual string DeliveryAddressStateStartsWith { get; set; }
+        public virtual string DeliveryAddressStateEndsWith { get; set; }
+        public virtual string DeliveryAddressStateContains { get; set; }
+        public virtual string DeliveryAddressStateLike { get; set; }
+        public virtual string[] DeliveryAddressStateBetween { get; set; }
+        public virtual string[] DeliveryAddressStateIn { get; set; }
+        public virtual string DeliveryAddressPostCode { get; set; }
+        public virtual string DeliveryAddressPostCodeStartsWith { get; set; }
+        public virtual string DeliveryAddressPostCodeEndsWith { get; set; }
+        public virtual string DeliveryAddressPostCodeContains { get; set; }
+        public virtual string DeliveryAddressPostCodeLike { get; set; }
+        public virtual string[] DeliveryAddressPostCodeBetween { get; set; }
+        public virtual string[] DeliveryAddressPostCodeIn { get; set; }
+        public virtual string DeliveryAddressCountry { get; set; }
+        public virtual string DeliveryAddressCountryStartsWith { get; set; }
+        public virtual string DeliveryAddressCountryEndsWith { get; set; }
+        public virtual string DeliveryAddressCountryContains { get; set; }
+        public virtual string DeliveryAddressCountryLike { get; set; }
+        public virtual string[] DeliveryAddressCountryBetween { get; set; }
+        public virtual string[] DeliveryAddressCountryIn { get; set; }
+        public virtual string DeliveryAddressPhone { get; set; }
+        public virtual string DeliveryAddressPhoneStartsWith { get; set; }
+        public virtual string DeliveryAddressPhoneEndsWith { get; set; }
+        public virtual string DeliveryAddressPhoneContains { get; set; }
+        public virtual string DeliveryAddressPhoneLike { get; set; }
+        public virtual string[] DeliveryAddressPhoneBetween { get; set; }
+        public virtual string[] DeliveryAddressPhoneIn { get; set; }
+        public virtual decimal? DeliveryAddressLatitude { get; set; }
+        public virtual decimal? DeliveryAddressLatitudeGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? DeliveryAddressLatitudeGreaterThan { get; set; }
+        public virtual decimal? DeliveryAddressLatitudeLessThan { get; set; }
+        public virtual decimal? DeliveryAddressLatitudeLessThanOrEqualTo { get; set; }
+        public virtual decimal? DeliveryAddressLatitudeNotEqualTo { get; set; }
+        public virtual decimal?[] DeliveryAddressLatitudeBetween { get; set; }
+        public virtual decimal?[] DeliveryAddressLatitudeIn { get; set; }
+        public virtual decimal? DeliveryAddressLongitude { get; set; }
+        public virtual decimal? DeliveryAddressLongitudeGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? DeliveryAddressLongitudeGreaterThan { get; set; }
+        public virtual decimal? DeliveryAddressLongitudeLessThan { get; set; }
+        public virtual decimal? DeliveryAddressLongitudeLessThanOrEqualTo { get; set; }
+        public virtual decimal? DeliveryAddressLongitudeNotEqualTo { get; set; }
+        public virtual decimal?[] DeliveryAddressLongitudeBetween { get; set; }
+        public virtual decimal?[] DeliveryAddressLongitudeIn { get; set; }
+        public virtual string DeliveryCourierDetails { get; set; }
+        public virtual string DeliveryCourierDetailsStartsWith { get; set; }
+        public virtual string DeliveryCourierDetailsEndsWith { get; set; }
+        public virtual string DeliveryCourierDetailsContains { get; set; }
+        public virtual string DeliveryCourierDetailsLike { get; set; }
+        public virtual string[] DeliveryCourierDetailsBetween { get; set; }
+        public virtual string[] DeliveryCourierDetailsIn { get; set; }
+        public virtual decimal? LocalCartageCharge1Ex { get; set; }
+        public virtual decimal? LocalCartageCharge1ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1ExGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge1ExLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge1ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1ExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge1ExBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge1ExIn { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRateLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge1TaxRateBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge1TaxRateIn { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmountLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge1TaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge1TaxAmountIn { get; set; }
+        public virtual decimal? LocalCartageCharge1Inc { get; set; }
+        public virtual decimal? LocalCartageCharge1IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1IncGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge1IncLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge1IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge1IncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge1IncBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge1IncIn { get; set; }
+        public virtual decimal? LocalCartageCharge2Ex { get; set; }
+        public virtual decimal? LocalCartageCharge2ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2ExGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge2ExLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge2ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2ExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge2ExBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge2ExIn { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRateLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge2TaxRateBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge2TaxRateIn { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmountLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge2TaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge2TaxAmountIn { get; set; }
+        public virtual decimal? LocalCartageCharge2Inc { get; set; }
+        public virtual decimal? LocalCartageCharge2IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2IncGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge2IncLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge2IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge2IncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge2IncBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge2IncIn { get; set; }
+        public virtual decimal? LocalCartageCharge3Ex { get; set; }
+        public virtual decimal? LocalCartageCharge3ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3ExGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge3ExLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge3ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3ExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge3ExBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge3ExIn { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRate { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRateGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRateGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRateLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRateLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxRateNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge3TaxRateBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge3TaxRateIn { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmount { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmountGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmountLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge3TaxAmountBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge3TaxAmountIn { get; set; }
+        public virtual decimal? LocalCartageCharge3Inc { get; set; }
+        public virtual decimal? LocalCartageCharge3IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3IncGreaterThan { get; set; }
+        public virtual decimal? LocalCartageCharge3IncLessThan { get; set; }
+        public virtual decimal? LocalCartageCharge3IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalCartageCharge3IncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalCartageCharge3IncBetween { get; set; }
+        public virtual decimal?[] LocalCartageCharge3IncIn { get; set; }
+        public virtual decimal? FXCartageCharge1Ex { get; set; }
+        public virtual decimal? FXCartageCharge1ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1ExGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge1ExLessThan { get; set; }
+        public virtual decimal? FXCartageCharge1ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1ExNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge1ExBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge1ExIn { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmountLessThan { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge1TaxAmountBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge1TaxAmountIn { get; set; }
+        public virtual decimal? FXCartageCharge1Inc { get; set; }
+        public virtual decimal? FXCartageCharge1IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1IncGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge1IncLessThan { get; set; }
+        public virtual decimal? FXCartageCharge1IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge1IncNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge1IncBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge1IncIn { get; set; }
+        public virtual decimal? FXCartageCharge2Ex { get; set; }
+        public virtual decimal? FXCartageCharge2ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2ExGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge2ExLessThan { get; set; }
+        public virtual decimal? FXCartageCharge2ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2ExNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge2ExBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge2ExIn { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmountLessThan { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge2TaxAmountBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge2TaxAmountIn { get; set; }
+        public virtual decimal? FXCartageCharge2Inc { get; set; }
+        public virtual decimal? FXCartageCharge2IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2IncGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge2IncLessThan { get; set; }
+        public virtual decimal? FXCartageCharge2IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge2IncNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge2IncBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge2IncIn { get; set; }
+        public virtual decimal? FXCartageCharge3Ex { get; set; }
+        public virtual decimal? FXCartageCharge3ExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3ExGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge3ExLessThan { get; set; }
+        public virtual decimal? FXCartageCharge3ExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3ExNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge3ExBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge3ExIn { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmount { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmountGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmountGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmountLessThan { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmountLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3TaxAmountNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge3TaxAmountBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge3TaxAmountIn { get; set; }
+        public virtual decimal? FXCartageCharge3Inc { get; set; }
+        public virtual decimal? FXCartageCharge3IncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3IncGreaterThan { get; set; }
+        public virtual decimal? FXCartageCharge3IncLessThan { get; set; }
+        public virtual decimal? FXCartageCharge3IncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXCartageCharge3IncNotEqualTo { get; set; }
+        public virtual decimal?[] FXCartageCharge3IncBetween { get; set; }
+        public virtual decimal?[] FXCartageCharge3IncIn { get; set; }
+        public virtual decimal? LocalAmountPaid { get; set; }
+        public virtual decimal? LocalAmountPaidGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalAmountPaidGreaterThan { get; set; }
+        public virtual decimal? LocalAmountPaidLessThan { get; set; }
+        public virtual decimal? LocalAmountPaidLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalAmountPaidNotEqualTo { get; set; }
+        public virtual decimal?[] LocalAmountPaidBetween { get; set; }
+        public virtual decimal?[] LocalAmountPaidIn { get; set; }
+        public virtual decimal? FXAmountPaid { get; set; }
+        public virtual decimal? FXAmountPaidGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXAmountPaidGreaterThan { get; set; }
+        public virtual decimal? FXAmountPaidLessThan { get; set; }
+        public virtual decimal? FXAmountPaidLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXAmountPaidNotEqualTo { get; set; }
+        public virtual decimal?[] FXAmountPaidBetween { get; set; }
+        public virtual decimal?[] FXAmountPaidIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalEx { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalExIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalTax { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? LocalInvoiceTotalInc { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? LocalInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] LocalInvoiceTotalIncIn { get; set; }
+        public virtual decimal? FXInvoiceTotalEx { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalExLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalExNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalExIn { get; set; }
+        public virtual decimal? FXInvoiceTotalTax { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalTaxNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalTaxIn { get; set; }
+        public virtual decimal? FXInvoiceTotalInc { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncGreaterThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThan { get; set; }
+        public virtual decimal? FXInvoiceTotalIncLessThanOrEqualTo { get; set; }
+        public virtual decimal? FXInvoiceTotalIncNotEqualTo { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncBetween { get; set; }
+        public virtual decimal?[] FXInvoiceTotalIncIn { get; set; }
     }
 
     public partial class v_Jiwa_SalesQuote_ListOR
@@ -227534,3 +235780,4 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.WorkOrders
     }
 
 }
+
