@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
 using JiwaFinancials.Jiwa.JiwaServiceModel;
 using System;
 using System.Collections.Generic;
@@ -6,14 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ServiceStack;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Bills;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Tables.Or;
 
-namespace JiwaAPITests.Manufacturing
+namespace JiwaAPITests.Bills
 {
-    public class WorkOrder : JiwaAPITest
+    public class Bill : JiwaAPITest
     {
         #region "{Main}"
         [Test]
-        public async Task WorkOrder_CRUD()
+        public async Task Bill_CRUD()
         {
             // Create an item for the output
             InventoryPOSTRequest outputItemCreateReq = new InventoryPOSTRequest()
@@ -35,7 +37,7 @@ namespace JiwaAPITests.Manufacturing
                 Description = "Input Item 1 Test",
                 DefaultPrice = 12.75M
             };
-            
+
             InventoryItem inputItem1CreateRes = await Client.PostAsync(inputItem1CreateReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
             Assert.That(inputItem1CreateRes.PartNo, Is.EqualTo(inputItem1CreateReq.PartNo));
@@ -97,91 +99,84 @@ namespace JiwaAPITests.Manufacturing
                     new JiwaFinancials.Jiwa.JiwaServiceModel.Bills.BillOutput() { PartNo = outputItemCreateRes.PartNo, Quantity = 1, IsRatio = true }
                 }
             };
+
             JiwaFinancials.Jiwa.JiwaServiceModel.Bills.Bill billCreateRes = await Client.PostAsync(billCreateReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
             Assert.That(billCreateRes.BillID, !Is.Null);
 
-            // Create a work order with the bill created previously
-            WorkOrderPOSTRequest workOrderCreateReq = new WorkOrderPOSTRequest()
+            // Get the bill
+            BillGETRequest billGetReq = new BillGETRequest() { BillID = billCreateRes.BillID };
+            JiwaFinancials.Jiwa.JiwaServiceModel.Bills.Bill billGetRes = await Client.GetAsync(billGetReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(billGetRes.BillID, Is.EqualTo(billCreateRes.BillID));
+
+            // Get an input item from the bill
+            BillInputGETRequest billInputItemGetReq = new BillInputGETRequest()
+            {
+                BillID = billCreateRes.BillID,
+                StageID = billCreateRes.Stages[0].StageID,
+                InputID = billCreateRes.Stages[0].Inputs[0].InputID
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.Bills.BillInput billInputItemGetRes = await Client.GetAsync(billInputItemGetReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(billInputItemGetRes.PartNo, Is.EqualTo(inputItem1CreateReq.PartNo));
+            Assert.That(billInputItemGetRes.InputID, Is.EqualTo(billCreateRes.Stages[0].Inputs[0].InputID));
+
+            // Remove an input from the bill
+            BillInputDELETERequest billInputItemDeleteReq = new BillInputDELETERequest()
+            {
+                BillID = billCreateRes.BillID,
+                StageID = billCreateRes.Stages[0].StageID,
+                InputID = billCreateRes.Stages[0].Inputs[0].InputID
+            };
+            await Client.DeleteAsync(billInputItemDeleteReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+
+            // Verify the bill input is no longer present
+            WebServiceException ex = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
+            {
+                JiwaFinancials.Jiwa.JiwaServiceModel.Bills.BillInput getDeletedRes = await Client.GetAsync(billInputItemGetReq);
+            });
+            Assert.That(ex.StatusCode, Is.EqualTo(404));
+
+            // Add another Input to the bill
+            JiwaFinancials.Jiwa.JiwaServiceModel.BillInputPOSTRequest billInputItemCreateReq = new BillInputPOSTRequest()
+            {
+                BillID = billCreateRes.BillID,
+                StageID = billCreateRes.Stages[0].StageID,
+                PartNo = inputItem1CreateRes.PartNo,
+                Quantity = 1,
+                IsRatio = true
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.Bills.BillInput billInputItemCreateRes = await Client.PostAsync(billInputItemCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(billInputItemCreateRes.InputID, !Is.Null);
+
+            // Update an input on the bill
+            JiwaFinancials.Jiwa.JiwaServiceModel.BillInputPATCHRequest billInputItemPachReq = new BillInputPATCHRequest()
+            {
+                BillID = billCreateRes.BillID,
+                StageID = billCreateRes.Stages[0].StageID,
+                InputID = billInputItemCreateRes.InputID,
+                Quantity = 5
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.Bills.BillInput billInputItemPatchRes = await Client.PatchAsync(billInputItemPachReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(billInputItemPatchRes.Quantity, Is.EqualTo(billInputItemPachReq.Quantity));
+
+            // Delete the bill
+            BillDELETERequest billDeleteReq = new BillDELETERequest()
             {
                 BillID = billCreateRes.BillID
             };
-            JiwaFinancials.Jiwa.JiwaServiceModel.WorkOrders.WorkOrder workOrderCreateRes = await Client.PostAsync(workOrderCreateReq);
-            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
-            Assert.That(workOrderCreateRes.WorkOrderID, !Is.Null);
-            Assert.That(workOrderCreateRes.BillID, Is.EqualTo(billCreateRes.BillID));
-            Assert.That(workOrderCreateRes.Stages[0].Inputs.Count, Is.EqualTo(billCreateReq.Stages[0].Inputs.Count));
-            Assert.That(workOrderCreateRes.Outputs.Count, Is.EqualTo(billCreateReq.Outputs.Count));
-
-            // Add an input to the work order
-            JiwaFinancials.Jiwa.JiwaServiceModel.WorkOrderInputPOSTRequest workOrderInputItemCreateReq = new WorkOrderInputPOSTRequest()
-            {
-                WorkOrderID = workOrderCreateRes.WorkOrderID,
-                StageID = workOrderCreateRes.Stages[0].StageID,
-                PartNo = inputItem1CreateRes.PartNo,
-                Quantity = 99,
-                IsRatio = true
-            };
-            JiwaFinancials.Jiwa.JiwaServiceModel.WorkOrders.WorkOrderInput workOrderInputItemCreateRes = await Client.PostAsync(workOrderInputItemCreateReq);
-            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
-            Assert.That(workOrderInputItemCreateRes.InputID, !Is.Null);
-
-            // Get an item from the bill
-            WorkOrderInputGETRequest workOrderInputItemGetReq = new WorkOrderInputGETRequest()
-            {
-                WorkOrderID = workOrderCreateRes.WorkOrderID,
-                StageID = workOrderCreateRes.Stages[0].StageID,
-                InputID = workOrderInputItemCreateRes.InputID
-            };
-            JiwaFinancials.Jiwa.JiwaServiceModel.WorkOrders.WorkOrderInput workOrderInputItemGetRes = await Client.GetAsync(workOrderInputItemGetReq);
-            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
-            Assert.That(workOrderInputItemGetRes.PartNo, Is.EqualTo(inputItem1CreateReq.PartNo));
-            Assert.That(workOrderInputItemGetRes.InputID, Is.EqualTo(workOrderInputItemCreateRes.InputID));
-
-            // Update an input on the work order
-            WorkOrderInputPATCHRequest workOrderInputItemPatchReq = new WorkOrderInputPATCHRequest()
-            {
-                WorkOrderID = workOrderCreateRes.WorkOrderID,
-                StageID = workOrderCreateRes.Stages[0].StageID,
-                InputID = workOrderInputItemCreateRes.InputID,
-                Quantity = 11
-            };
-            JiwaFinancials.Jiwa.JiwaServiceModel.WorkOrders.WorkOrderInput workOrderInputItemPatchRes = await Client.PatchAsync(workOrderInputItemPatchReq);
-            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
-            Assert.That(workOrderInputItemPatchRes.Quantity, Is.EqualTo(workOrderInputItemPatchReq.Quantity));
-
-            // Verify the item has been patched
-            workOrderInputItemGetReq = new WorkOrderInputGETRequest()
-            {
-                WorkOrderID = workOrderCreateRes.WorkOrderID,
-                StageID = workOrderCreateRes.Stages[0].StageID,
-                InputID = workOrderInputItemCreateRes.InputID
-            };
-            workOrderInputItemGetRes = await Client.GetAsync(workOrderInputItemGetReq);
-            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));            
-            Assert.That(workOrderInputItemGetRes.InputID, Is.EqualTo(workOrderInputItemPatchReq.InputID));
-            Assert.That(workOrderInputItemGetRes.Quantity, Is.EqualTo(workOrderInputItemPatchReq.Quantity));
-
-            // Delete an input from the work order
-            WorkOrderInputDELETERequest workOrderInputItemDeleteReq = new WorkOrderInputDELETERequest()
-            {
-                WorkOrderID = workOrderCreateRes.WorkOrderID,
-                StageID = workOrderCreateRes.Stages[0].StageID,
-                InputID = workOrderInputItemCreateRes.InputID
-            };
-            await Client.DeleteAsync(workOrderInputItemDeleteReq);
+            await Client.DeleteAsync(billDeleteReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
 
-            // Verify the input item is no longer on the work order
-            workOrderInputItemGetReq = new WorkOrderInputGETRequest()
+            // Verify the deleted bill is not present
+            billGetReq = new BillGETRequest() { BillID = billCreateRes.BillID };            
+            ex = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
             {
-                WorkOrderID = workOrderCreateRes.WorkOrderID,
-                StageID = workOrderCreateRes.Stages[0].StageID,
-                InputID = workOrderInputItemCreateRes.InputID
-            };            
-            WebServiceException ex = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
-            {
-                JiwaFinancials.Jiwa.JiwaServiceModel.WorkOrders.WorkOrderInput getDeletedRes = await Client.GetAsync(workOrderInputItemGetReq);
+                JiwaFinancials.Jiwa.JiwaServiceModel.Bills.Bill getDeletedRes = await Client.GetAsync(billGetReq);
             });
             Assert.That(ex.StatusCode, Is.EqualTo(404));
         }

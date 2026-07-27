@@ -1,5 +1,5 @@
 /* Options:
-Date: 2026-07-13 14:36:12
+Date: 2026-07-26 16:30:41
 Version: 6.10
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: http://localhost
@@ -82,6 +82,7 @@ using JiwaFinancials.Jiwa.JiwaServiceModel.Carriers;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Tags;
 using ServiceStack.Web;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Debtors.Category;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Debtors.Group;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Debtors.PricingGroup;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory.Category;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory.Classification;
@@ -1967,7 +1968,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/CreditorPurchases/Activate/{CreditorPurchaseID}", "POST")]
-    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Activated OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No creditor purchase with the CreditorPurchaseID provided was found", StatusCode = 404)]
@@ -2947,27 +2948,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     {
     }
 
-    public partial class CustomerWebPortalSettings
-    {
-        public virtual string SalesOrderReport { get; set; }
-        public virtual string SalesQuoteReport { get; set; }
-        public virtual string DebtorStatementReport { get; set; }
-        public virtual string PluginVersion { get; set; }
-        public virtual string DocketNumHeader { get; set; }
-        public virtual string IN_LogicalID { get; set; }
-        public virtual string IN_PhysicalID { get; set; }
-        public virtual string LogicalWarehouseDescription { get; set; }
-        public virtual string PhysicalWarehouseDescription { get; set; }
-    }
-
-    [Route("/CustomerWebPortal/Settings", "GET")]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    public partial class CustomerWebPortalSettingsGETRequest
-        : IReturn<CustomerWebPortalSettings>
-    {
-    }
-
     public partial class DebtorBackOrder
     {
         public virtual string InvoiceID { get; set; }
@@ -3184,39 +3164,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual DateTimeOffset? LastSavedDateTime { get; set; }
     }
 
-    [Route("/Debtors/ContactNames/{ContactNameID}/PasswordChange", "POST")]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    [ApiResponse(Description = "No debtor contact name with the ContactNameID provided was not found", StatusCode = 404)]
-    [ApiResponse(Description = "Password changed successfully", StatusCode = 204)]
-    public partial class DebtorContactNameChangePasswordPOSTRequest
-        : IReturnVoid
-    {
-        public virtual string ContactNameID { get; set; }
-        public virtual string ExistingPassword { get; set; }
-        public virtual string NewPassword { get; set; }
-    }
-
-    [Route("/CustomerWebPortal/Role", "GET")]
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    [ApiResponse(Description = "No role was found", StatusCode = 404)]
-    public partial class DebtorContactNameCustomerWebPortalRoleGETRequest
-        : IReturn<DebtorContactNameCustomerWebPortalRoleGETResponse>
-    {
-    }
-
-    public partial class DebtorContactNameCustomerWebPortalRoleGETResponse
-    {
-        public DebtorContactNameCustomerWebPortalRoleGETResponse()
-        {
-            Roles = new List<string> { };
-        }
-
-        public virtual List<string> Roles { get; set; }
-    }
-
     [Route("/Debtors/ContactNames/CustomFields/{SettingID}", "GET")]
     [ApiResponse(Description = "Read OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
@@ -3343,18 +3290,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual bool? LogonCodeChangedByUser { get; set; }
 
         public virtual string DebtorID { get; set; }
-    }
-
-    [Route("/Debtors/ContactNames/{ContactNameID}/PasswordReset", "POST")]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    [ApiResponse(Description = "No debtor contact name with the ContactNameID provided was not found", StatusCode = 404)]
-    [ApiResponse(Description = "Password reset request generated and emailed", StatusCode = 204)]
-    public partial class DebtorContactNameResetPasswordPOSTRequest
-        : IReturnVoid
-    {
-        public virtual string ContactNameID { get; set; }
-        public virtual string ResetURL { get; set; }
     }
 
     [Route("/Debtors/{DebtorID}/ContactNames", "GET")]
@@ -3513,18 +3448,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
 
         [IgnoreDataMember]
         public virtual byte[] RowHash { get; set; }
-    }
-
-    [Route("/Debtors/ContactNames/{Token}/TokenisedPasswordChange", "POST")]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    [ApiResponse(Description = "No debtor contact name with the ContactNameID provided was not found", StatusCode = 404)]
-    [ApiResponse(Description = "Password changed successfully", StatusCode = 204)]
-    public partial class DebtorContactNameTokenisedChangePasswordPOSTRequest
-        : IReturnVoid
-    {
-        public virtual string Token { get; set; }
-        public virtual string NewPassword { get; set; }
     }
 
     [Route("/Debtors/CustomFields", "GET")]
@@ -3964,6 +3887,44 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual string DebtorID { get; set; }
     }
 
+    [Route("/ServiceManager/Statuses/Cache", "DELETE")]
+    [Route("/Debtors/Groups/Cache", "DELETE")]
+    public partial class DebtorGroupCACHEDELETERequest
+        : IReturnVoid, IJiwaInternalRequest
+    {
+    }
+
+    [Route("/Debtors/Groups/{GroupID}", "DELETE")]
+    [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No group with GroupID provided was found", StatusCode = 404)]
+    public partial class DebtorGroupDELETERequest
+        : IReturnVoid
+    {
+        public virtual string GroupID { get; set; }
+    }
+
+    [Route("/Debtors/Groups", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class DebtorGroupGETManyRequest
+        : IReturn<List<DebtorGroup>>
+    {
+    }
+
+    [Route("/Debtors/Groups/{GroupID}", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No group with GroupID provided was found", StatusCode = 404)]
+    public partial class DebtorGroupGETRequest
+        : IReturn<DebtorGroup>
+    {
+        public virtual string GroupID { get; set; }
+    }
+
     [Route("/Debtors/{DebtorID}/GroupMemberships/{GroupMembershipID}", "DELETE")]
     [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
@@ -4047,6 +4008,50 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         : IReturn<List<DebtorGroupMembership>>
     {
         public virtual string DebtorID { get; set; }
+    }
+
+    [Route("/Debtors/Groups/{GroupID}", "PATCH")]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No group with GroupID provided was found", StatusCode = 404)]
+    public partial class DebtorGroupPATCHRequest
+        : DebtorGroup, IReturn<DebtorGroup>
+    {
+        public DebtorGroupPATCHRequest()
+        {
+            RowHash = new byte[] { };
+        }
+
+        [IgnoreDataMember]
+        public virtual byte[] RowHash { get; set; }
+
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+
+        public virtual string GroupID { get; set; }
+    }
+
+    [Route("/Debtors/Groups", "POST")]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class DebtorGroupPOSTRequest
+        : DebtorGroup, IReturn<DebtorGroup>
+    {
+        public DebtorGroupPOSTRequest()
+        {
+            RowHash = new byte[] { };
+        }
+
+        [IgnoreDataMember]
+        public virtual string GroupID { get; set; }
+
+        [IgnoreDataMember]
+        public virtual byte[] RowHash { get; set; }
+
+        [IgnoreDataMember]
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
     }
 
     [Route("/Debtors/{DebtorID}/Notes/{NoteID}", "DELETE")]
@@ -4690,7 +4695,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/DebtorSystemTemplates/{DebtorSystemTemplateID}", "PATCH")]
-    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No debtor system template with the DebtorSystemTemplateID provided was found", StatusCode = 404)]
@@ -5257,7 +5262,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/GoodsReceivedNotes/Activate/{GRNID}", "POST")]
-    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Activated OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No GRN with the GRNID provided was found", StatusCode = 404)]
@@ -6241,7 +6246,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/GoodsReceivedNotes/{GRNID}", "PATCH")]
-    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No goods received note with the GRNID provided was found", StatusCode = 404)]
@@ -6782,7 +6787,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual string AttributeID { get; set; }
     }
 
-    [Route("/Inventory/{InventoryID}/Budgets/{LogicalWarehouseID}/Months/{MonthIndex}", "GET")]
+    [Route("/Inventory/{InventoryID}/Budgets/{LogicalWarehouseID}/Months/{PeriodNo}", "GET")]
     [ApiResponse(Description = "Read OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
@@ -6795,7 +6800,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual string LogicalWarehouseID { get; set; }
     }
 
-    [Route("/Inventory/{InventoryID}/Budgets/{LogicalWarehouseID}/Months/{MonthIndex}", "PATCH")]
+    [Route("/Inventory/{InventoryID}/Budgets/{LogicalWarehouseID}/Months/{PeriodNo}", "PATCH")]
     [ApiResponse(Description = "Updated OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
@@ -9718,7 +9723,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/BookIns/Activate/{BookInID}", "POST")]
-    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Activated OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No book in with the book in no. provided was found", StatusCode = 404)]
@@ -10390,7 +10395,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/BookIns/{BookInID}", "PATCH")]
-    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No book in with the book in no. provided was found", StatusCode = 404)]
@@ -10410,7 +10415,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/Shipments/Activate/{ShipmentID}", "POST")]
-    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Activated OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No shipment with the ShipmentID provided was found", StatusCode = 404)]
@@ -10443,7 +10448,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual List<ReceivedPOLineQuantity> ReceivedPOLineQuantities { get; set; }
     }
 
-    [Route("/Shipments/FromPurchaseOrders/{OrderNos}", "POST")]
+    [Route("/Shipments/FromPurchaseOrders", "POST")]
     [ApiResponse(Description = "Created OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
@@ -10630,7 +10635,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/Shipments/{ShipmentID}", "PATCH")]
-    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No shipment with the ShipmentID provided was found", StatusCode = 404)]
@@ -10931,7 +10936,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/PurchaseInvoices/Activate/{PurchaseInvoiceID}", "POST")]
-    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Activated OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No purchase invoice with the PurchaseInvoiceID provided was found", StatusCode = 404)]
@@ -11688,7 +11693,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/PurchaseInvoices/{PurchaseInvoiceID}", "PATCH")]
-    [ApiResponse(Description = "Created OK", StatusCode = 201)]
+    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No purchase invoice with the PurchaseInvoiceID provided was found", StatusCode = 404)]
@@ -11808,7 +11813,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/PurchaseOrders/Activate/{PurchaseOrderID}", "POST")]
-    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Activated OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No purchase order with the PurchaseOrderID provided was found", StatusCode = 404)]
@@ -12774,8 +12779,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual DateTime? ReceivedDate { get; set; }
     }
 
-    [Route("/Logs", "GET")]
-    [Route("/Logs/{Date}", "GET")]
     public partial class QueryRequestLogsGETManyRequest
         : QueryData<RequestLogEntry>, IReturn<QueryResponse<RequestLogEntry>>
     {
@@ -12911,7 +12914,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/SalesOrders/CreditReasons/{CreditReasonID}", "DELETE")]
-    [ApiResponse(Description = "Deleted OK", StatusCode = 200)]
+    [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No payment type with PaymentTypeID provided was found", StatusCode = 404)]
@@ -14085,7 +14088,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/SalesOrders/{InvoiceID}/Historys/{InvoiceHistoryID}/Payments", "POST")]
-    [ApiResponse(Description = "Created OK", StatusCode = 200)]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     public partial class SalesOrderPaymentsPOSTRequest
@@ -14118,7 +14121,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/SalesOrders/PaymentTypes/{PaymentTypeID}", "DELETE")]
-    [ApiResponse(Description = "Deleted OK", StatusCode = 200)]
+    [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No payment type with PaymentTypeID provided was found", StatusCode = 404)]
@@ -14177,7 +14180,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/SalesOrders/{InvoiceID}/{InvoiceLineID}/LineDetails", "PUT")]
-    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Picked OK", StatusCode = 204)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No Sales Order with the InvoiceID or  InvoiceLineID provided was found", StatusCode = 404)]
@@ -14229,8 +14232,8 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual string DebtorEmailAddress { get; set; }
     }
 
-    [Route("/SalesOrders/{InvoiceID}/Process", "GET")]
-    [ApiResponse(Description = "Processed OK", StatusCode = 200)]
+    [Route("/SalesOrders/{InvoiceID}/Process", "POST")]
+    [ApiResponse(Description = "Processed OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No Sales Order with the InvoiceID provided was found", StatusCode = 404)]
@@ -14747,7 +14750,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/SalesQuotes/{QuoteID}/MakeOrderB2B", "POST")]
-    [ApiResponse(Description = "Created OK", StatusCode = 200)]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No Sales Quote with the QuoteID provided was found", StatusCode = 404)]
@@ -14758,7 +14761,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/SalesQuotes/{QuoteID}/MakeOrder", "POST")]
-    [ApiResponse(Description = "Created OK", StatusCode = 200)]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No Sales Quote with the QuoteID provided was found", StatusCode = 404)]
@@ -15643,7 +15646,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/ServiceManager/Jobs/Tasks/Priorities/{PriorityID}", "DELETE")]
-    [ApiResponse(Description = "Deleted OK", StatusCode = 200)]
+    [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No priority with PriorityID provided was found", StatusCode = 404)]
@@ -15709,7 +15712,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/ServiceManager/Jobs/Tasks/Statuses/{StatusID}", "DELETE")]
-    [ApiResponse(Description = "Deleted OK", StatusCode = 200)]
+    [ApiResponse(Description = "Deleted OK", StatusCode = 204)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No status with StatusID provided was found", StatusCode = 404)]
@@ -16652,7 +16655,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/ServiceManager/Jobs/{JobID}/Tasks/{TaskID}/ProcessCreditNote", "POST")]
-    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No service manager task record with the JobID, or TaskID provided was found", StatusCode = 404)]
@@ -16662,7 +16665,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/ServiceManager/Jobs/{JobID}/Tasks/{TaskID}/ProcessSalesOrder", "POST")]
-    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No service manager task record with the JobID, or TaskID provided was found", StatusCode = 404)]
@@ -16742,7 +16745,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/ServiceManager/Jobs/{JobID}/Tasks/{TaskID}/Retire", "POST")]
-    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No service manager task record with the JobID, or TaskID provided was found", StatusCode = 404)]
@@ -16754,7 +16757,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/ServiceManager/Jobs/{JobID}/Tasks/{TaskID}/Unretire", "POST")]
-    [ApiResponse(Description = "Updated OK", StatusCode = 200)]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No service manager task record with the JobID, or TaskID provided was found", StatusCode = 404)]
@@ -17174,19 +17177,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     {
     }
 
-    [Route("/Staff/{StaffID}/PasswordChange", "POST")]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    [ApiResponse(Description = "No staff member with the StaffID provided was not found", StatusCode = 404)]
-    [ApiResponse(Description = "Password changed successfully", StatusCode = 204)]
-    public partial class StaffChangePasswordPOSTRequest
-        : IReturnVoid
-    {
-        public virtual string StaffID { get; set; }
-        public virtual string ExistingPassword { get; set; }
-        public virtual string NewPassword { get; set; }
-    }
-
     [Route("/Staff/Department/Cache/{DepartmentID}", "DELETE")]
     [Route("/Staff/Department/Cache/{DepartmentID}", "DELETE")]
     public partial class StaffDepartmentCACHEDELETERequest
@@ -17354,18 +17344,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
 
         public virtual string ManagerStaffID { get; set; }
         public virtual string ManagerStaffUserName { get; set; }
-    }
-
-    [Route("/Staff/{Username}/PasswordReset", "POST")]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    [ApiResponse(Description = "No staff member with the Username provided was not found", StatusCode = 404)]
-    [ApiResponse(Description = "Password reset request generated and emailed", StatusCode = 204)]
-    public partial class StaffResetPasswordPOSTRequest
-        : IReturnVoid
-    {
-        public virtual string Username { get; set; }
-        public virtual string ResetURL { get; set; }
     }
 
     [Route("/Staff/Timesheet/Cache/{TimesheetID}", "DELETE")]
@@ -17566,18 +17544,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual string StaffUserName { get; set; }
     }
 
-    [Route("/Staff/{Token}/TokenisedPasswordChange", "POST")]
-    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
-    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
-    [ApiResponse(Description = "No staff member with the StaffID provided was not found", StatusCode = 404)]
-    [ApiResponse(Description = "Password changed successfully", StatusCode = 204)]
-    public partial class StaffTokenisedChangePasswordPOSTRequest
-        : IReturnVoid
-    {
-        public virtual string Token { get; set; }
-        public virtual string NewPassword { get; set; }
-    }
-
     [Route("/Queries/StartupLog", "GET")]
     public partial class StartupLogEntryQuery
         : QueryData<StartupLogEntry>, IReturn<QueryResponse<StartupLogEntry>>
@@ -17585,7 +17551,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/StockTransfers/Activate/{TransferID}", "POST")]
-    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Activated OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No Stock Transfer with the TransferID provided was found", StatusCode = 404)]
@@ -17694,7 +17660,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/SupplierReturns/Credit/Activate/{CreditID}", "POST")]
-    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Activated OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No supplier return credit with the CreditID provided was found", StatusCode = 404)]
@@ -18067,13 +18033,11 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     {
     }
 
-    [Route("/Logs/Today/Errors", "GET")]
     public partial class TodayErrorLogsGETManyRequest
         : QueryData<RequestLogEntry>, IReturn<QueryResponse<RequestLogEntry>>
     {
     }
 
-    [Route("/Logs/Today", "GET")]
     public partial class TodayLogsGETManyRequest
         : QueryData<RequestLogEntry>, IReturn<QueryResponse<RequestLogEntry>>
     {
@@ -18385,7 +18349,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/UserSettings", "POST")]
-    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Created OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     public partial class UserSettingPOSTRequest
@@ -18426,6 +18390,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         : QueryDb<v_Jiwa_Inventory_Item_List_OR_ImmutableWarehouse>, IReturn<QueryResponse<v_Jiwa_Inventory_Item_List_OR_ImmutableWarehouse>>
     {
         public virtual string Immutable_IN_LogicalID { get; set; }
+        public virtual bool? Immutable_WebEnabled { get; set; }
         public virtual string InventoryID { get; set; }
         public virtual string InventoryIDStartsWith { get; set; }
         public virtual string InventoryIDEndsWith { get; set; }
@@ -18603,7 +18568,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/WarehouseTransfersIn/Activate/{WarehouseTransferInID}", "POST")]
-    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Activated OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No warehouse transfer in with the WarehouseTransferInID provided was found", StatusCode = 404)]
@@ -18922,7 +18887,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
     }
 
     [Route("/WarehouseTransfersOut/Activate/{WarehouseTransferOutID}", "POST")]
-    [ApiResponse(Description = "Activated OK", StatusCode = 204)]
+    [ApiResponse(Description = "Activated OK", StatusCode = 201)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]
     [ApiResponse(Description = "No warehouse transfer out with the WarehouseTransferOutID provided was found", StatusCode = 404)]
@@ -21202,13 +21167,31 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel
         public virtual string WorkOrderID { get; set; }
     }
 
-    [Route("/Logs/Yesterday/Errors", "GET")]
+    [Route("/WorkOrders/Statuses", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    public partial class WorkOrderStatusesGETManyRequest
+        : IReturn<List<WorkOrderStatus>>
+    {
+    }
+
+    [Route("/WorkOrders/Statuses/{StatusID}", "GET")]
+    [ApiResponse(Description = "Read OK", StatusCode = 200)]
+    [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
+    [ApiResponse(Description = "Not authorised", StatusCode = 403)]
+    [ApiResponse(Description = "No work order status with the StatusID provided was found", StatusCode = 404)]
+    public partial class WorkOrderStatusGETRequest
+        : IReturn<WorkOrderStatus>
+    {
+        public virtual string StatusID { get; set; }
+    }
+
     public partial class YesterdayErrorLogsGETManyRequest
         : QueryData<RequestLogEntry>, IReturn<QueryResponse<RequestLogEntry>>
     {
     }
 
-    [Route("/Logs/Yesterday", "GET")]
     public partial class YesterdayLogsGETManyRequest
         : QueryData<RequestLogEntry>, IReturn<QueryResponse<RequestLogEntry>>
     {
@@ -22153,6 +22136,7 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Debtors
         public virtual DateTimeOffset? LastSavedDateTime { get; set; }
         public virtual string Description { get; set; }
         public virtual List<DebtorSystemField> Fields { get; set; }
+        public virtual string DebtorSystemTemplateID { get; set; }
     }
 
     public partial class DebtorSystemField
@@ -22217,6 +22201,24 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Debtors.Classification
             Statement,
         }
 
+    }
+
+}
+
+namespace JiwaFinancials.Jiwa.JiwaServiceModel.Debtors.Group
+{
+    public partial class DebtorGroup
+    {
+        public DebtorGroup()
+        {
+            RowHash = new byte[] { };
+        }
+
+        public virtual string GroupID { get; set; }
+        public virtual string Description { get; set; }
+        public virtual int? ItemNo { get; set; }
+        public virtual DateTimeOffset? LastSavedDateTime { get; set; }
+        public virtual byte[] RowHash { get; set; }
     }
 
 }
@@ -116855,7 +116857,6 @@ namespace JiwaFinancials.Jiwa.JiwaServiceModel.Tables
         public virtual string DebtorID { get; set; }
     }
 
-    [Route("/Queries/ContactNameMultiples", "GET")]
     [ApiResponse(Description = "Read OK", StatusCode = 200)]
     [ApiResponse(Description = "Not authenticated", StatusCode = 401)]
     [ApiResponse(Description = "Not authorised", StatusCode = 403)]

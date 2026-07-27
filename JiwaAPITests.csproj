@@ -1,17 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>	
+    <IsPackable>false</IsPackable>
+    <RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
+	  <NoWarn>
+		  CS8600;
+		  CS8602;
+		  CS8604;
+		  CS8618;
+		  CS0114;
+		  CS8601
+	  </NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Creditors\**" />
     <EmbeddedResource Remove="Creditors\**" />
     <None Remove="Creditors\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Creditors\Account.cs" />
+    <Compile Include="Creditors\Classification.cs" />
+    <Compile Include="Creditors\Document.cs" />
+    <Compile Include="Creditors\DocumentType.cs" />
+    <Compile Include="Creditors\Note.cs" />
+    <Compile Include="Creditors\NoteType.cs" />
+    <Compile Include="Creditors\Tag.cs" />
+    <Compile Include="Creditors\TagMembership.cs" />
+    <Compile Include="Creditors\WarehouseAddress.cs" />
+    <Compile Include="Creditors\WarehouseAddresses.cs" />
   </ItemGroup>
 
   <ItemGroup>

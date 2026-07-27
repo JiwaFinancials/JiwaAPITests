@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
 using JiwaFinancials.Jiwa.JiwaServiceModel;
 using ServiceStack;
 using System;
@@ -43,6 +43,17 @@ namespace JiwaAPITests.Inventory
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
             Assert.That(classificationPatchRes.Description, Is.EqualTo(classificationPatchReq.Description));
 
+            // Remove cache entry for inventory classifications (internal endpoint)
+            InventoryClassificationCACHEDELETERequest cacheDeleteReq = new InventoryClassificationCACHEDELETERequest()
+            {
+                ClassificationID = classificationCreateRes.ClassificationID
+            };
+            WebServiceException cacheEx = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
+            {
+                await Client.DeleteAsync(cacheDeleteReq);
+            });
+            Assert.That(cacheEx.ErrorMessage, Does.Contain("Invalid ClientKey"));
+
             // Remove the created classification
             InventoryClassificationDELETERequest classificationDELETEReq = new InventoryClassificationDELETERequest() { ClassificationID = classificationCreateRes.ClassificationID };
             await Client.DeleteAsync(classificationDELETEReq);
@@ -58,3 +69,4 @@ namespace JiwaAPITests.Inventory
         #endregion
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
 using JiwaFinancials.Jiwa.JiwaServiceModel;
 using ServiceStack;
 using System;
@@ -58,3 +58,4 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+

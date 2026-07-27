@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
 using JiwaFinancials.Jiwa.JiwaServiceModel;
 using ServiceStack;
 using System;
@@ -125,8 +125,9 @@ namespace JiwaAPITests.Debtors
             {
                 await Client.DeleteAsync(categoryDELETEReq);
             });
-            Assert.That(ex.StatusCode, Is.EqualTo(500));
+            Assert.That(ex.StatusCode, Is.EqualTo(409));
         }
         #endregion
     }
 }
+

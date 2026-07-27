@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel;
+using JiwaFinancials.Jiwa.JiwaServiceModel;
 using ServiceStack;
 using CreditorPurchaseNoteTypeDto = JiwaFinancials.Jiwa.JiwaServiceModel.Notes.NoteType;
 using System;
@@ -85,3 +85,4 @@ namespace JiwaAPITests.CreditorPurchases
         #endregion
     }
 }
+

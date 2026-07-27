@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel;
+using JiwaFinancials.Jiwa.JiwaServiceModel;
 using JiwaFinancials.Jiwa.JiwaServiceModel.CRBatchTX;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Creditors;
 using ServiceStack;
@@ -146,3 +146,4 @@ namespace JiwaAPITests.CreditorPurchases
         #endregion
     }
 }
+

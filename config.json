@@ -1,7 +1,7 @@
 {
   "Hostname": "http://localhost",
   "UseAPIKeyAuth": true,
-  "APIKey": "<YOUR API KEY HERE>",
+  "APIKey": "7wWZkMKk8BtFMbERoVKrkUVcmkf9WoUDmvKKzNBSuzE",
   "Credentials_Username": "Admin",
   "Credentials_Password": "password"
 }

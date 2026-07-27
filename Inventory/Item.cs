@@ -1,8 +1,9 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel.Tables;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Tables;
 using JiwaFinancials.Jiwa.JiwaServiceModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using static ServiceStack.Diagnostics.Events;
@@ -12,7 +13,7 @@ using ServiceStack;
 
 namespace JiwaAPITests.Inventory
 {
-    public class Item : JiwaAPITest
+    public class Item : InventoryTestBase
     {
         #region "{Main}"
         [Test]       
@@ -98,7 +99,7 @@ namespace JiwaAPITests.Inventory
             };
 
             InventoryItem alternateChildItemCreateRes = await Client.PostAsync(alternateChildItemCreateReq);
-            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));    
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
 
             // Add an Alternate child to the item
             InventoryAlternateChildPOSTRequest alternateChildPOSTReq = new InventoryAlternateChildPOSTRequest()
@@ -112,7 +113,7 @@ namespace JiwaAPITests.Inventory
             Assert.That(alternateChildPOSTRes.LinkedInventoryID, Is.EqualTo(alternateChildItemCreateRes.InventoryID));
             Assert.That(alternateChildPOSTRes.LinkedInventoryPartNo, Is.EqualTo(alternateChildItemCreateRes.PartNo));
             Assert.That(alternateChildPOSTRes.LinkedInventoryDescription, Is.EqualTo(alternateChildItemCreateRes.Description));
-            Assert.That(alternateChildPOSTRes.Notes, Is.EqualTo(alternateChildPOSTRes.Notes));
+            Assert.That(alternateChildPOSTRes.Notes, Is.EqualTo(alternateChildPOSTReq.Notes));
 
             // Check to see if the inventory alternate child is present via a GET 
             InventoryAlternateChildGETRequest alternateChildGETReq = new InventoryAlternateChildGETRequest() 
@@ -357,9 +358,9 @@ namespace JiwaAPITests.Inventory
             inventoryAttributeGroupPATCHReq.Attributes.Add(new InventoryAttributeGroupAttribute() { AttributeID = inventoryAttributeGroupGETRes.Attributes[0].AttributeID, Contents = "Test" });
             InventoryAttributeGroup InventoryAlternateChildPATCHRes = await Client.PatchAsync(inventoryAttributeGroupPATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
-            Assert.That(inventoryAttributeGroupPATCHReq.Description, Is.EqualTo(inventoryAttributeGroupPATCHReq.Description));
+            Assert.That(InventoryAlternateChildPATCHRes.Description, Is.EqualTo(inventoryAttributeGroupPATCHReq.Description));
 
-            // Get the patched item and ensure it matches what we just patched            
+            // Get the patched item and ensure it matches what we patched            
             inventoryAttributeGroupGETRes = await Client.GetAsync(inventoryAttributeGroupGETReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
             Assert.That(inventoryAttributeGroupGETRes.Description, Is.EqualTo(inventoryAttributeGroupPATCHReq.Description));            
@@ -402,6 +403,37 @@ namespace JiwaAPITests.Inventory
             Assert.That(inventoryAttributeGroupsGETManyRes, !Is.Null);
             Assert.That(inventoryAttributeGroupsGETManyRes.Count, Is.EqualTo(1));
             Assert.That(inventoryAttributeGroupsGETManyRes[0].Template.AttributeGroupTemplateID, Is.EqualTo(attributeGroupTemplateCreateRes.AttributeGroupTemplateID));
+
+            // Read an attribute value using the dedicated route
+            InventoryAttributeGroup postedGroup = inventoryAttributeGroupsGETManyRes[0];
+            Assert.That(postedGroup.Attributes.Count, Is.GreaterThan(0));
+
+            InventoryAttributeValueGETRequest attributeValueGETReq = new InventoryAttributeValueGETRequest()
+            {
+                InventoryID = itemCreateRes.InventoryID,
+                AttributeGroupID = postedGroup.AttributeGroupID,
+                AttributeID = postedGroup.Attributes[0].AttributeID
+            };
+            InventoryAttributeGroupAttribute attributeValueGETRes = await Client.GetAsync(attributeValueGETReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(attributeValueGETRes.AttributeID, Is.EqualTo(postedGroup.Attributes[0].AttributeID));
+
+            // Update an attribute value using the dedicated route
+            InventoryAttributeValuePATCHRequest attributeValuePATCHReq = new InventoryAttributeValuePATCHRequest()
+            {
+                InventoryID = itemCreateRes.InventoryID,
+                AttributeGroupID = postedGroup.AttributeGroupID,
+                AttributeID = postedGroup.Attributes[0].AttributeID,
+                Contents = "Updated Value " + RandomString(5)
+            };
+            InventoryAttributeGroupAttribute attributeValuePATCHRes = await Client.PatchAsync(attributeValuePATCHReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(attributeValuePATCHRes.AttributeID, Is.EqualTo(attributeValuePATCHReq.AttributeID));
+
+            // Verify the updated attribute value
+            attributeValueGETRes = await Client.GetAsync(attributeValueGETReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(attributeValueGETRes.Contents, Is.EqualTo(attributeValuePATCHReq.Contents));
 
             // Remove the test attribute group template item we created
             InventoryAttributeGroupTemplateDELETERequest inventoryAttributeGroupTemplateDELETEReq = new InventoryAttributeGroupTemplateDELETERequest()
@@ -604,3 +636,4 @@ namespace JiwaAPITests.Inventory
         #endregion
     }
 }
+

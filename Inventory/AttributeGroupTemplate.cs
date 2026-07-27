@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
 using JiwaFinancials.Jiwa.JiwaServiceModel;
 using ServiceStack;
 using System;
@@ -79,6 +79,93 @@ namespace JiwaAPITests.Inventory
         }
         #endregion
 
+        #region "Attributes"
+        [Test]
+        public async Task InventoryAttributeGroupTemplate_Attributes_CRUD()
+        {
+            // Create an inventory attribute group template
+            InventoryAttributeGroupTemplatePOSTRequest templateCreateReq = new InventoryAttributeGroupTemplatePOSTRequest()
+            {
+                Name = RandomString(5),
+                TemplateAttributes = new List<InventoryAttributeGroupTemplateAttribute>()
+                {
+                    new InventoryAttributeGroupTemplateAttribute() { Name = RandomString(5), AttributeType = 0, ItemNo = 1 }
+                }
+            };
+
+            InventoryAttributeGroupTemplate templateCreateRes = await Client.PostAsync(templateCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+
+            // Create a template attribute
+            InventoryAttributeGroupTemplateAttributePOSTRequest attributePostReq = new InventoryAttributeGroupTemplateAttributePOSTRequest()
+            {
+                AttributeGroupTemplateID = templateCreateRes.AttributeGroupTemplateID,
+                Name = RandomString(5),
+                AttributeType = 1
+            };
+            InventoryAttributeGroupTemplateAttribute attributePostRes = await Client.PostAsync(attributePostReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+
+            // Read all template attributes
+            InventoryAttributeGroupTemplateAttributesGETManyRequest attributesGETManyReq = new InventoryAttributeGroupTemplateAttributesGETManyRequest()
+            {
+                AttributeGroupTemplateID = templateCreateRes.AttributeGroupTemplateID
+            };
+            List<InventoryAttributeGroupTemplateAttribute> attributesGETManyRes = await Client.GetAsync(attributesGETManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(attributesGETManyRes.Any(x => x.TemplateAttributeID == attributePostRes.TemplateAttributeID), Is.True);
+
+            // Read the created template attribute
+            InventoryAttributeGroupTemplateAttributeGETRequest attributeGETReq = new InventoryAttributeGroupTemplateAttributeGETRequest()
+            {
+                AttributeGroupTemplateID = templateCreateRes.AttributeGroupTemplateID,
+                TemplateAttributeID = attributePostRes.TemplateAttributeID
+            };
+            InventoryAttributeGroupTemplateAttribute attributeGETRes = await Client.GetAsync(attributeGETReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(attributeGETRes.TemplateAttributeID, Is.EqualTo(attributePostRes.TemplateAttributeID));
+
+            // Update the template attribute
+            InventoryAttributeGroupTemplateAttributePATCHRequest attributePATCHReq = new InventoryAttributeGroupTemplateAttributePATCHRequest()
+            {
+                AttributeGroupTemplateID = templateCreateRes.AttributeGroupTemplateID,
+                TemplateAttributeID = attributePostRes.TemplateAttributeID,
+                Name = "Updated " + RandomString(5)
+            };
+            InventoryAttributeGroupTemplateAttribute attributePATCHRes = await Client.PatchAsync(attributePATCHReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(attributePATCHRes.TemplateAttributeID, Is.EqualTo(attributePostRes.TemplateAttributeID));
+
+            // Delete the template attribute
+            InventoryAttributeGroupTemplateAttributeDELETERequest attributeDELETEReq = new InventoryAttributeGroupTemplateAttributeDELETERequest()
+            {
+                AttributeGroupTemplateID = templateCreateRes.AttributeGroupTemplateID,
+                TemplateAttributeID = attributePostRes.TemplateAttributeID
+            };
+            await Client.DeleteAsync(attributeDELETEReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+
+            // Remove cache entry for the attribute group template (internal endpoint)
+            InventoryAttributeGroupTemplateCACHEDELETERequest cacheDeleteReq = new InventoryAttributeGroupTemplateCACHEDELETERequest()
+            {
+                AttributeGroupTemplateID = templateCreateRes.AttributeGroupTemplateID
+            };
+            WebServiceException cacheEx = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
+            {
+                await Client.DeleteAsync(cacheDeleteReq);
+            });
+            Assert.That(cacheEx.ErrorMessage, Does.Contain("Invalid ClientKey"));
+
+            // Delete the template
+            InventoryAttributeGroupTemplateDELETERequest templateDeleteReq = new InventoryAttributeGroupTemplateDELETERequest()
+            {
+                AttributeGroupTemplateID = templateCreateRes.AttributeGroupTemplateID
+            };
+            await Client.DeleteAsync(templateDeleteReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+        }
+        #endregion
+
         #region "Queries"
         [Test]
         public async Task IN_AttributeGroupTemplateQuery()
@@ -128,3 +215,4 @@ namespace JiwaAPITests.Inventory
         #endregion 
     }
 }
+

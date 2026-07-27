@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel;
+using JiwaFinancials.Jiwa.JiwaServiceModel;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Debtors;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Notes;
@@ -167,6 +167,404 @@ namespace JiwaAPITests.Debtors
             WebServiceException ex = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
             {
                 debtorContactNameGETRes = await Client.GetAsync(debtorContactNameGETReq);
+            });
+            Assert.That(ex.StatusCode, Is.EqualTo(404));
+        }
+        #endregion
+
+        #region "Backorders"
+        [Test]
+        public async Task Debtor_Backorders_GETMany()
+        {
+            // Create a debtor we can operate on
+            DebtorPOSTRequest debtorCreateReq = new DebtorPOSTRequest()
+            {
+                AccountNo = RandomString(5),
+                Name = "Debtor Backorders Test",
+                EmailAddress = "a@b.c"
+            };
+
+            Debtor debtorCreateRes = await Client.PostAsync(debtorCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(debtorCreateRes.DebtorID, !Is.Null);
+
+            // Read the backorders for the new debtor
+            DebtorBackordersGETRequest debtorBackordersGETReq = new DebtorBackordersGETRequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID
+            };
+
+            List<DebtorBackOrder> debtorBackordersGETRes = await Client.GetAsync(debtorBackordersGETReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(debtorBackordersGETRes, !Is.Null);
+            Assert.That(debtorBackordersGETRes.Count, Is.EqualTo(0));
+
+            // Create an item
+            InventoryPOSTRequest itemCreateReq = new InventoryPOSTRequest()
+            {
+                PartNo = RandomString(5),
+                Description = "Item Test",
+                DefaultPrice = 125.67M
+            };
+
+            InventoryItem itemCreateRes = await Client.PostAsync(itemCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(itemCreateRes.PartNo, Is.EqualTo(itemCreateReq.PartNo));
+            Assert.That(itemCreateRes.InventoryID, !Is.Null);
+
+            // Create a sales order for debtor and add item (it will go on backorder)
+            SalesOrderPOSTRequest salesOrderCreateReq = new SalesOrderPOSTRequest()
+            {
+                DebtorAccountNo = debtorCreateRes.AccountNo,
+                InvoiceInitDate = DateTime.Today.Date,
+                Lines = new List<JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine>()
+                {
+                    new JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine()
+                    {
+                        InventoryID = itemCreateRes.InventoryID,
+                        QuantityOrdered = 1
+                    }
+                }
+            };
+
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrder salesOrderCreateRes = await Client.PostAsync(salesOrderCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(salesOrderCreateRes.InvoiceID, !Is.Null);
+
+            // Process the sales order
+            SalesOrderPROCESSRequest salesOrderProcessReq = new SalesOrderPROCESSRequest()
+            {
+                InvoiceID = salesOrderCreateRes.InvoiceID
+            };
+
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrder salesOrderProcessRes = await Client.PostAsync(salesOrderProcessReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(salesOrderProcessRes.Status, Is.EqualTo(JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrder.SalesOrderStatuses.e_SalesOrderProcessed));
+
+            // Read the backorders for the new debtor
+            debtorBackordersGETReq = new DebtorBackordersGETRequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID
+            };
+
+            debtorBackordersGETRes = await Client.GetAsync(debtorBackordersGETReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(debtorBackordersGETRes, !Is.Null);
+            Assert.That(debtorBackordersGETRes.Count, Is.EqualTo(1));
+        }
+        #endregion
+
+        #region "Contact Name Tag Memberships"
+        [Test]
+        public async Task Debtor_ContactNames_TagMembership_CRUD()
+        {
+            // Create an account we can operate on
+            DebtorPOSTRequest debtorCreateReq = new DebtorPOSTRequest()
+            {
+                AccountNo = RandomString(5),
+                Name = "Debtor Contact Name Tag Membership Test",
+                EmailAddress = "a@b.c"
+            };
+
+            Debtor debtorCreateRes = await Client.PostAsync(debtorCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(debtorCreateRes.DebtorID, !Is.Null);
+
+            // Add a contact name to the account
+            DebtorContactNamePOSTRequest debtorContactNamePOSTReq = new DebtorContactNamePOSTRequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID,
+                Title = "Mr.",
+                FirstName = "John",
+                Surname = "Citizen"
+            };
+
+            DebtorContactName debtorContactNamePOSTRes = await Client.PostAsync(debtorContactNamePOSTReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(debtorContactNamePOSTRes.ContactNameID, !Is.Null);
+
+            // Create a tag
+            DebtorContactNameTagPOSTRequest tagCreateReq = new DebtorContactNameTagPOSTRequest()
+            {
+                Text = RandomString(5)
+            };
+
+            DebtorContactNameTag tagCreateRes = await Client.PostAsync(tagCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(tagCreateRes.Text, Is.EqualTo(tagCreateReq.Text));
+            Assert.That(tagCreateRes.RecID, !Is.Null);
+
+            // Add a tag membership to the contact name
+            DebtorContactNameTagMembershipPOSTRequest tagMembershipPOSTReq = new DebtorContactNameTagMembershipPOSTRequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID,
+                ContactNameID = debtorContactNamePOSTRes.ContactNameID,
+                TagID = tagCreateRes.RecID
+            };
+
+            JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag tagMembershipPOSTRes = await Client.PostAsync(tagMembershipPOSTReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(tagMembershipPOSTRes.RecID, Is.EqualTo(tagCreateRes.RecID));
+            Assert.That(tagMembershipPOSTRes.Text, Is.EqualTo(tagCreateRes.Text));
+
+            // Get the tag memberships for the contact name
+            DebtorContactNameTagMembershipGETManyRequest tagMembershipGETManyReq = new DebtorContactNameTagMembershipGETManyRequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID,
+                ContactNameID = debtorContactNamePOSTRes.ContactNameID
+            };
+
+            List<JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag> tagMembershipGETManyRes = await Client.GetAsync(tagMembershipGETManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagMembershipGETManyRes, !Is.Null);
+            Assert.That(tagMembershipGETManyRes.Count, Is.EqualTo(1));
+            Assert.That(tagMembershipGETManyRes[0].RecID, Is.EqualTo(tagCreateRes.RecID));
+
+            // Replace all the tag memberships with an empty list
+            DebtorContactNameTagMembershipPUTRequest tagMembershipPUTReq = new DebtorContactNameTagMembershipPUTRequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID,
+                ContactNameID = debtorContactNamePOSTRes.ContactNameID,
+                Tags = new List<JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag>()
+            };
+
+            List<JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag> tagMembershipPUTRes = await Client.PutAsync(tagMembershipPUTReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagMembershipPUTRes, !Is.Null);
+            Assert.That(tagMembershipPUTRes.Count, Is.EqualTo(0));
+
+            DebtorContactNameTag firstTagCreateRes = tagCreateRes.CreateCopy();
+
+            // Create a second tag so we can add it with a PUT later
+            tagCreateReq = new DebtorContactNameTagPOSTRequest()
+            {
+                Text = RandomString(5)
+            };
+
+            tagCreateRes = await Client.PostAsync(tagCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(tagCreateRes.Text, Is.EqualTo(tagCreateReq.Text));
+            Assert.That(tagCreateRes.RecID, !Is.Null);
+
+            // Replace all the tag memberships with the two tags we created
+            tagMembershipPUTReq = new DebtorContactNameTagMembershipPUTRequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID,
+                ContactNameID = debtorContactNamePOSTRes.ContactNameID,
+                Tags = new List<JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag>()
+                {
+                    new JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag()
+                    {
+                        RecID = firstTagCreateRes.RecID
+                    },
+                    new JiwaFinancials.Jiwa.JiwaServiceModel.Tags.Tag()
+                    {
+                        RecID = tagCreateRes.RecID
+                    }
+                }
+            };
+
+            tagMembershipPUTRes = await Client.PutAsync(tagMembershipPUTReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagMembershipPUTRes, !Is.Null);
+            Assert.That(tagMembershipPUTRes.Count, Is.EqualTo(2));
+            Assert.That(tagMembershipPUTRes[0].RecID, Is.EqualTo(firstTagCreateRes.RecID));
+            Assert.That(tagMembershipPUTRes[1].RecID, Is.EqualTo(tagCreateRes.RecID));
+
+            // Remove a tag membership
+            DebtorContactNameTagMembershipDELETERequest tagMembershipDELETEReq = new DebtorContactNameTagMembershipDELETERequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID,
+                ContactNameID = debtorContactNamePOSTRes.ContactNameID,
+                TagID = tagCreateRes.RecID
+            };
+
+            await Client.DeleteAsync(tagMembershipDELETEReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+
+            // Ensure the deleted tag membership is not there anymore
+            tagMembershipGETManyRes = await Client.GetAsync(tagMembershipGETManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagMembershipGETManyRes, !Is.Null);
+            Assert.That(tagMembershipGETManyRes.Count, Is.EqualTo(1));
+            Assert.That(tagMembershipGETManyRes[0].RecID, Is.EqualTo(firstTagCreateRes.RecID));
+        }
+        #endregion
+
+        #region "Contact Name Tags"
+        [Test]
+        public async Task Debtor_ContactNamesTag_CRUD()
+        {
+            // Create a tag
+            DebtorContactNameTagPOSTRequest tagCreateReq = new DebtorContactNameTagPOSTRequest()
+            {
+                Text = RandomString(5)
+            };
+
+            DebtorContactNameTag tagCreateRes = await Client.PostAsync(tagCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(tagCreateRes.Text, Is.EqualTo(tagCreateReq.Text));
+            Assert.That(tagCreateRes.RecID, !Is.Null);
+
+            // Read all tags and ensure the created tag is returned
+            DebtorContactNameTagGETManyRequest tagGETManyReq = new DebtorContactNameTagGETManyRequest();
+            List<DebtorContactNameTag> tagGETManyRes = await Client.GetAsync(tagGETManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagGETManyRes.Any(x => x.RecID == tagCreateRes.RecID), Is.True);
+
+            // Read the created tag using the RecID
+            DebtorContactNameTagGETRequest tagGETReq = new DebtorContactNameTagGETRequest() { RecID = tagCreateRes.RecID };
+            DebtorContactNameTag tagGETRes = await Client.GetAsync(tagGETReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagGETRes.Text, Is.EqualTo(tagCreateReq.Text));
+
+            // Update the tag
+            DebtorContactNameTagPATCHRequest tagPATCHReq = new DebtorContactNameTagPATCHRequest()
+            {
+                RecID = tagCreateRes.RecID,
+                Text = "Updated Tag " + RandomString(6)
+            };
+
+            DebtorContactNameTag tagPATCHRes = await Client.PatchAsync(tagPATCHReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagPATCHRes.Text, Is.EqualTo(tagPATCHReq.Text));
+
+            // Remove the created tag
+            DebtorContactNameTagDELETERequest tagDELETEReq = new DebtorContactNameTagDELETERequest() { RecID = tagCreateRes.RecID };
+            await Client.DeleteAsync(tagDELETEReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+
+            // Ensure the deleted tag is not there anymore
+            WebServiceException ex = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
+            {
+                DebtorContactNameTag getDeletedRes = await Client.GetAsync(tagGETReq);
+            });
+            Assert.That(ex.StatusCode, Is.EqualTo(404));
+
+            // Read all tags and ensure the deleted tag is no longer returned
+            tagGETManyRes = await Client.GetAsync(tagGETManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagGETManyRes.Any(x => x.RecID == tagCreateRes.RecID), Is.False);
+
+            // Try to GET non-existent tag to make sure we get a 404
+            tagGETReq.RecID = Guid.NewGuid().ToString();
+            ex = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
+            {
+                DebtorContactNameTag getRes = await Client.GetAsync(tagGETReq);
+            });
+            Assert.That(ex.StatusCode, Is.EqualTo(404));
+        }
+        #endregion
+
+        #region "Debtor Part Numbers"
+        [Test]
+        public async Task Debtor_DebtorPartNumbers_CRUD()
+        {
+            // Create an account we can operate on
+            DebtorPOSTRequest debtorCreateReq = new DebtorPOSTRequest()
+            {
+                AccountNo = RandomString(5),
+                Name = "Debtor Part Number Test",
+                EmailAddress = "a@b.c"
+            };
+
+            Debtor debtorCreateRes = await Client.PostAsync(debtorCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(debtorCreateRes.DebtorID, !Is.Null);
+
+            // Create an inventory item we can link to the debtor part number
+            InventoryPOSTRequest itemCreateReq = new InventoryPOSTRequest()
+            {
+                PartNo = RandomString(5),
+                Description = "Debtor Part Number Item Test",
+                DefaultPrice = 125.67M
+            };
+
+            InventoryItem itemCreateRes = await Client.PostAsync(itemCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(itemCreateRes.InventoryID, !Is.Null);
+
+            // Add a debtor part number to the account
+            DebtorPartNumberPOSTRequest debtorPartNumberPOSTReq = new DebtorPartNumberPOSTRequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID,
+                InventoryID = itemCreateRes.InventoryID,
+                DebtorPartNo = RandomString(8),
+                DebtorBarcode = RandomString(10)
+            };
+
+            DebtorPartNumber debtorPartNumberPOSTRes = await Client.PostAsync(debtorPartNumberPOSTReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(debtorPartNumberPOSTRes.PartNumberID, !Is.Null);
+            Assert.That(debtorPartNumberPOSTRes.InventoryID, Is.EqualTo(debtorPartNumberPOSTReq.InventoryID));
+            Assert.That(debtorPartNumberPOSTRes.DebtorPartNo, Is.EqualTo(debtorPartNumberPOSTReq.DebtorPartNo));
+            Assert.That(debtorPartNumberPOSTRes.DebtorBarcode, Is.EqualTo(debtorPartNumberPOSTReq.DebtorBarcode));
+
+            // Get the debtor part number
+            DebtorPartNumberGETRequest debtorPartNumberGETReq = new DebtorPartNumberGETRequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID,
+                PartNumberID = debtorPartNumberPOSTRes.PartNumberID
+            };
+
+            DebtorPartNumber debtorPartNumberGETRes = await Client.GetAsync(debtorPartNumberGETReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(debtorPartNumberGETRes.PartNumberID, Is.EqualTo(debtorPartNumberPOSTRes.PartNumberID));
+            Assert.That(debtorPartNumberGETRes.InventoryID, Is.EqualTo(itemCreateRes.InventoryID));
+            Assert.That(debtorPartNumberGETRes.PartNo, Is.EqualTo(itemCreateRes.PartNo));
+            Assert.That(debtorPartNumberGETRes.DebtorPartNo, Is.EqualTo(debtorPartNumberPOSTReq.DebtorPartNo));
+            Assert.That(debtorPartNumberGETRes.DebtorBarcode, Is.EqualTo(debtorPartNumberPOSTReq.DebtorBarcode));
+
+            // Get all debtor part numbers for the account
+            DebtorPartNumbersGETManyRequest debtorPartNumbersGETManyReq = new DebtorPartNumbersGETManyRequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID
+            };
+
+            List<DebtorPartNumber> debtorPartNumbersGETManyRes = await Client.GetAsync(debtorPartNumbersGETManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(debtorPartNumbersGETManyRes.Count, Is.EqualTo(1));
+            Assert.That(debtorPartNumbersGETManyRes[0].PartNumberID, Is.EqualTo(debtorPartNumberPOSTRes.PartNumberID));
+
+            // Update the debtor part number
+            DebtorPartNumberPATCHRequest debtorPartNumberPATCHReq = new DebtorPartNumberPATCHRequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID,
+                PartNumberID = debtorPartNumberPOSTRes.PartNumberID,
+                DebtorPartNo = RandomString(8),
+                DebtorBarcode = RandomString(10)
+            };
+
+            DebtorPartNumber debtorPartNumberPATCHRes = await Client.PatchAsync(debtorPartNumberPATCHReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(debtorPartNumberPATCHRes.DebtorPartNo, Is.EqualTo(debtorPartNumberPATCHReq.DebtorPartNo));
+            Assert.That(debtorPartNumberPATCHRes.DebtorBarcode, Is.EqualTo(debtorPartNumberPATCHReq.DebtorBarcode));
+
+            // Get the patched debtor part number and ensure it matches what we patched
+            debtorPartNumberGETRes = await Client.GetAsync(debtorPartNumberGETReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(debtorPartNumberGETRes.DebtorPartNo, Is.EqualTo(debtorPartNumberPATCHReq.DebtorPartNo));
+            Assert.That(debtorPartNumberGETRes.DebtorBarcode, Is.EqualTo(debtorPartNumberPATCHReq.DebtorBarcode));
+
+            // Remove the debtor part number
+            DebtorPartNumberDELETERequest debtorPartNumberDELETEReq = new DebtorPartNumberDELETERequest()
+            {
+                DebtorID = debtorCreateRes.DebtorID,
+                PartNumberID = debtorPartNumberPOSTRes.PartNumberID
+            };
+
+            await Client.DeleteAsync(debtorPartNumberDELETEReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+
+            // Ensure the debtor part number is no longer present in the list for the account
+            debtorPartNumbersGETManyRes = await Client.GetAsync(debtorPartNumbersGETManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(debtorPartNumbersGETManyRes.Count, Is.EqualTo(0));
+
+            // Ensure explicitly requesting the debtor part number 404's
+            WebServiceException ex = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
+            {
+                debtorPartNumberGETRes = await Client.GetAsync(debtorPartNumberGETReq);
             });
             Assert.That(ex.StatusCode, Is.EqualTo(404));
         }
@@ -552,3 +950,4 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+

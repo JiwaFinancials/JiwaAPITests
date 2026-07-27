@@ -9,6 +9,7 @@ using static ServiceStack.Diagnostics.Events;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using static ServiceStack.Diagnostics;
+using NUnit.Framework;
 using ServiceStack;
 using ServiceStack.Text;
 
@@ -104,7 +105,8 @@ namespace JiwaAPITests
         public string RandomString(int length)
         {            
             const string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(characters, length).Select(x => x[random.Next(x.Length)]).ToArray());
-        }        
-    }
-}
+            return new string(Enumerable.Repeat(characters, length).Select(x => x[random.Next(x.Length)]).ToArray());        
+        }
+
+            }
+        }

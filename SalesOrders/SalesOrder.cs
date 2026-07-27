@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel.Tables;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Tables;
 using JiwaFinancials.Jiwa.JiwaServiceModel;
 using System;
 using System.Collections.Generic;
@@ -169,6 +169,16 @@ namespace JiwaAPITests.SalesOrders
                 JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrder salesOrderGetRes = await Client.GetAsync(salesOrderGetReq);
             });
             Assert.That(ex.StatusCode, Is.EqualTo(404));
+
+            // Process a sales order
+            SalesOrderPROCESSRequest salesOrderProcessReq = new SalesOrderPROCESSRequest()
+            {
+                InvoiceID = salesOrderCreateRes.InvoiceID
+            };
+
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrder salesOrderProcessRes = await Client.PostAsync(salesOrderProcessReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(salesOrderProcessRes.Status, Is.EqualTo(JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrder.SalesOrderStatuses.e_SalesOrderProcessed));
         }        
 
         [Test]
@@ -442,3 +452,4 @@ namespace JiwaAPITests.SalesOrders
         #endregion
     }
 }
+

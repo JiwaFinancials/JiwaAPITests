@@ -123,10 +123,7 @@ namespace JiwaAPITests.CreditorPurchases
             };
 
             CreditorBatchTrans purchaseActivateRes = await Client.PostAsync(purchaseActivateReq);
-            Assert.That(LastHttpStatusCode,
-                Is.EqualTo(System.Net.HttpStatusCode.NoContent)
-                .Or.EqualTo(System.Net.HttpStatusCode.OK)
-                .Or.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
 
             if (purchaseActivateRes != null)
             {
@@ -369,3 +366,4 @@ namespace JiwaAPITests.CreditorPurchases
 
     }
 }
+

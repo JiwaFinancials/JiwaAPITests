@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel;
+using JiwaFinancials.Jiwa.JiwaServiceModel;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Debtors;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
 using ServiceStack;
@@ -41,7 +41,15 @@ namespace JiwaAPITests.Inventory
             };
             InventoryTag tagPatchRes = await Client.PatchAsync(tagPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
-            Assert.That(tagPatchRes.Text, Is.EqualTo(tagPatchReq.Text));            
+            Assert.That(tagPatchRes.Text, Is.EqualTo(tagPatchReq.Text));
+
+            // Remove cache entry for inventory tags (internal endpoint)
+            InventoryTagCACHEDELETERequest cacheDeleteReq = new InventoryTagCACHEDELETERequest();
+            WebServiceException cacheEx = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
+            {
+                await Client.DeleteAsync(cacheDeleteReq);
+            });
+            Assert.That(cacheEx.ErrorMessage, Does.Contain("Invalid ClientKey"));
 
             // Remove the created tag
             InventoryTagDELETERequest tagDeleteReq = new InventoryTagDELETERequest() { RecID = tagCreateRes.RecID };
@@ -66,3 +74,4 @@ namespace JiwaAPITests.Inventory
         #endregion
     }
 }
+

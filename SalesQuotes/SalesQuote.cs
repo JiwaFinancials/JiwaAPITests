@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel.Debtors;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Debtors;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
 using JiwaFinancials.Jiwa.JiwaServiceModel.Tables;
 using JiwaFinancials.Jiwa.JiwaServiceModel;
@@ -169,6 +169,110 @@ namespace JiwaAPITests.SalesQuotes
         }
         #endregion
 
+        #region "{MakeOrder}"
+        [Test]
+        public async Task SalesQuote_MakeOrder_POST()
+        {
+            // Create an item
+            InventoryPOSTRequest itemCreateReq = new InventoryPOSTRequest()
+            {
+                PartNo = RandomString(5),
+                Description = "MakeOrder Item",
+                DefaultPrice = 125.67M
+            };
+            InventoryItem itemCreateRes = await Client.PostAsync(itemCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+
+            // Create a debtor
+            DebtorPOSTRequest accountCreateReq = new DebtorPOSTRequest()
+            {
+                AccountNo = RandomString(5),
+                Name = "MakeOrder Debtor"
+            };
+            Debtor accountCreateRes = await Client.PostAsync(accountCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(accountCreateRes.DebtorID, Is.Not.Null);
+
+            // Create a sales quote that can be converted
+            SalesQuotePOSTRequest salesQuoteCreateReq = new SalesQuotePOSTRequest()
+            {
+                DebtorAccountNo = accountCreateReq.AccountNo,
+                InvoiceInitDate = DateTime.Today.Date,
+                Lines = new List<JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuoteLine>()
+                {
+                    new JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuoteLine()
+                    {
+                        InventoryID = itemCreateRes.InventoryID,
+                        QuantityOrdered = 1
+                    }
+                }
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuote salesQuoteCreateRes = await Client.PostAsync(salesQuoteCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+
+            // Convert the quote to a sales order
+            SalesQuoteMAKEORDERRequest makeOrderReq = new SalesQuoteMAKEORDERRequest()
+            {
+                QuoteID = salesQuoteCreateRes.QuoteID
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuote makeOrderRes = await Client.PostAsync(makeOrderReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(makeOrderRes, Is.Not.Null);
+            Assert.That(makeOrderRes.QuoteID, Is.EqualTo(salesQuoteCreateRes.QuoteID));
+        }
+
+        [Test]
+        public async Task SalesQuote_MakeOrderB2B_POST()
+        {
+            // Create an item
+            InventoryPOSTRequest itemCreateReq = new InventoryPOSTRequest()
+            {
+                PartNo = RandomString(5),
+                Description = "MakeOrderB2B Item",
+                DefaultPrice = 125.67M
+            };
+            InventoryItem itemCreateRes = await Client.PostAsync(itemCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+
+            // Create a debtor
+            DebtorPOSTRequest accountCreateReq = new DebtorPOSTRequest()
+            {
+                AccountNo = RandomString(5),
+                Name = "MakeOrderB2B Debtor"
+            };
+            Debtor accountCreateRes = await Client.PostAsync(accountCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(accountCreateRes.DebtorID, Is.Not.Null);
+
+            // Create a sales quote that can be converted back-to-back
+            SalesQuotePOSTRequest salesQuoteCreateReq = new SalesQuotePOSTRequest()
+            {
+                DebtorAccountNo = accountCreateReq.AccountNo,
+                InvoiceInitDate = DateTime.Today.Date,
+                Lines = new List<JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuoteLine>()
+                {
+                    new JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuoteLine()
+                    {
+                        InventoryID = itemCreateRes.InventoryID,
+                        QuantityOrdered = 1
+                    }
+                }
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuote salesQuoteCreateRes = await Client.PostAsync(salesQuoteCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+
+            // Convert the quote to a back-to-back sales order
+            SalesQuoteMAKEORDERB2BRequest makeOrderReq = new SalesQuoteMAKEORDERB2BRequest()
+            {
+                QuoteID = salesQuoteCreateRes.QuoteID
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuote makeOrderRes = await Client.PostAsync(makeOrderReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(makeOrderRes, Is.Not.Null);
+            Assert.That(makeOrderRes.QuoteID, Is.EqualTo(salesQuoteCreateRes.QuoteID));
+        }
+        #endregion
+
         #region "Queries"
         [Test]
         public async Task QO_MainQuery()
@@ -225,3 +329,4 @@ namespace JiwaAPITests.SalesQuotes
         #endregion
     }
 }
+
