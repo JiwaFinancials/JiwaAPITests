@@ -23,6 +23,18 @@ namespace JiwaAPITests.Staff.Timesheets
 {
     public class Lines : ServiceManagerTestBase
     {
+        private static DateTimeOffset ConvertToApiPersistedValue(DateTimeOffset value)
+        {
+            return value.Subtract(value.Offset);
+        }
+
+        private static void AssertApiTimeEquals(DateTimeOffset? actual, DateTimeOffset expectedRequestValue)
+        {
+            Assert.That(actual, Is.Not.Null);
+            DateTimeOffset expectedPersistedValue = ConvertToApiPersistedValue(expectedRequestValue);
+            Assert.That(actual!.Value.TimeOfDay, Is.EqualTo(expectedPersistedValue.TimeOfDay));
+        }
+
         private async Task<WorkOrderDto> CreateWorkOrderForTimesheetAsync()
         {
             // Create an item for the output
@@ -152,12 +164,14 @@ namespace JiwaAPITests.Staff.Timesheets
                     Description = serviceManagerTaskOne.Description
                 };
 
+                DateTimeOffset timeSheetDate = new DateTimeOffset(DateTime.UtcNow.Date);
+
                 // Create a staff timesheet.
                 StaffTimesheetPOSTRequest timesheetCreateReq = new StaffTimesheetPOSTRequest()
                 {
                     StaffID = adminStaff.StaffID,
                     StaffUserName = adminStaff.Username,
-                    TimeSheetDate = new DateTimeOffset(DateTime.UtcNow.Date),
+                    TimeSheetDate = timeSheetDate,
                     Reference = "Timesheet Lines " + RandomString(6),
                     IsActivated = false
                 };
@@ -168,15 +182,23 @@ namespace JiwaAPITests.Staff.Timesheets
                 createdTimesheetID = timesheetCreateRes.TimesheetID;
 
                 // Append a line to the staff timesheet.
-                DateTimeOffset lineCreateStartTime = DateTimeOffset.UtcNow;
-                lineCreateStartTime = new DateTimeOffset(lineCreateStartTime.Year, lineCreateStartTime.Month, lineCreateStartTime.Day, lineCreateStartTime.Hour, lineCreateStartTime.Minute, 0, lineCreateStartTime.Offset);
+                //DateTimeOffset? lineCreateStartTime = new DateTimeOffset(
+                //    DateTimeOffset.Now.Year,
+                //    DateTimeOffset.Now.Month,
+                //    DateTimeOffset.Now.Day,
+                //    8,
+                //    30,
+                //    0, DateTimeOffset.Now.Offset);
+
+                DateTimeOffset? lineCreateStartTime = new DateTimeOffset(timeSheetDate.Year, timeSheetDate.Month, timeSheetDate.Day, 13, 0, 0, TimeZoneInfo.Local.BaseUtcOffset);
+                //DateTimeOffset? lineCreateStartTime = new DateTimeOffset(value.Value.Year, value.Value.Month, value.Value.Day, value.Value.Hour, value.Value.Minute, 0, TimeZoneInfo.Local.BaseUtcOffset); // Remove milliseconds and seconds
 
                 StaffTimesheetLinePOSTRequest lineCreateReq = new StaffTimesheetLinePOSTRequest()
                 {
                     TimesheetID = timesheetCreateRes.TimesheetID,
                     Description = "Timesheet line " + RandomString(6),
                     StartTime = lineCreateStartTime,
-                    EndTime = lineCreateStartTime.AddHours(1),
+                    EndTime = lineCreateStartTime.Value!.AddHours(1),
                     ServiceManagerTask = timesheetServiceManagerTask
                 };
 
@@ -184,6 +206,8 @@ namespace JiwaAPITests.Staff.Timesheets
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
                 Assert.That(lineCreateRes.TimesheetLineID, Is.Not.Null.And.Not.Empty);
                 Assert.That(lineCreateRes.Description, Is.EqualTo(lineCreateReq.Description));
+                AssertApiTimeEquals(lineCreateRes.StartTime, lineCreateReq.StartTime!.Value);
+                AssertApiTimeEquals(lineCreateRes.EndTime, lineCreateReq.EndTime!.Value);
 
                 // Read all lines for the staff timesheet.
                 StaffTimesheetLinesGETManyRequest linesGetManyReq = new StaffTimesheetLinesGETManyRequest()
@@ -208,8 +232,7 @@ namespace JiwaAPITests.Staff.Timesheets
                 Assert.That(lineGetRes.Description, Is.EqualTo(lineCreateReq.Description));
 
                 // Update the line with PATCH.
-                DateTimeOffset linePatchStartTime = DateTimeOffset.UtcNow.AddHours(-1);
-                linePatchStartTime = new DateTimeOffset(linePatchStartTime.Year, linePatchStartTime.Month, linePatchStartTime.Day, linePatchStartTime.Hour, linePatchStartTime.Minute, 0, linePatchStartTime.Offset);
+                DateTimeOffset linePatchStartTime = new DateTimeOffset(timeSheetDate.Year, timeSheetDate.Month, timeSheetDate.Day, 15, 0, 0, TimeZoneInfo.Local.BaseUtcOffset);
 
                 StaffTimesheetLinePATCHRequest linePatchReq = new StaffTimesheetLinePATCHRequest()
                 {
@@ -230,10 +253,11 @@ namespace JiwaAPITests.Staff.Timesheets
                 lineGetRes = await Client.GetAsync(lineGetReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
                 Assert.That(lineGetRes.Description, Is.EqualTo(linePatchReq.Description));
+                AssertApiTimeEquals(lineGetRes.StartTime, linePatchReq.StartTime!.Value);
+                AssertApiTimeEquals(lineGetRes.EndTime, linePatchReq.EndTime!.Value);
 
                 // Update the line with PUT.
-                DateTimeOffset linePutStartTime = DateTimeOffset.UtcNow;
-                linePutStartTime = new DateTimeOffset(linePutStartTime.Year, linePutStartTime.Month, linePutStartTime.Day, linePutStartTime.Hour, linePutStartTime.Minute, 0, linePutStartTime.Offset);
+                DateTimeOffset linePutStartTime = new DateTimeOffset(timeSheetDate.Year, timeSheetDate.Month, timeSheetDate.Day, 17, 0, 0, TimeZoneInfo.Local.BaseUtcOffset);
 
                 StaffTimesheetLinePUTRequest linePutReq = new StaffTimesheetLinePUTRequest()
                 {
@@ -254,10 +278,11 @@ namespace JiwaAPITests.Staff.Timesheets
                 lineGetRes = await Client.GetAsync(lineGetReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
                 Assert.That(lineGetRes.Description, Is.EqualTo(linePutReq.Description));
+                AssertApiTimeEquals(lineGetRes.StartTime, linePutReq.StartTime!.Value);
+                AssertApiTimeEquals(lineGetRes.EndTime, linePutReq.EndTime!.Value);
 
                 // Create a line using dynamic route behavior for existing or new daily timesheets.
-                DateTimeOffset dynamicLineCreateStartTime = DateTimeOffset.UtcNow;
-                dynamicLineCreateStartTime = new DateTimeOffset(dynamicLineCreateStartTime.Year, dynamicLineCreateStartTime.Month, dynamicLineCreateStartTime.Day, dynamicLineCreateStartTime.Hour, dynamicLineCreateStartTime.Minute, 0, dynamicLineCreateStartTime.Offset);
+                DateTimeOffset dynamicLineCreateStartTime = new DateTimeOffset(timeSheetDate.Year, timeSheetDate.Month, timeSheetDate.Day, 20, 0, 0, TimeZoneInfo.Local.BaseUtcOffset);
 
                 StaffTimesheetLineDynamicPOSTRequest dynamicLineCreateReq = new StaffTimesheetLineDynamicPOSTRequest()
                 {
@@ -326,8 +351,7 @@ namespace JiwaAPITests.Staff.Timesheets
                 Assert.That(workOrderStageOne.StageID, Is.Not.Null.And.Not.Empty);
 
                 // Create a line with a work order stage.
-                DateTimeOffset woLineCreateStartTime = new DateTimeOffset(DateTime.UtcNow.Date.AddHours(14));
-                woLineCreateStartTime = new DateTimeOffset(woLineCreateStartTime.Year, woLineCreateStartTime.Month, woLineCreateStartTime.Day, woLineCreateStartTime.Hour, woLineCreateStartTime.Minute, 0, woLineCreateStartTime.Offset);
+                DateTimeOffset woLineCreateStartTime = new DateTimeOffset(timeSheetDate.Year, timeSheetDate.Month, timeSheetDate.Day, 11, 0, 0, TimeZoneInfo.Local.BaseUtcOffset);
 
                 StaffTimesheetLinePOSTRequest woLineCreateReq = new StaffTimesheetLinePOSTRequest()
                 {
@@ -373,10 +397,11 @@ namespace JiwaAPITests.Staff.Timesheets
                 Assert.That(woLineGetRes.Description, Is.EqualTo(woLineCreateReq.Description));
                 Assert.That(woLineGetRes.WorkOrderStage, Is.Not.Null);
                 Assert.That(woLineGetRes.WorkOrderStage.WorkOrderStageID, Is.EqualTo(workOrderStageOne.StageID));
+                AssertApiTimeEquals(woLineGetRes.StartTime, woLineCreateReq.StartTime!.Value);
+                AssertApiTimeEquals(woLineGetRes.EndTime, woLineCreateReq.EndTime!.Value);
 
                 // Update the work order line with PATCH.
-                DateTimeOffset woLinePatchStartTime = new DateTimeOffset(DateTime.UtcNow.Date.AddHours(15));
-                woLinePatchStartTime = new DateTimeOffset(woLinePatchStartTime.Year, woLinePatchStartTime.Month, woLinePatchStartTime.Day, woLinePatchStartTime.Hour, woLinePatchStartTime.Minute, 0, woLinePatchStartTime.Offset);
+                DateTimeOffset woLinePatchStartTime = new DateTimeOffset(timeSheetDate.Year, timeSheetDate.Month, timeSheetDate.Day, 14, 0, 0, TimeZoneInfo.Local.BaseUtcOffset);
 
                 StaffTimesheetLinePATCHRequest woLinePatchReq = new StaffTimesheetLinePATCHRequest()
                 {
@@ -397,10 +422,11 @@ namespace JiwaAPITests.Staff.Timesheets
                 woLineGetRes = await Client.GetAsync(woLineGetReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
                 Assert.That(woLineGetRes.Description, Is.EqualTo(woLinePatchReq.Description));
+                AssertApiTimeEquals(woLineGetRes.StartTime, woLinePatchReq.StartTime!.Value);
+                AssertApiTimeEquals(woLineGetRes.EndTime, woLinePatchReq.EndTime!.Value);
 
                 // Update the work order line with PUT.
-                DateTimeOffset woLinePutStartTime = new DateTimeOffset(DateTime.UtcNow.Date.AddHours(16));
-                woLinePutStartTime = new DateTimeOffset(woLinePutStartTime.Year, woLinePutStartTime.Month, woLinePutStartTime.Day, woLinePutStartTime.Hour, woLinePutStartTime.Minute, 0, woLinePutStartTime.Offset);
+                DateTimeOffset woLinePutStartTime = new DateTimeOffset(timeSheetDate.Year, timeSheetDate.Month, timeSheetDate.Day, 18, 0, 0, TimeZoneInfo.Local.BaseUtcOffset);
 
                 StaffTimesheetLinePUTRequest woLinePutReq = new StaffTimesheetLinePUTRequest()
                 {
@@ -421,6 +447,8 @@ namespace JiwaAPITests.Staff.Timesheets
                 woLineGetRes = await Client.GetAsync(woLineGetReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
                 Assert.That(woLineGetRes.Description, Is.EqualTo(woLinePutReq.Description));
+                AssertApiTimeEquals(woLineGetRes.StartTime, woLinePutReq.StartTime!.Value);
+                AssertApiTimeEquals(woLineGetRes.EndTime, woLinePutReq.EndTime!.Value);
 
                 // Delete the work order line.
                 StaffTimesheetLineDELETERequest woLineDeleteReq = new StaffTimesheetLineDELETERequest()
