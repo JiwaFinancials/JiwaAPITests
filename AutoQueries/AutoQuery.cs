@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace JiwaAPITests.AutoQueries
 {
+    [Route("/Queries/v_Jiwa_CreditorPurchases", "GET")]
+    public class AutoQueryv_Jiwa_CreditorPurchasesRouteQuery : IReturn<QueryResponse<v_Jiwa_CreditorPurchases>>, IGet { }
+
     public partial class AutoQuery : JiwaAPITest
     {
         #region "/Queries/BackOrderList"
@@ -145,6 +148,32 @@ namespace JiwaAPITests.AutoQueries
             // Retrieve CR warehouse records
             CR_WarehouseQuery req = new CR_WarehouseQuery();
             QueryResponse<CR_Warehouse> res = await Client.GetAsync(req);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(res, Is.Not.Null);
+            Assert.That(res.Results, Is.Not.Null);
+        }
+        #endregion
+
+        #region "/Queries/v_Jiwa_CreditorPurchaseInformation"
+        [Test]
+        public async Task v_Jiwa_CreditorPurchaseInformation_GET()
+        {
+            // Retrieve creditor purchase information records
+            v_Jiwa_CreditorPurchaseInformationQuery req = new v_Jiwa_CreditorPurchaseInformationQuery();
+            QueryResponse<v_Jiwa_CreditorPurchaseInformation> res = await Client.GetAsync(req);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(res, Is.Not.Null);
+            Assert.That(res.Results, Is.Not.Null);
+        }
+        #endregion
+
+        #region "/Queries/v_Jiwa_CreditorPurchases"
+        [Test]
+        public async Task v_Jiwa_CreditorPurchases_GET()
+        {
+            // Retrieve creditor purchase header records
+            AutoQueryv_Jiwa_CreditorPurchasesRouteQuery req = new AutoQueryv_Jiwa_CreditorPurchasesRouteQuery();
+            QueryResponse<v_Jiwa_CreditorPurchases> res = await Client.GetAsync(req);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
             Assert.That(res, Is.Not.Null);
             Assert.That(res.Results, Is.Not.Null);
@@ -626,6 +655,32 @@ namespace JiwaAPITests.AutoQueries
             // Retrieve OR creditor summary records
             v_Jiwa_CreditorSummaryORQuery req = new v_Jiwa_CreditorSummaryORQuery();
             QueryResponse<v_Jiwa_CreditorSummaryOR> res = await Client.GetAsync(req);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(res, Is.Not.Null);
+            Assert.That(res.Results, Is.Not.Null);
+        }
+        #endregion
+
+        #region "/Queries/OR/v_Jiwa_CreditorPurchaseInformation"
+        [Test]
+        public async Task OR_v_Jiwa_CreditorPurchaseInformation_GET()
+        {
+            // Retrieve OR creditor purchase information records
+            v_Jiwa_CreditorPurchaseInformationORQuery req = new v_Jiwa_CreditorPurchaseInformationORQuery();
+            QueryResponse<v_Jiwa_CreditorPurchaseInformationOR> res = await Client.GetAsync(req);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(res, Is.Not.Null);
+            Assert.That(res.Results, Is.Not.Null);
+        }
+        #endregion
+
+        #region "/Queries/OR/v_Jiwa_CreditorPurchases"
+        [Test]
+        public async Task OR_v_Jiwa_CreditorPurchases_GET()
+        {
+            // Retrieve OR creditor purchase header records
+            v_Jiwa_CreditorPurchasesORQuery req = new v_Jiwa_CreditorPurchasesORQuery();
+            QueryResponse<v_Jiwa_CreditorPurchasesOR> res = await Client.GetAsync(req);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
             Assert.That(res, Is.Not.Null);
             Assert.That(res.Results, Is.Not.Null);
