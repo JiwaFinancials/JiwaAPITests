@@ -136,6 +136,89 @@ namespace JiwaAPITests.SalesOrders
             });
             Assert.That(exLine.StatusCode, Is.EqualTo(404));
         }
+
+        [Test]
+        public async Task SalesOrderHistory_Lines_CRUD_CommentLine()
+        {
+            // Create a sales order with an initial line to operate against
+            var (salesOrder, _, _) = await CreateSalesOrderWithLineAsync();
+            string invoiceID = salesOrder.InvoiceID;
+            string invoiceHistoryID = salesOrder.Histories[0].InvoiceHistoryID;
+
+            // Read all lines for the history
+            SalesOrderLinesGETManyRequest linesGetManyReq = new SalesOrderLinesGETManyRequest()
+            {
+                InvoiceID = invoiceID,
+                InvoiceHistoryID = invoiceHistoryID
+            };
+            List<JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine> linesGetManyRes = await Client.GetAsync(linesGetManyReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(linesGetManyRes.Count, Is.GreaterThanOrEqualTo(1));
+
+            // Append a new comment line to the sales order history
+            SalesOrderLinePOSTRequest lineCreateReq = new SalesOrderLinePOSTRequest()
+            {
+                InvoiceID = invoiceID,
+                InvoiceHistoryID = invoiceHistoryID,
+                CommentLine = true,
+                CommentText = "Initial history comment line"
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine lineCreateRes = await Client.PostAsync(lineCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(lineCreateRes.InvoiceLineID, Is.Not.Null);
+            Assert.That(lineCreateRes.CommentLine, Is.True);
+            Assert.That(lineCreateRes.CommentText, Is.EqualTo(lineCreateReq.CommentText));
+
+            // Read the created line
+            SalesOrderLineGETRequest lineGetReq = new SalesOrderLineGETRequest()
+            {
+                InvoiceID = invoiceID,
+                InvoiceHistoryID = invoiceHistoryID,
+                InvoiceLineID = lineCreateRes.InvoiceLineID
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine lineGetRes = await Client.GetAsync(lineGetReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(lineGetRes.InvoiceLineID, Is.EqualTo(lineCreateRes.InvoiceLineID));
+            Assert.That(lineGetRes.CommentLine, Is.True);
+            Assert.That(lineGetRes.CommentText, Is.EqualTo(lineCreateReq.CommentText));
+
+            // Update the line
+            SalesOrderLinePATCHRequest linePatchReq = new SalesOrderLinePATCHRequest()
+            {
+                InvoiceID = invoiceID,
+                InvoiceHistoryID = invoiceHistoryID,
+                InvoiceLineID = lineCreateRes.InvoiceLineID,
+                CommentLine = true,
+                CommentText = "Updated history comment line"
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine linePatchRes = await Client.PatchAsync(linePatchReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(linePatchRes.CommentLine, Is.True);
+            Assert.That(linePatchRes.CommentText, Is.EqualTo(linePatchReq.CommentText));
+
+            // Read the updated line and confirm the changes were saved
+            lineGetRes = await Client.GetAsync(lineGetReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(lineGetRes.CommentLine, Is.True);
+            Assert.That(lineGetRes.CommentText, Is.EqualTo(linePatchReq.CommentText));
+
+            // Delete the line
+            SalesOrderLineDELETERequest lineDeleteReq = new SalesOrderLineDELETERequest()
+            {
+                InvoiceID = invoiceID,
+                InvoiceHistoryID = invoiceHistoryID,
+                InvoiceLineID = lineCreateRes.InvoiceLineID
+            };
+            await Client.DeleteAsync(lineDeleteReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.NoContent));
+
+            // Verify the line was deleted
+            WebServiceException exLine = Assert.ThrowsAsync<ServiceStack.WebServiceException>(async () =>
+            {
+                JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine deletedLineGetRes = await Client.GetAsync(lineGetReq);
+            });
+            Assert.That(exLine.StatusCode, Is.EqualTo(404));
+        }
         #endregion
 
         #region "{Lines/LineDetails}"
