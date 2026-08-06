@@ -90,6 +90,7 @@ namespace JiwaAPITests.JournalSets
 
             JournalSetLine linePatchRes = await Client.PatchAsync(linePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(linePatchRes.JournalSetLineID, Is.EqualTo(linePatchReq.JournalSetLineID));
             Assert.That(linePatchRes.JournalSetLineID, Is.EqualTo(lineCreateRes.JournalSetLineID));
             Assert.That(linePatchRes.Reference, Is.EqualTo(linePatchReq.Reference));
 
@@ -117,4 +118,5 @@ namespace JiwaAPITests.JournalSets
         #endregion
     }
 }
+
 

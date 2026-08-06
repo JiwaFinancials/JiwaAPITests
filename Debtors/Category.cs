@@ -81,6 +81,7 @@ namespace JiwaAPITests.Debtors
             };
             DebtorCategory categoryPatchRes = await Client.PatchAsync(categoryPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(categoryPatchRes.CategoryID, Is.EqualTo(categoryPatchReq.CategoryID));
             Assert.That(categoryPatchRes.Description, Is.EqualTo(categoryPatchReq.Description));
 
             // Remove the created category
@@ -116,6 +117,7 @@ namespace JiwaAPITests.Debtors
             };
             categoryPatchRes = await Client.PatchAsync(categoryPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(categoryPatchRes.CategoryID, Is.EqualTo(categoryPatchReq.CategoryID));
             Assert.That(categoryPatchRes.IsDefault, Is.EqualTo(categoryPatchReq.IsDefault));
 
             // Ensure that we cannot delete the default category
@@ -130,4 +132,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

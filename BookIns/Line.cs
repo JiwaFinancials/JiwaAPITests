@@ -123,6 +123,7 @@ namespace JiwaAPITests.BookIns
 
             BookInLine linePatchRes = await Client.PatchAsync(linePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(linePatchRes.LineID, Is.EqualTo(linePatchReq.LineID));
             Assert.That(linePatchRes.LineID, Is.EqualTo(lineID));
             Assert.That(linePatchRes.Quantity, Is.EqualTo(linePatchReq.Quantity));
 
@@ -181,6 +182,7 @@ namespace JiwaAPITests.BookIns
 
             InventorySOHLineDetail lineDetailPatchRes = await Client.PatchAsync(lineDetailPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(lineDetailPatchRes.LineDetailID, Is.EqualTo(lineDetailPatchReq.LineDetailID));
             Assert.That(lineDetailPatchRes.LineDetailID, Is.EqualTo(lineDetailCreateRes.LineDetailID));
 
             // Remove the created line detail
@@ -219,4 +221,5 @@ namespace JiwaAPITests.BookIns
         #endregion
     }
 }
+
 

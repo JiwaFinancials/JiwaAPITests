@@ -117,6 +117,7 @@ namespace JiwaAPITests.SalesOrders
             };
             SalesOrderPaymentDto paymentPatchRes = await Client.PatchAsync(paymentPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(paymentPatchRes.PaymentID, Is.EqualTo(paymentPatchReq.PaymentID));
             Assert.That(paymentPatchRes.PaymentID, Is.EqualTo(paymentCreateRes.PaymentID));
             Assert.That(paymentPatchRes.AmountPaid, Is.EqualTo(paymentPatchReq.AmountPaid));
 
@@ -150,4 +151,5 @@ namespace JiwaAPITests.SalesOrders
         #endregion
     }
 }
+
 

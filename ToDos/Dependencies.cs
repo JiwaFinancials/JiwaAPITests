@@ -85,6 +85,7 @@ namespace JiwaAPITests.ToDos
 
             DependencyDto dependencyPatchRes = await Client.PatchAsync(dependencyPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(dependencyPatchRes.DepID, Is.EqualTo(dependencyPatchReq.DepID));
             Assert.That(dependencyPatchRes.DepID, Is.EqualTo(dependencyCreateRes.DepID));
             Assert.That(dependencyPatchRes.DependencyRecID, Is.EqualTo(dependencyPatchReq.DependencyRecID));
 
@@ -125,3 +126,4 @@ namespace JiwaAPITests.ToDos
         #endregion
     }
 }
+

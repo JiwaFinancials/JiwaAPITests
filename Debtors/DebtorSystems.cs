@@ -74,6 +74,7 @@ namespace JiwaAPITests.Debtors
             };
             DebtorSystem systemPatchRes = await Client.PatchAsync(systemPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(systemPatchRes.SystemID, Is.EqualTo(systemPatchReq.SystemID));
             Assert.That(systemPatchRes.Description, Is.EqualTo(systemPatchReq.Description));
 
             // Delete the debtor system
@@ -242,6 +243,7 @@ namespace JiwaAPITests.Debtors
                 };
                 DebtorSystemField fieldPatchRes = await Client.PatchAsync(fieldPatchReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+                Assert.That(fieldPatchRes.SystemFieldID, Is.EqualTo(fieldPatchReq.SystemFieldID));
                 Assert.That(fieldPatchRes.Contents, Is.EqualTo(fieldPatchReq.Contents));
             }
 
@@ -271,4 +273,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

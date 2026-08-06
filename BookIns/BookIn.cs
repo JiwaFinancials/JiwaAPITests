@@ -53,6 +53,7 @@ namespace JiwaAPITests.BookIns
 
             BookInDto bookInPatchRes = await Client.PatchAsync(bookInPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(bookInPatchRes.BookInID, Is.EqualTo(bookInPatchReq.BookInID));
             Assert.That(bookInPatchRes.BookInID, Is.EqualTo(bookInCreateRes.BookInID));
             Assert.That(bookInPatchRes.BookInDate, Is.Not.Null);
             Assert.That(bookInPatchReq.BookInDate, Is.Not.Null);
@@ -150,4 +151,5 @@ namespace JiwaAPITests.BookIns
         #endregion
     }
 }
+
 

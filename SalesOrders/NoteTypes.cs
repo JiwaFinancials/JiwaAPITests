@@ -49,6 +49,7 @@ namespace JiwaAPITests.SalesOrders
             };
             SalesOrderNoteTypeDto noteTypePatchRes = await Client.PatchAsync(noteTypePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(noteTypePatchRes.NoteTypeID, Is.EqualTo(noteTypePatchReq.NoteTypeID));
             Assert.That(noteTypePatchRes.NoteTypeID, Is.EqualTo(noteTypeCreateRes.NoteTypeID));
             Assert.That(noteTypePatchRes.Description, Is.EqualTo(noteTypePatchReq.Description));
 
@@ -80,4 +81,5 @@ namespace JiwaAPITests.SalesOrders
         #endregion
     }
 }
+
 

@@ -129,6 +129,7 @@ namespace JiwaAPITests.Debtors
 
                 DebtorGroupMembership groupMembershipPATCHRes = await Client.PatchAsync(groupMembershipPATCHReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+                Assert.That(groupMembershipPATCHRes.GroupMembershipID, Is.EqualTo(groupMembershipPATCHReq.GroupMembershipID));
                 Assert.That(groupMembershipPATCHRes.IsDefault, Is.True);
 
                 // Read the first created group membership and ensure it is no longer the default
@@ -205,4 +206,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

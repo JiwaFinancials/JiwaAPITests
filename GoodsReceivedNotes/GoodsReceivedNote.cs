@@ -54,6 +54,7 @@ namespace JiwaAPITests.GoodsReceivedNotes
 
             GoodsReceivedNoteDto grnPatchRes = await Client.PatchAsync(grnPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(grnPatchRes.GRNID, Is.EqualTo(grnPatchReq.GRNID));
             Assert.That(grnPatchRes.GRNID, Is.EqualTo(grnCreateRes.GRNID));
             Assert.That(grnPatchRes.Reference, Is.EqualTo(grnPatchReq.Reference));
 
@@ -156,4 +157,5 @@ namespace JiwaAPITests.GoodsReceivedNotes
         #endregion
     }
 }
+
 

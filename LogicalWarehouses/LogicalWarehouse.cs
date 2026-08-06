@@ -45,6 +45,7 @@ namespace JiwaAPITests.LogicalWarehouses
 
             IN_Logical patchedLogicalWarehouse = await Client.PatchAsync(logicalWarehousePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(patchedLogicalWarehouse.IN_LogicalID, Is.EqualTo(logicalWarehousePatchReq.IN_LogicalID));
             Assert.That(patchedLogicalWarehouse.IN_LogicalID, Is.EqualTo(targetLogicalWarehouse.IN_LogicalID));
 
             // Read the current logical warehouse after the change.
@@ -71,3 +72,4 @@ namespace JiwaAPITests.LogicalWarehouses
         #endregion
     }
 }
+

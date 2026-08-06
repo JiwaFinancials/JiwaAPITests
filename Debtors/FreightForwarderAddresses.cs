@@ -59,6 +59,7 @@ namespace JiwaAPITests.Debtors
             };
             DebtorFreightForwarderAddress addressPatchRes = await Client.PatchAsync(addressPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(addressPatchRes.FreightForwarderAddressID, Is.EqualTo(addressPatchReq.FreightForwarderAddressID));
             Assert.That(addressPatchRes.Address1, Is.EqualTo(addressPatchReq.Address1));
 
             // Delete the freight forwarder address
@@ -141,4 +142,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

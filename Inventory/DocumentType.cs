@@ -40,6 +40,7 @@ namespace JiwaAPITests.Inventory
             };
             InventoryDocumentTypeDto patchRes = await Client.PatchAsync(patchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(patchRes.DocumentTypeID, Is.EqualTo(patchReq.DocumentTypeID));
             Assert.That(patchRes.DocumentTypeID, Is.EqualTo(createRes.DocumentTypeID));
 
             // Delete the document type
@@ -49,4 +50,5 @@ namespace JiwaAPITests.Inventory
         #endregion
     }
 }
+
 

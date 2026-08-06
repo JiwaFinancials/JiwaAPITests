@@ -67,6 +67,7 @@ namespace JiwaAPITests.ServiceManager
 
             ServiceManagerActivity activityPatchRes = await Client.PatchAsync(activityPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(activityPatchRes.ActivityID, Is.EqualTo(activityPatchReq.ActivityID));
             Assert.That(activityPatchRes.ActivityID, Is.EqualTo(activityCreateRes.ActivityID));
             Assert.That(activityPatchRes.Name, Is.EqualTo(activityPatchReq.Name));
 
@@ -87,8 +88,9 @@ namespace JiwaAPITests.ServiceManager
                     IsDefault = true
                 };
 
-                _ = await Client.PatchAsync(restoreDefaultActivityReq);
+                var restoreDefaultActivityReqRes = await Client.PatchAsync(restoreDefaultActivityReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+                Assert.That(restoreDefaultActivityReqRes.ActivityID, Is.EqualTo(restoreDefaultActivityReq.ActivityID));
             }
 
             // Delete the created service manager activity.
@@ -125,4 +127,5 @@ namespace JiwaAPITests.ServiceManager
         #endregion
     }
 }
+
 

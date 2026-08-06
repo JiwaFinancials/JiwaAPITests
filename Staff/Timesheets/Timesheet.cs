@@ -64,6 +64,7 @@ namespace JiwaAPITests.Staff.Timesheets
 
             StaffTimesheetDto timesheetPatchRes = await Client.PatchAsync(timesheetPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(timesheetPatchRes.TimesheetID, Is.EqualTo(timesheetPatchReq.TimesheetID));
             Assert.That(timesheetPatchRes.TimesheetID, Is.EqualTo(timesheetCreateRes.TimesheetID));
             Assert.That(timesheetPatchRes.Reference, Is.EqualTo(timesheetPatchReq.Reference));
 
@@ -109,3 +110,4 @@ namespace JiwaAPITests.Staff.Timesheets
         #endregion
     }
 }
+

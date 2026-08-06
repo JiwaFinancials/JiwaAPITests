@@ -115,6 +115,7 @@ namespace JiwaAPITests.WarehouseTransfersIn
 
             WarehouseTransferInLineDto linePatchRes = await Client.PatchAsync(linePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(linePatchRes.WarehouseTransferInLineID, Is.EqualTo(linePatchReq.WarehouseTransferInLineID));
             Assert.That(linePatchRes.WarehouseTransferInLineID, Is.EqualTo(firstLine.WarehouseTransferInLineID));
             Assert.That(linePatchRes.Ref, Is.EqualTo(updatedReference));
 
@@ -126,3 +127,4 @@ namespace JiwaAPITests.WarehouseTransfersIn
         #endregion
     }
 }
+

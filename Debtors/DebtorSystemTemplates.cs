@@ -47,6 +47,7 @@ namespace JiwaAPITests.Debtors
 
             DebtorSystemTemplate patchRes = await Client.PatchAsync(patchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(patchRes.DebtorSystemTemplateID, Is.EqualTo(patchReq.DebtorSystemTemplateID));
             Assert.That(patchRes.Name, Is.EqualTo(patchReq.Name));
             Assert.That(patchRes.IsEnabled, Is.EqualTo(patchReq.IsEnabled));
 
@@ -136,6 +137,7 @@ namespace JiwaAPITests.Debtors
 
                 DebtorSystemTemplateField fieldPatchRes = await Client.PatchAsync(fieldPatchReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+                Assert.That(fieldPatchRes.DebtorSystemTemplateFieldID, Is.EqualTo(fieldPatchReq.DebtorSystemTemplateFieldID));
                 Assert.That(fieldPatchRes.Name, Is.EqualTo(fieldPatchReq.Name));
 
                 // Delete the field
@@ -236,6 +238,7 @@ namespace JiwaAPITests.Debtors
 
                 DebtorSystemTemplateReference referencePatchRes = await Client.PatchAsync(referencePatchReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+                Assert.That(referencePatchRes.DebtorSystemTemplateReferenceID, Is.EqualTo(referencePatchReq.DebtorSystemTemplateReferenceID));
                 Assert.That(referencePatchRes.AssemblyName, Is.EqualTo(referencePatchReq.AssemblyName));
 
                 // Delete the reference
@@ -269,4 +272,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

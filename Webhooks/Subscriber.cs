@@ -47,6 +47,7 @@ namespace JiwaAPITests.Webhooks
 
             SY_WebhookSubscriber subscriberPatchRes = await Client.PatchAsync(subscriberPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(subscriberPatchRes.RecID.ToString(), Is.EqualTo(subscriberPatchReq.SubscriberID));
             Assert.That(subscriberPatchRes.Name, Is.EqualTo(subscriberPatchReq.Name));
             Assert.That(subscriberPatchRes.IsEnabled, Is.False);
 
@@ -70,3 +71,4 @@ namespace JiwaAPITests.Webhooks
         #endregion
     }
 }
+

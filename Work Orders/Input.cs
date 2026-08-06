@@ -88,6 +88,7 @@ namespace JiwaAPITests.WorkOrders
 
             WorkOrderInput inputPatchRes = await Client.PatchAsync(inputPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(inputPatchRes.InputID, Is.EqualTo(inputPatchReq.InputID));
             Assert.That(inputPatchRes.InputID, Is.EqualTo(inputCreateRes.InputID));
             Assert.That(inputPatchRes.Quantity, Is.EqualTo(inputPatchReq.Quantity));
 
@@ -122,4 +123,5 @@ namespace JiwaAPITests.WorkOrders
         #endregion
     }
 }
+
 

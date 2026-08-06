@@ -63,6 +63,7 @@ namespace JiwaAPITests.Staff
 
             StaffDepartmentDto departmentPatchRes = await Client.PatchAsync(departmentPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(departmentPatchRes.DepartmentID, Is.EqualTo(departmentPatchReq.DepartmentID));
             Assert.That(departmentPatchRes.DepartmentID, Is.EqualTo(departmentCreateRes.DepartmentID));
             Assert.That(departmentPatchRes.Name, Is.EqualTo(departmentPatchReq.Name));
 
@@ -109,3 +110,4 @@ namespace JiwaAPITests.Staff
         #endregion
     }
 }
+

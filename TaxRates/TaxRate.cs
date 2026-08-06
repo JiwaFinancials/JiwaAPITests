@@ -50,6 +50,7 @@ namespace JiwaAPITests.TaxRates
 
             TaxRateDto taxRatePatchRes = await Client.PatchAsync(taxRatePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(taxRatePatchRes.TaxID, Is.EqualTo(taxRatePatchReq.TaxID));
             Assert.That(taxRatePatchRes.TaxID, Is.EqualTo(taxRateCreateRes.TaxID));
             Assert.That(taxRatePatchRes.Description, Is.EqualTo(taxRatePatchReq.Description));
 
@@ -72,3 +73,4 @@ namespace JiwaAPITests.TaxRates
         #endregion
     }
 }
+

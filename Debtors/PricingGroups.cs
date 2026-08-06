@@ -83,6 +83,7 @@ namespace JiwaAPITests.Debtors
 
             DebtorPricingGroup pricingGroupPATCHRes = await Client.PatchAsync(pricingGroupPATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(pricingGroupPATCHRes.PricingGroupID, Is.EqualTo(pricingGroupPATCHReq.PricingGroupID));
             Assert.That(pricingGroupPATCHRes.Description, Is.EqualTo(pricingGroupPATCHReq.Description));
 
             // Read the second created pricing group
@@ -124,4 +125,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

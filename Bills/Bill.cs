@@ -162,6 +162,7 @@ namespace JiwaAPITests.Bills
             };
             JiwaFinancials.Jiwa.JiwaServiceModel.Bills.BillInput billInputItemPatchRes = await Client.PatchAsync(billInputItemPachReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(billInputItemPatchRes.InputID, Is.EqualTo(billInputItemPachReq.InputID));
             Assert.That(billInputItemPatchRes.Quantity, Is.EqualTo(billInputItemPachReq.Quantity));
 
             // Delete the bill
@@ -183,3 +184,4 @@ namespace JiwaAPITests.Bills
         #endregion
     }
 }
+

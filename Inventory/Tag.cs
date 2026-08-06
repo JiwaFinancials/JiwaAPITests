@@ -41,6 +41,7 @@ namespace JiwaAPITests.Inventory
             };
             InventoryTag tagPatchRes = await Client.PatchAsync(tagPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagPatchRes.RecID, Is.EqualTo(tagPatchReq.RecID));
             Assert.That(tagPatchRes.Text, Is.EqualTo(tagPatchReq.Text));
 
             // Remove cache entry for inventory tags (internal endpoint)
@@ -74,4 +75,5 @@ namespace JiwaAPITests.Inventory
         #endregion
     }
 }
+
 

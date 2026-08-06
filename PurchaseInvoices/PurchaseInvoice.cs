@@ -61,6 +61,7 @@ namespace JiwaAPITests.PurchaseInvoices
 
             PurchaseInvoiceDto purchaseInvoicePatchRes = await Client.PatchAsync(purchaseInvoicePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(purchaseInvoicePatchRes.PurchaseInvoiceID, Is.EqualTo(purchaseInvoicePatchReq.PurchaseInvoiceID));
             Assert.That(purchaseInvoicePatchRes.PurchaseInvoiceID, Is.EqualTo(purchaseInvoiceCreateRes.PurchaseInvoiceID));
             Assert.That(purchaseInvoicePatchRes.DueDate, Is.EqualTo(purchaseInvoicePatchReq.DueDate));
 
@@ -134,4 +135,5 @@ namespace JiwaAPITests.PurchaseInvoices
         #endregion
     }
 }
+
 

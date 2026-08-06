@@ -105,6 +105,7 @@ namespace JiwaAPITests.ServiceManager
 
             LabourLine labourLinePatchRes = await Client.PatchAsync(labourLinePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(labourLinePatchRes.LabourLineID, Is.EqualTo(labourLinePatchReq.LabourLineID));
             Assert.That(labourLinePatchRes.LabourLineID, Is.EqualTo(labourLineCreateRes.LabourLineID));
             Assert.That(labourLinePatchRes.Description, Is.EqualTo(labourLinePatchReq.Description));
 
@@ -289,6 +290,7 @@ namespace JiwaAPITests.ServiceManager
 
             LabourLineDetail lineDetailPatchRes = await Client.PatchAsync(lineDetailPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(lineDetailPatchRes.LabourLineDetailID, Is.EqualTo(lineDetailPatchReq.LabourLineDetailID));
             Assert.That(lineDetailPatchRes.LabourLineDetailID, Is.EqualTo(persistedLineDetail.LabourLineDetailID));
             Assert.That(lineDetailPatchRes.Quantity, Is.EqualTo(lineDetailPatchReq.Quantity));
 
@@ -369,4 +371,5 @@ namespace JiwaAPITests.ServiceManager
         #endregion
     }
 }
+
 

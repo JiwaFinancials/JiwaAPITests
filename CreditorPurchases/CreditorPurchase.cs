@@ -76,6 +76,7 @@ namespace JiwaAPITests.CreditorPurchases
 
             CreditorBatchTrans purchasePatchRes = await Client.PatchAsync(purchasePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(purchasePatchRes.BatchID, Is.EqualTo(purchasePatchReq.CreditorPurchaseID));
             Assert.That(purchasePatchRes.Description, Is.EqualTo(purchasePatchReq.Description));
 
             // Remove the created creditor purchase
@@ -232,6 +233,7 @@ namespace JiwaAPITests.CreditorPurchases
 
             CRBatchTranLine purchaseLinePatchRes = await Client.PatchAsync(purchaseLinePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(purchaseLinePatchRes.CRBatchTranLineID, Is.EqualTo(purchaseLinePatchReq.LineID));
             Assert.That(purchaseLinePatchRes.CRBatchTranLineID, Is.EqualTo(purchaseLineCreateRes.CRBatchTranLineID));
             Assert.That(purchaseLinePatchRes.HomeTransAmount, Is.EqualTo(purchaseLinePatchReq.HomeTransAmount));
             Assert.That(purchaseLinePatchRes.DueDate, Is.EqualTo(purchaseLinePatchReq.DueDate));
@@ -366,4 +368,5 @@ namespace JiwaAPITests.CreditorPurchases
 
     }
 }
+
 

@@ -41,6 +41,7 @@ namespace JiwaAPITests.Creditors
             };
             Creditor accountPatchRes = await Client.PatchAsync(accountPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(accountPatchRes.CreditorID, Is.EqualTo(accountPatchReq.CreditorID));
             Assert.That(accountPatchRes.Name, Is.EqualTo(accountPatchReq.Name));
 
             // Remove the created creditor
@@ -66,4 +67,5 @@ namespace JiwaAPITests.Creditors
         #endregion
     }
 }
+
 

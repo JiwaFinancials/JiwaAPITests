@@ -80,6 +80,7 @@ namespace JiwaAPITests.Creditors
 
             CreditorNoteDto notePatchRes = await Client.PatchAsync(notePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(notePatchRes.NoteID, Is.EqualTo(notePatchReq.NoteID));
             Assert.That(notePatchRes.NoteID, Is.EqualTo(noteCreateRes.NoteID));
             Assert.That(notePatchRes.NoteText, Is.EqualTo(notePatchReq.NoteText));
 
@@ -122,4 +123,5 @@ namespace JiwaAPITests.Creditors
         #endregion
     }
 }
+
 

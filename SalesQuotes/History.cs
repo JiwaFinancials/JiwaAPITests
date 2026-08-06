@@ -91,6 +91,7 @@ namespace JiwaAPITests.SalesQuotes
             historyPatchReq.Notes = "Updated notes " + RandomString(6);
             SalesQuoteHistoryDto historyPatchRes = await Client.PatchAsync(historyPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(historyPatchRes.QuoteHistoryID, Is.EqualTo(historyPatchReq.QuoteHistoryID));
             Assert.That(historyPatchRes.QuoteHistoryID, Is.EqualTo(quoteHistoryID));
             Assert.That(historyPatchRes.Notes, Is.EqualTo(historyPatchReq.Notes));
 

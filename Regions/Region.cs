@@ -44,6 +44,7 @@ namespace JiwaAPITests.Regions
 
             JiwaFinancials.Jiwa.JiwaServiceModel.Regions.Region regionPatchRes = await Client.PatchAsync(regionPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(regionPatchRes.RegionID, Is.EqualTo(regionPatchReq.RegionID));
             Assert.That(regionPatchRes.RegionID, Is.EqualTo(regionCreateRes.RegionID));
             Assert.That(regionPatchRes.Name, Is.EqualTo(regionPatchReq.Name));
 
@@ -72,4 +73,5 @@ namespace JiwaAPITests.Regions
         #endregion
     }
 }
+
 

@@ -56,6 +56,7 @@ namespace JiwaAPITests.SalesOrders
 
             SalesOrderCreditReasonDto creditReasonPatchRes = await Client.PatchAsync(creditReasonPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(creditReasonPatchRes.CreditReasonID, Is.EqualTo(creditReasonPatchReq.CreditReasonID));
             Assert.That(creditReasonPatchRes.CreditReasonID, Is.EqualTo(creditReasonCreateRes.CreditReasonID));
             Assert.That(creditReasonPatchRes.CreditReasonDescription, Is.EqualTo(creditReasonPatchReq.CreditReasonDescription));
 
@@ -104,4 +105,5 @@ namespace JiwaAPITests.SalesOrders
         #endregion
     }
 }
+
 

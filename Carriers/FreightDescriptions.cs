@@ -86,6 +86,7 @@ namespace JiwaAPITests.Carriers
 
             CarrierFreightDescription freightDescriptionPatchRes = await Client.PatchAsync(freightDescriptionPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(freightDescriptionPatchRes.FreightDescriptionID, Is.EqualTo(freightDescriptionPatchReq.FreightDescriptionID));
             Assert.That(freightDescriptionPatchRes.FreightDescriptionID, Is.EqualTo(freightDescriptionCreateRes.FreightDescriptionID));
             Assert.That(freightDescriptionPatchRes.Description, Is.EqualTo(freightDescriptionPatchReq.Description));
 
@@ -120,4 +121,5 @@ namespace JiwaAPITests.Carriers
         #endregion
     }
 }
+
 

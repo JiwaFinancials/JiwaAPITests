@@ -58,6 +58,7 @@ namespace JiwaAPITests.SalesOrders
             };
             SalesOrderPaymentTypeDto paymentTypePatchRes = await Client.PatchAsync(paymentTypePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(paymentTypePatchRes.PaymentTypeID, Is.EqualTo(paymentTypePatchReq.PaymentTypeID));
             Assert.That(paymentTypePatchRes.PaymentTypeID, Is.EqualTo(paymentTypeCreateRes.PaymentTypeID));
             Assert.That(paymentTypePatchRes.Name, Is.EqualTo(paymentTypePatchReq.Name));
 
@@ -104,4 +105,5 @@ namespace JiwaAPITests.SalesOrders
         #endregion
     }
 }
+
 

@@ -56,6 +56,7 @@ namespace JiwaAPITests.PurchaseInvoices
 
             PurchaseInvoiceLineDto linePatchRes = await Client.PatchAsync(linePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(linePatchRes.PurchaseInvoiceLineID, Is.EqualTo(linePatchReq.PurchaseInvoiceLineID));
             Assert.That(linePatchRes.PurchaseInvoiceLineID, Is.EqualTo(lineGetRes.PurchaseInvoiceLineID));
             Assert.That(linePatchRes.Quantity, Is.EqualTo(updatedQuantity));
 
@@ -67,3 +68,4 @@ namespace JiwaAPITests.PurchaseInvoices
         #endregion
     }
 }
+

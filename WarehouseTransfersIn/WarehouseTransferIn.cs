@@ -98,6 +98,7 @@ namespace JiwaAPITests.WarehouseTransfersIn
             // Verify update
             transferGetRes = await Client.GetAsync(transferGetReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(transferPatchRes.WarehouseTransferInID, Is.EqualTo(transferPatchReq.WarehouseTransferInID));
             Assert.That(transferGetRes.Notes, Is.EqualTo(transferPatchReq.Notes));
         }
         #endregion
@@ -184,4 +185,5 @@ namespace JiwaAPITests.WarehouseTransfersIn
         #endregion
     }
 }
+
 

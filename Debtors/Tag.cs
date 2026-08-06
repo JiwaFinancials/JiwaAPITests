@@ -40,6 +40,7 @@ namespace JiwaAPITests.Debtors
             };
             DebtorTag tagPatchRes = await Client.PatchAsync(tagPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagPatchRes.RecID, Is.EqualTo(tagPatchReq.RecID));
             Assert.That(tagPatchRes.Text, Is.EqualTo(tagPatchReq.Text));            
 
             // Remove the created tag
@@ -65,4 +66,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

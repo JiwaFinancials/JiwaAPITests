@@ -67,6 +67,7 @@ namespace JiwaAPITests.WorkOrders
 
             WorkOrderStage stagePatchRes = await Client.PatchAsync(stagePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(stagePatchRes.StageID, Is.EqualTo(stagePatchReq.StageID));
             Assert.That(stagePatchRes.StageID, Is.EqualTo(stageCreateRes.StageID));
             Assert.That(stagePatchRes.Name, Is.EqualTo(stagePatchReq.Name));
 
@@ -100,4 +101,5 @@ namespace JiwaAPITests.WorkOrders
         #endregion
     }
 }
+
 

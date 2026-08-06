@@ -38,6 +38,7 @@ namespace JiwaAPITests.Inventory
             };
             var patchRes = await Client.PatchAsync(patchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(patchRes.CategoryID, Is.EqualTo(patchReq.CategoryID));
             Assert.That(patchRes.CategoryID, Is.EqualTo(createRes.CategoryID));
 
             // Remove category cache entry (internal endpoint)
@@ -83,6 +84,7 @@ namespace JiwaAPITests.Inventory
             };
             var patchRes = await Client.PatchAsync(patchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(patchRes.CategoryID, Is.EqualTo(patchReq.CategoryID));
             Assert.That(patchRes.CategoryID, Is.EqualTo(createRes.CategoryID));
 
             // Delete the category
@@ -121,6 +123,7 @@ namespace JiwaAPITests.Inventory
             };
             var patchRes = await Client.PatchAsync(patchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(patchRes.CategoryID, Is.EqualTo(patchReq.CategoryID));
             Assert.That(patchRes.CategoryID, Is.EqualTo(createRes.CategoryID));
 
             // Delete the category
@@ -159,6 +162,7 @@ namespace JiwaAPITests.Inventory
             };
             var patchRes = await Client.PatchAsync(patchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(patchRes.CategoryID, Is.EqualTo(patchReq.CategoryID));
             Assert.That(patchRes.CategoryID, Is.EqualTo(createRes.CategoryID));
 
             // Delete the category
@@ -197,6 +201,7 @@ namespace JiwaAPITests.Inventory
             };
             var patchRes = await Client.PatchAsync(patchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(patchRes.CategoryID, Is.EqualTo(patchReq.CategoryID));
             Assert.That(patchRes.CategoryID, Is.EqualTo(createRes.CategoryID));
 
             // Delete the category
@@ -206,4 +211,5 @@ namespace JiwaAPITests.Inventory
         #endregion
     }
 }
+
 

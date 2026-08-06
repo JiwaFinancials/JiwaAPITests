@@ -48,6 +48,7 @@ namespace JiwaAPITests.Shipments
 
             ShipmentDto shipmentPatchRes = await Client.PatchAsync(shipmentPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(shipmentPatchRes.ShipmentID, Is.EqualTo(shipmentPatchReq.ShipmentID));
             Assert.That(shipmentPatchRes.ShipmentID, Is.EqualTo(shipmentCreateRes.ShipmentID));
             Assert.That(shipmentPatchRes.DeliveryNotes, Is.EqualTo(shipmentPatchReq.DeliveryNotes));
 
@@ -221,4 +222,5 @@ namespace JiwaAPITests.Shipments
         #endregion
     }
 }
+
 

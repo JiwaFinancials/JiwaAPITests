@@ -119,6 +119,7 @@ namespace JiwaAPITests.SalesQuotes
 
             SalesQuoteDocumentDto documentPatchRes = await Client.PatchAsync(documentPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(documentPatchRes.DocumentID, Is.EqualTo(documentPatchReq.DocumentID));
             Assert.That(documentPatchRes.DocumentID, Is.EqualTo(documentCreateRes.DocumentID));
             Assert.That(documentPatchRes.Description, Is.EqualTo(documentPatchReq.Description));
 
@@ -152,4 +153,5 @@ namespace JiwaAPITests.SalesQuotes
         #endregion
     }
 }
+
 

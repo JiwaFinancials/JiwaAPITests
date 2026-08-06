@@ -88,6 +88,7 @@ namespace JiwaAPITests.Carriers
 
             CarrierService servicePatchRes = await Client.PatchAsync(servicePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(servicePatchRes.ServiceID, Is.EqualTo(servicePatchReq.ServiceID));
             Assert.That(servicePatchRes.ServiceID, Is.EqualTo(serviceCreateRes.ServiceID));
             Assert.That(servicePatchRes.ServiceName, Is.EqualTo(servicePatchReq.ServiceName));
 
@@ -122,4 +123,5 @@ namespace JiwaAPITests.Carriers
         #endregion
     }
 }
+
 

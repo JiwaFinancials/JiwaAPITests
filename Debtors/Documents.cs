@@ -60,6 +60,7 @@ namespace JiwaAPITests.Debtors
             };
             Document documentPatchRes = await Client.PatchAsync(documentPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(documentPatchRes.DocumentID, Is.EqualTo(documentPatchReq.DocumentID));
             Assert.That(documentPatchRes.Description, Is.EqualTo(documentPatchReq.Description));
 
             // Delete the document
@@ -142,4 +143,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

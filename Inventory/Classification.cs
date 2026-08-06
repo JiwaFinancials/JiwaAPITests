@@ -41,6 +41,7 @@ namespace JiwaAPITests.Inventory
             };
             InventoryClassification classificationPatchRes = await Client.PatchAsync(classificationPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(classificationPatchRes.ClassificationID, Is.EqualTo(classificationPatchReq.ClassificationID));
             Assert.That(classificationPatchRes.Description, Is.EqualTo(classificationPatchReq.Description));
 
             // Remove cache entry for inventory classifications (internal endpoint)
@@ -69,4 +70,5 @@ namespace JiwaAPITests.Inventory
         #endregion
     }
 }
+
 

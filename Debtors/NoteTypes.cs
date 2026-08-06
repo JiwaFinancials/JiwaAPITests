@@ -57,6 +57,7 @@ namespace JiwaAPITests.Debtors
 
             NoteType noteTypePATCHRes = await Client.PatchAsync(noteTypePATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(noteTypePATCHRes.NoteTypeID, Is.EqualTo(noteTypePATCHReq.NoteTypeID));
             Assert.That(noteTypePATCHRes.Description, Is.EqualTo(noteTypePATCHReq.Description));
 
             // Delete the note type
@@ -86,4 +87,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

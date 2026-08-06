@@ -45,6 +45,7 @@ namespace JiwaAPITests.Creditors
             };
             CreditorTag tagPatchRes = await Client.PatchAsync(tagPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagPatchRes.RecID, Is.EqualTo(tagPatchReq.RecID));
             Assert.That(tagPatchRes.Text, Is.EqualTo(tagPatchReq.Text));
 
             // Remove cache entry for creditor tags (internal endpoint)
@@ -83,4 +84,5 @@ namespace JiwaAPITests.Creditors
         #endregion
     }
 }
+
 

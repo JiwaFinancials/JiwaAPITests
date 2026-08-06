@@ -83,6 +83,7 @@ namespace JiwaAPITests.WarehouseTransfersOut
 
             WarehouseTransferOutDto transferPatchRes = await Client.PatchAsync(transferPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(transferPatchRes.WarehouseTransferOutID, Is.EqualTo(transferPatchReq.WarehouseTransferOutID));
             Assert.That(transferPatchRes.WarehouseTransferOutID, Is.EqualTo(transferCreateRes.WarehouseTransferOutID));
             Assert.That(transferPatchRes.Notes, Is.EqualTo(transferPatchReq.Notes));
 
@@ -169,3 +170,4 @@ namespace JiwaAPITests.WarehouseTransfersOut
         #endregion
     }
 }
+

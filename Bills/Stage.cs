@@ -128,6 +128,7 @@ namespace JiwaAPITests.Bills
 
             BillStageDto stagePatchRes = await Client.PatchAsync(stagePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(stagePatchRes.StageID, Is.EqualTo(stagePatchReq.StageID));
             Assert.That(stagePatchRes.StageID, Is.EqualTo(stageCreateRes.StageID));
             Assert.That(stagePatchRes.Name, Is.EqualTo(stagePatchReq.Name));
 
@@ -259,6 +260,7 @@ namespace JiwaAPITests.Bills
 
             BillInstructionDto instructionPatchRes = await Client.PatchAsync(instructionPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(instructionPatchRes.InstructionID, Is.EqualTo(instructionPatchReq.InstructionID));
             Assert.That(instructionPatchRes.InstructionID, Is.EqualTo(instructionCreateRes.InstructionID));
             Assert.That(instructionPatchRes.InstructionText, Is.EqualTo(instructionPatchReq.InstructionText));
 
@@ -303,4 +305,5 @@ namespace JiwaAPITests.Bills
         }
     }
 }
+
 

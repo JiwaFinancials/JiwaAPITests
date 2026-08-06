@@ -1,4 +1,4 @@
-﻿using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
+using JiwaFinancials.Jiwa.JiwaServiceModel.Inventory;
 using JiwaFinancials.Jiwa.JiwaServiceModel;
 using System;
 using System.Collections.Generic;
@@ -42,6 +42,7 @@ namespace JiwaAPITests.WorkOrders
 
             JiwaFinancials.Jiwa.JiwaServiceModel.WorkOrders.WorkOrder workOrderPatchRes = await Client.PatchAsync(workOrderPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(workOrderPatchRes.WorkOrderID, Is.EqualTo(workOrderPatchReq.WorkOrderID));
             Assert.That(workOrderPatchRes.WorkOrderID, Is.EqualTo(workOrderCreateRes.WorkOrderID));
             Assert.That(workOrderPatchRes.Reference, Is.EqualTo(workOrderPatchReq.Reference));
             Assert.That(workOrderPatchRes.DateRequired, Is.EqualTo(workOrderPatchReq.DateRequired));
@@ -73,3 +74,4 @@ namespace JiwaAPITests.WorkOrders
         #endregion
     }
 }
+

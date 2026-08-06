@@ -70,6 +70,7 @@ namespace JiwaAPITests.Webhooks
 
             Subscription subscriptionPatchRes = await Client.PatchAsync(subscriptionPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(subscriptionPatchRes.SubscriptionID, Is.EqualTo(subscriptionPatchReq.SubscriptionID));
             Assert.That(subscriptionPatchRes.URL, Is.EqualTo(updatedURL));
 
             // Verify update
@@ -107,3 +108,4 @@ namespace JiwaAPITests.Webhooks
         #endregion
     }
 }
+

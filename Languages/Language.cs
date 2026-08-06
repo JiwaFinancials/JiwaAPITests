@@ -54,6 +54,7 @@ namespace JiwaAPITests.Languages
 
             JiwaFinancials.Jiwa.JiwaServiceModel.Languages.Language languagePatchRes = await Client.PatchAsync(languagePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(languagePatchRes.LanguageID, Is.EqualTo(languagePatchReq.LanguageID));
             Assert.That(languagePatchRes.LanguageID, Is.EqualTo(languageCreateRes.LanguageID));
             Assert.That(languagePatchRes.Description, Is.EqualTo(languagePatchReq.Description));
 
@@ -82,5 +83,6 @@ namespace JiwaAPITests.Languages
         #endregion
     }
 }
+
 
 

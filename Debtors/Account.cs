@@ -52,6 +52,7 @@ namespace JiwaAPITests.Debtors
             };
             Debtor accountPatchRes = await Client.PatchAsync(accountPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(accountPatchRes.DebtorID, Is.EqualTo(accountPatchReq.DebtorID));
             Assert.That(accountPatchRes.Name, Is.EqualTo(accountPatchReq.Name));
             Assert.That(accountPatchRes.EmailAddress, Is.EqualTo(accountPatchReq.EmailAddress));
 
@@ -142,6 +143,7 @@ namespace JiwaAPITests.Debtors
             };
             DebtorContactName debtorContactNamePATCHRes = await Client.PatchAsync(debtorContactNamePATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(debtorContactNamePATCHRes.ContactNameID, Is.EqualTo(debtorContactNamePATCHReq.ContactNameID));
             Assert.That(debtorContactNamePATCHRes.EmailAddress, Is.EqualTo(debtorContactNamePATCHReq.EmailAddress));
 
             // Get the patched account and ensure it matches what we patched
@@ -427,6 +429,7 @@ namespace JiwaAPITests.Debtors
 
             DebtorContactNameTag tagPATCHRes = await Client.PatchAsync(tagPATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(tagPATCHRes.RecID, Is.EqualTo(tagPATCHReq.RecID));
             Assert.That(tagPATCHRes.Text, Is.EqualTo(tagPATCHReq.Text));
 
             // Remove the created tag
@@ -537,6 +540,7 @@ namespace JiwaAPITests.Debtors
 
             DebtorPartNumber debtorPartNumberPATCHRes = await Client.PatchAsync(debtorPartNumberPATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(debtorPartNumberPATCHRes.PartNumberID, Is.EqualTo(debtorPartNumberPATCHReq.PartNumberID));
             Assert.That(debtorPartNumberPATCHRes.DebtorPartNo, Is.EqualTo(debtorPartNumberPATCHReq.DebtorPartNo));
             Assert.That(debtorPartNumberPATCHRes.DebtorBarcode, Is.EqualTo(debtorPartNumberPATCHReq.DebtorBarcode));
 
@@ -677,6 +681,7 @@ namespace JiwaAPITests.Debtors
             };
             DebtorDeliveryAddress debtorDeliveryAddressPATCHRes = await Client.PatchAsync(debtorDeliveryAddressPATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(debtorDeliveryAddressPATCHRes.DeliveryAddressID, Is.EqualTo(debtorDeliveryAddressPATCHReq.DeliveryAddressID));
             Assert.That(debtorDeliveryAddressPATCHRes.EmailAddress, Is.EqualTo(debtorDeliveryAddressPATCHReq.EmailAddress));
 
             // Get the patched account and ensure it matches what we patched
@@ -728,6 +733,7 @@ namespace JiwaAPITests.Debtors
             };
             debtorDeliveryAddressPATCHRes = await Client.PatchAsync(debtorDeliveryAddressPATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(debtorDeliveryAddressPATCHRes.DeliveryAddressID, Is.EqualTo(debtorDeliveryAddressPATCHReq.DeliveryAddressID));
             Assert.That(debtorDeliveryAddressPATCHRes.IsDefault, Is.EqualTo(debtorDeliveryAddressPATCHReq.IsDefault));
 
             // Get the patched account and ensure it matches what we patched
@@ -950,4 +956,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

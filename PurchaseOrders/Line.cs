@@ -99,6 +99,7 @@ namespace JiwaAPITests.PurchaseOrders
 
             PurchaseOrderLine linePatchRes = await Client.PatchAsync(linePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(linePatchRes.PurchaseOrderLineID, Is.EqualTo(linePatchReq.PurchaseOrderLineID));
             Assert.That(linePatchRes.PurchaseOrderLineID, Is.EqualTo(lineCreateRes.PurchaseOrderLineID));
             Assert.That(linePatchRes.Quantity, Is.EqualTo(linePatchReq.Quantity));
 
@@ -132,4 +133,5 @@ namespace JiwaAPITests.PurchaseOrders
         #endregion
     }
 }
+
 

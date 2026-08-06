@@ -86,6 +86,7 @@ namespace JiwaAPITests.SalesQuotes
             };
             JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuote salesQuotePatchRes = await Client.PatchAsync(salesQuotePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(salesQuotePatchRes.QuoteID, Is.EqualTo(salesQuotePatchReq.QuoteID));
             Assert.That(salesQuotePatchRes.Lines.Count, Is.EqualTo(2));
             Assert.That(salesQuotePatchRes.Lines[1].DiscountedPrice, Is.EqualTo(salesQuotePatchReq.Lines[0].DiscountedPrice));
 
@@ -100,6 +101,7 @@ namespace JiwaAPITests.SalesQuotes
             };
             JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuoteLine salesQuoteLinePatchRes = await Client.PatchAsync(salesQuoteLinePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(salesQuoteLinePatchRes.QuoteLineID, Is.EqualTo(salesQuoteLinePatchReq.QuoteLineID));
             Assert.That(salesQuoteLinePatchRes.DiscountedPrice, Is.EqualTo(salesQuoteLinePatchReq.DiscountedPrice));
 
             // Remove the second sales quote line
@@ -223,6 +225,7 @@ namespace JiwaAPITests.SalesQuotes
             };
             JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuote salesQuotePatchRes = await Client.PatchAsync(salesQuotePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(salesQuotePatchRes.QuoteID, Is.EqualTo(salesQuotePatchReq.QuoteID));
             Assert.That(salesQuotePatchRes.Lines.Count, Is.EqualTo(2));
             Assert.That(salesQuotePatchRes.Lines[1].CommentLine, Is.True);
             Assert.That(salesQuotePatchRes.Lines[1].CommentText, Is.EqualTo(salesQuotePatchReq.Lines[0].CommentText));
@@ -397,4 +400,5 @@ namespace JiwaAPITests.SalesQuotes
         #endregion
     }
 }
+
 

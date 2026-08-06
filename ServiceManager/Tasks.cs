@@ -56,6 +56,7 @@ namespace JiwaAPITests.ServiceManager
 
             ServiceManagerTask taskPatchRes = await Client.PatchAsync(taskPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(taskPatchRes.TaskID, Is.EqualTo(taskPatchReq.TaskID));
             Assert.That(taskPatchRes.TaskID, Is.EqualTo(taskCreateRes.TaskID));
             Assert.That(taskPatchRes.Description, Is.EqualTo(taskPatchReq.Description));
 
@@ -161,3 +162,4 @@ namespace JiwaAPITests.ServiceManager
         #endregion
     }
 }
+

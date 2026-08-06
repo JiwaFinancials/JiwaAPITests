@@ -246,6 +246,7 @@ namespace JiwaAPITests.Staff.Timesheets
 
                 StaffTimesheetLineDto linePatchRes = await Client.PatchAsync(linePatchReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+                Assert.That(linePatchRes.TimesheetLineID, Is.EqualTo(linePatchReq.TimesheetLineID));
                 Assert.That(linePatchRes.TimesheetLineID, Is.EqualTo(lineCreateRes.TimesheetLineID));
                 Assert.That(linePatchRes.Description, Is.EqualTo(linePatchReq.Description));
 
@@ -415,6 +416,7 @@ namespace JiwaAPITests.Staff.Timesheets
 
                 StaffTimesheetLineDto woLinePatchRes = await Client.PatchAsync(woLinePatchReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+                Assert.That(woLinePatchRes.TimesheetLineID, Is.EqualTo(woLinePatchReq.TimesheetLineID));
                 Assert.That(woLinePatchRes.TimesheetLineID, Is.EqualTo(woLineCreateRes.TimesheetLineID));
                 Assert.That(woLinePatchRes.Description, Is.EqualTo(woLinePatchReq.Description));
 
@@ -630,6 +632,7 @@ namespace JiwaAPITests.Staff.Timesheets
 
                 StaffTimesheetLineDto linePatchRes = await Client.PatchAsync(linePatchReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+                Assert.That(linePatchRes.TimesheetLineID, Is.EqualTo(linePatchReq.TimesheetLineID));
                 Assert.That(linePatchRes.TimesheetLineID, Is.EqualTo(lineCreateRes.TimesheetLineID));
                 Assert.That(linePatchRes.Description, Is.EqualTo(linePatchReq.Description));
 
@@ -714,3 +717,4 @@ namespace JiwaAPITests.Staff.Timesheets
         #endregion
     }
 }
+

@@ -92,6 +92,7 @@ namespace JiwaAPITests.ServiceManager
 
             CustomerReturn returnPatchRes = await Client.PatchAsync(returnPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(returnPatchRes.CustomerReturnID, Is.EqualTo(returnPatchReq.CustomerReturnID));
             Assert.That(returnPatchRes.CustomerReturnID, Is.EqualTo(returnCreateRes.CustomerReturnID));
             Assert.That(returnPatchRes.Notes, Is.EqualTo(returnPatchReq.Notes));
 
@@ -231,6 +232,7 @@ namespace JiwaAPITests.ServiceManager
 
             CustomerReturnLineDetail lineDetailPatchRes = await Client.PatchAsync(lineDetailPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(lineDetailPatchRes.CustomerReturnLineDetailID, Is.EqualTo(lineDetailPatchReq.CustomerReturnLineDetailID));
             Assert.That(lineDetailPatchRes.CustomerReturnLineDetailID, Is.EqualTo(persistedLineDetail.CustomerReturnLineDetailID));
             Assert.That(lineDetailPatchRes.Cost, Is.EqualTo(lineDetailPatchReq.Cost));
 
@@ -293,4 +295,5 @@ namespace JiwaAPITests.ServiceManager
         #endregion
     }
 }
+
 

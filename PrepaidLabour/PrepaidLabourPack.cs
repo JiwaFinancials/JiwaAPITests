@@ -72,6 +72,7 @@ namespace JiwaAPITests.PrepaidLabour
 
             JiwaFinancials.Jiwa.JiwaServiceModel.PrepaidLabour.PrepaidLabourPack prepaidLabourPackPatchRes = await Client.PatchAsync(prepaidLabourPackPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(prepaidLabourPackPatchRes.PackID, Is.EqualTo(prepaidLabourPackPatchReq.PackID));
             Assert.That(prepaidLabourPackPatchRes.PackID, Is.EqualTo(prepaidLabourPackCreateRes.PackID));
             Assert.That(prepaidLabourPackPatchRes.Name, Is.EqualTo(prepaidLabourPackPatchReq.Name));
 
@@ -101,4 +102,5 @@ namespace JiwaAPITests.PrepaidLabour
         #endregion
     }
 }
+
 

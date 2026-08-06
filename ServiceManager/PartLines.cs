@@ -91,6 +91,7 @@ namespace JiwaAPITests.ServiceManager
 
             PartLine partLinePatchRes = await Client.PatchAsync(partLinePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(partLinePatchRes.PartLineID, Is.EqualTo(partLinePatchReq.PartLineID));
             Assert.That(partLinePatchRes.PartLineID, Is.EqualTo(partLineCreateRes.PartLineID));
             Assert.That(partLinePatchRes.UserDefinedString1, Is.EqualTo(partLinePatchReq.UserDefinedString1));
 
@@ -229,6 +230,7 @@ namespace JiwaAPITests.ServiceManager
 
             PartLineDetail lineDetailPatchRes = await Client.PatchAsync(lineDetailPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(lineDetailPatchRes.PartLineDetailID, Is.EqualTo(lineDetailPatchReq.PartLineDetailID));
             Assert.That(lineDetailPatchRes.PartLineDetailID, Is.EqualTo(persistedLineDetail.PartLineDetailID));
             Assert.That(lineDetailPatchRes.Cost, Is.EqualTo(lineDetailPatchReq.Cost));
 
@@ -293,4 +295,5 @@ namespace JiwaAPITests.ServiceManager
         #endregion
     }
 }
+
 

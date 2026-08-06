@@ -110,6 +110,7 @@ namespace JiwaAPITests.SalesOrders
             };
             JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine linePatchRes = await Client.PatchAsync(linePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(linePatchRes.InvoiceLineID, Is.EqualTo(linePatchReq.InvoiceLineID));
             Assert.That(linePatchRes.QuantityOrdered, Is.EqualTo(linePatchReq.QuantityOrdered));
             Assert.That(linePatchRes.DiscountedPrice, Is.EqualTo(linePatchReq.DiscountedPrice));
 
@@ -193,6 +194,7 @@ namespace JiwaAPITests.SalesOrders
             };
             JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine linePatchRes = await Client.PatchAsync(linePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(linePatchRes.InvoiceLineID, Is.EqualTo(linePatchReq.InvoiceLineID));
             Assert.That(linePatchRes.CommentLine, Is.True);
             Assert.That(linePatchRes.CommentText, Is.EqualTo(linePatchReq.CommentText));
 
@@ -357,6 +359,7 @@ namespace JiwaAPITests.SalesOrders
             };
             JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLineDetail lineDetailPatchRes = await Client.PatchAsync(lineDetailPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(lineDetailPatchRes.LineDetailID, Is.EqualTo(lineDetailPatchReq.LineDetailID));
             Assert.That(lineDetailPatchRes.LineDetailID, Is.EqualTo(lineDetailCreateRes.LineDetailID));
             Assert.That(lineDetailPatchRes.SerialNo, Is.EqualTo(lineDetailPatchReq.SerialNo));
 
@@ -387,4 +390,5 @@ namespace JiwaAPITests.SalesOrders
         #endregion
     }
 }
+
 

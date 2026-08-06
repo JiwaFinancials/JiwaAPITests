@@ -57,6 +57,7 @@ namespace JiwaAPITests.GoodsReceivedNotes
 
             GoodsReceivedNoteLine linePatchRes = await Client.PatchAsync(linePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(linePatchRes.LineID, Is.EqualTo(linePatchReq.LineID));
             Assert.That(linePatchRes.LineID, Is.EqualTo(existingLineID));
             Assert.That(linePatchRes.Quantity, Is.EqualTo(linePatchReq.Quantity));
 
@@ -118,6 +119,7 @@ namespace JiwaAPITests.GoodsReceivedNotes
 
             GoodsReceivedNoteLineDetail lineDetailPatchRes = await Client.PatchAsync(lineDetailPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(lineDetailPatchRes.LineDetailID, Is.EqualTo(lineDetailPatchReq.LineDetailID));
             Assert.That(lineDetailPatchRes.LineDetailID, Is.EqualTo(lineDetailCreateRes.LineDetailID));
             Assert.That(lineDetailPatchRes.Quantity, Is.EqualTo(lineDetailPatchReq.Quantity));
 
@@ -192,4 +194,5 @@ namespace JiwaAPITests.GoodsReceivedNotes
         #endregion
     }
 }
+
 

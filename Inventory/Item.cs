@@ -48,6 +48,7 @@ namespace JiwaAPITests.Inventory
             };
             InventoryItem itemPatchRes =  await Client.PatchAsync(itemPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(itemPatchRes.InventoryID, Is.EqualTo(itemPatchReq.InventoryID));
             Assert.That(itemPatchRes.Description, Is.EqualTo(itemPatchReq.Description));
             Assert.That(itemPatchRes.DefaultPrice, Is.EqualTo(itemPatchReq.DefaultPrice));
 
@@ -148,6 +149,7 @@ namespace JiwaAPITests.Inventory
             };
             InventoryAlternateChild InventoryAlternateChildPATCHRes = await Client.PatchAsync(InventoryAlternateChildPATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(InventoryAlternateChildPATCHRes.AlternateChildID, Is.EqualTo(InventoryAlternateChildPATCHReq.AlternateChildID));
             Assert.That(InventoryAlternateChildPATCHRes.Notes, Is.EqualTo(InventoryAlternateChildPATCHReq.Notes));
 
             // Get the patched item and ensure it matches what we patched
@@ -358,6 +360,7 @@ namespace JiwaAPITests.Inventory
             inventoryAttributeGroupPATCHReq.Attributes.Add(new InventoryAttributeGroupAttribute() { AttributeID = inventoryAttributeGroupGETRes.Attributes[0].AttributeID, Contents = "Test" });
             InventoryAttributeGroup InventoryAlternateChildPATCHRes = await Client.PatchAsync(inventoryAttributeGroupPATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(InventoryAlternateChildPATCHRes.AttributeGroupID, Is.EqualTo(inventoryAttributeGroupPATCHReq.AttributeGroupID));
             Assert.That(InventoryAlternateChildPATCHRes.Description, Is.EqualTo(inventoryAttributeGroupPATCHReq.Description));
 
             // Get the patched item and ensure it matches what we patched            
@@ -428,6 +431,7 @@ namespace JiwaAPITests.Inventory
             };
             InventoryAttributeGroupAttribute attributeValuePATCHRes = await Client.PatchAsync(attributeValuePATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(attributeValuePATCHRes.AttributeGroupID, Is.EqualTo(attributeValuePATCHReq.AttributeGroupID));
             Assert.That(attributeValuePATCHRes.AttributeID, Is.EqualTo(attributeValuePATCHReq.AttributeID));
 
             // Verify the updated attribute value
@@ -636,4 +640,5 @@ namespace JiwaAPITests.Inventory
         #endregion
     }
 }
+
 

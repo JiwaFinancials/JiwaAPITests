@@ -74,6 +74,7 @@ namespace JiwaAPITests.ServiceManager
 
             JobActivityBudget budgetPatchRes = await Client.PatchAsync(budgetPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(budgetPatchRes.JobActivityBudgetID, Is.EqualTo(budgetPatchReq.JobActivityBudgetID));
             Assert.That(budgetPatchRes.JobActivityBudgetID, Is.EqualTo(budgetCreateRes.JobActivityBudgetID));
             Assert.That(budgetPatchRes.BudgetedBillingTime, Is.EqualTo(budgetPatchReq.BudgetedBillingTime));
             Assert.That(budgetPatchRes.BudgetedBillingValue, Is.EqualTo(budgetPatchReq.BudgetedBillingValue));
@@ -108,4 +109,5 @@ namespace JiwaAPITests.ServiceManager
         #endregion
     }
 }
+
 

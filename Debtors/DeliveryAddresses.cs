@@ -72,6 +72,7 @@ namespace JiwaAPITests.Debtors
             };
             DebtorDeliveryAddress addressPatchRes = await Client.PatchAsync(addressPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(addressPatchRes.DeliveryAddressID, Is.EqualTo(addressPatchReq.DeliveryAddressID));
             Assert.That(addressPatchRes.DeliveryAddressName, Is.EqualTo(addressPatchReq.DeliveryAddressName));
 
             // Delete the delivery address
@@ -157,4 +158,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

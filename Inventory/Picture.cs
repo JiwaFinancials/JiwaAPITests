@@ -37,6 +37,7 @@ namespace JiwaAPITests.Inventory
             };
             InventoryItem itemPatchRes = await Client.PatchAsync(itemPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(itemPatchRes.InventoryID, Is.EqualTo(itemPatchReq.InventoryID));
             Assert.That(itemPatchRes.Description, Is.EqualTo(itemPatchReq.Description));
             Assert.That(itemPatchRes.Picture, Is.EqualTo(itemPatchReq.Picture));
 
@@ -50,3 +51,4 @@ namespace JiwaAPITests.Inventory
         #endregion
     }
 }
+

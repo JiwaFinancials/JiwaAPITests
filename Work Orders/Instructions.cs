@@ -72,6 +72,7 @@ namespace JiwaAPITests.WorkOrders
 
             WorkOrderInstruction instructionPatchRes = await Client.PatchAsync(instructionPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(instructionPatchRes.InstructionID, Is.EqualTo(instructionPatchReq.InstructionID));
             Assert.That(instructionPatchRes.InstructionID, Is.EqualTo(instructionCreateRes.InstructionID));
             Assert.That(instructionPatchRes.InstructionText, Is.EqualTo(instructionPatchReq.InstructionText));
 
@@ -106,4 +107,5 @@ namespace JiwaAPITests.WorkOrders
         #endregion
     }
 }
+
 

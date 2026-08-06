@@ -40,6 +40,7 @@ namespace JiwaAPITests.Inventory
             };
             InventoryNoteTypeDto patchRes = await Client.PatchAsync(patchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(patchRes.NoteTypeID, Is.EqualTo(patchReq.NoteTypeID));
             Assert.That(patchRes.NoteTypeID, Is.EqualTo(createRes.NoteTypeID));
 
             // Delete the note type
@@ -49,4 +50,5 @@ namespace JiwaAPITests.Inventory
         #endregion
     }
 }
+
 

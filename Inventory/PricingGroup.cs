@@ -37,6 +37,7 @@ namespace JiwaAPITests.Inventory
             };
             var patchRes = await Client.PatchAsync(patchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(patchRes.PricingGroupID, Is.EqualTo(patchReq.PricingGroupID));
             Assert.That(patchRes.PricingGroupID, Is.EqualTo(createRes.PricingGroupID));
 
             // Remove pricing group cache entry (internal endpoint)
@@ -53,4 +54,5 @@ namespace JiwaAPITests.Inventory
         #endregion
     }
 }
+
 

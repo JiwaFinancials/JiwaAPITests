@@ -69,6 +69,7 @@ namespace JiwaAPITests.Creditors
 
             CreditorWarehouseAddress warehouseAddressPatchRes = await Client.PatchAsync(warehouseAddressPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(warehouseAddressPatchRes.WarehouseAddressID, Is.EqualTo(warehouseAddressPatchReq.WarehouseAddressID));
             Assert.That(warehouseAddressPatchRes.WarehouseAddressID, Is.EqualTo(warehouseAddressCreateRes.WarehouseAddressID));
             Assert.That(warehouseAddressPatchRes.Description, Is.EqualTo(warehouseAddressPatchReq.Description));
             Assert.That(warehouseAddressPatchRes.IsDefault, Is.EqualTo(warehouseAddressPatchReq.IsDefault));
@@ -122,4 +123,5 @@ namespace JiwaAPITests.Creditors
         #endregion
     }
 }
+
 

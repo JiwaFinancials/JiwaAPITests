@@ -103,6 +103,7 @@ namespace JiwaAPITests.WorkOrders
 
             InventorySOHLineDetail wastageLineDetailPatchRes = await Client.PatchAsync(wastageLineDetailPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(wastageLineDetailPatchRes.LineDetailID, Is.EqualTo(wastageLineDetailPatchReq.LineDetailID));
             Assert.That(wastageLineDetailPatchRes.LineDetailID, Is.EqualTo(persistedWastageLineDetail.LineDetailID));
             Assert.That(wastageLineDetailPatchRes.SerialNo, Is.EqualTo(wastageLineDetailPatchReq.SerialNo));
 
@@ -254,6 +255,7 @@ namespace JiwaAPITests.WorkOrders
 
             InventorySOHLineDetail wastageLineDetailPatchRes = await Client.PatchAsync(wastageLineDetailPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(wastageLineDetailPatchRes.LineDetailID, Is.EqualTo(wastageLineDetailPatchReq.LineDetailID));
             Assert.That(wastageLineDetailPatchRes.LineDetailID, Is.EqualTo(persistedWastageLineDetail.LineDetailID));
             Assert.That(wastageLineDetailPatchRes.Quantity, Is.EqualTo(wastageLineDetailPatchReq.Quantity));
 
@@ -310,4 +312,5 @@ namespace JiwaAPITests.WorkOrders
         #endregion
     }
 }
+
 

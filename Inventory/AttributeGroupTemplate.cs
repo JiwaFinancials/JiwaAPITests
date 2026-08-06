@@ -54,6 +54,7 @@ namespace JiwaAPITests.Inventory
             };
             InventoryAttributeGroupTemplate attributeGroupTemplatePatchRes = await Client.PatchAsync(attributeGroupTemplatePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(attributeGroupTemplatePatchRes.AttributeGroupTemplateID, Is.EqualTo(attributeGroupTemplatePatchReq.AttributeGroupTemplateID));
             Assert.That(attributeGroupTemplatePatchRes.Name, Is.EqualTo(attributeGroupTemplatePatchReq.Name));
             Assert.That(attributeGroupTemplatePatchRes.TemplateAttributes.Count, Is.EqualTo(4));
 
@@ -134,6 +135,7 @@ namespace JiwaAPITests.Inventory
             };
             InventoryAttributeGroupTemplateAttribute attributePATCHRes = await Client.PatchAsync(attributePATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(attributePATCHRes.TemplateAttributeID, Is.EqualTo(attributePATCHReq.TemplateAttributeID));
             Assert.That(attributePATCHRes.TemplateAttributeID, Is.EqualTo(attributePostRes.TemplateAttributeID));
 
             // Delete the template attribute
@@ -215,4 +217,5 @@ namespace JiwaAPITests.Inventory
         #endregion 
     }
 }
+
 

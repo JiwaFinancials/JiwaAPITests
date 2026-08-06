@@ -25,6 +25,7 @@ namespace JiwaAPITests.WorkOrders
 
             JiwaFinancials.Jiwa.JiwaServiceModel.WorkOrders.WorkOrder workOrderPatchRes = await Client.PatchAsync(workOrderPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(workOrderPatchRes.WorkOrderID, Is.EqualTo(workOrderPatchReq.WorkOrderID));
             Assert.That(workOrderPatchRes.WorkOrderID, Is.EqualTo(workOrderCreateRes.WorkOrderID));
             Assert.That(workOrderPatchRes.Status, Is.EqualTo(JiwaFinancials.Jiwa.JiwaServiceModel.WorkOrders.WorkOrderStatuses.Started));
 
@@ -37,6 +38,7 @@ namespace JiwaAPITests.WorkOrders
 
             workOrderPatchRes = await Client.PatchAsync(workOrderPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(workOrderPatchRes.WorkOrderID, Is.EqualTo(workOrderPatchReq.WorkOrderID));
             Assert.That(workOrderPatchRes.WorkOrderID, Is.EqualTo(workOrderCreateRes.WorkOrderID));
             Assert.That(workOrderPatchRes.Status, Is.EqualTo(JiwaFinancials.Jiwa.JiwaServiceModel.WorkOrders.WorkOrderStatuses.Closed));
 
@@ -54,4 +56,5 @@ namespace JiwaAPITests.WorkOrders
         #endregion
     }
 }
+
 

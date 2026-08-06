@@ -49,6 +49,7 @@ namespace JiwaAPITests.Currencies
 
             JiwaFinancials.Jiwa.JiwaServiceModel.Currencies.Currency currencyPatchRes = await Client.PatchAsync(currencyPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(currencyPatchRes.CurrencyID, Is.EqualTo(currencyPatchReq.CurrencyID));
             Assert.That(currencyPatchRes.CurrencyID, Is.EqualTo(currencyCreateRes.CurrencyID));
             Assert.That(currencyPatchRes.Name, Is.EqualTo(currencyPatchReq.Name));
 
@@ -74,4 +75,5 @@ namespace JiwaAPITests.Currencies
         #endregion
     }
 }
+
 

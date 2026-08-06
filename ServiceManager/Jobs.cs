@@ -34,6 +34,7 @@ namespace JiwaAPITests.ServiceManager
 
             Job jobPatchRes = await Client.PatchAsync(jobPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(jobPatchRes.JobID, Is.EqualTo(jobPatchReq.JobID));
             Assert.That(jobPatchRes.JobID, Is.EqualTo(jobCreateRes.JobID));
             Assert.That(jobPatchRes.ContactName, Is.EqualTo(jobPatchReq.ContactName));
 
@@ -86,3 +87,4 @@ namespace JiwaAPITests.ServiceManager
         #endregion
     }
 }
+

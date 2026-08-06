@@ -100,6 +100,7 @@ namespace JiwaAPITests.WorkOrders
 
             InventorySOHLineDetail lineDetailPatchRes = await Client.PatchAsync(lineDetailPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(lineDetailPatchRes.LineDetailID, Is.EqualTo(lineDetailPatchReq.LineDetailID));
             Assert.That(lineDetailPatchRes.LineDetailID, Is.EqualTo(persistedLineDetail.LineDetailID));
             Assert.That(lineDetailPatchRes.SerialNo, Is.EqualTo(lineDetailPatchReq.SerialNo));
 
@@ -251,6 +252,7 @@ namespace JiwaAPITests.WorkOrders
 
             InventorySOHLineDetail lineDetailPatchRes = await Client.PatchAsync(lineDetailPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(lineDetailPatchRes.LineDetailID, Is.EqualTo(lineDetailPatchReq.LineDetailID));
             Assert.That(lineDetailPatchRes.LineDetailID, Is.EqualTo(persistedLineDetail.LineDetailID));
             Assert.That(lineDetailPatchRes.Quantity, Is.EqualTo(lineDetailPatchReq.Quantity));
 
@@ -307,4 +309,5 @@ namespace JiwaAPITests.WorkOrders
         #endregion
     }
 }
+
 

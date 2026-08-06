@@ -66,6 +66,7 @@ namespace JiwaAPITests.ServiceManager
 
             ServiceManagerPriority priorityPatchRes = await Client.PatchAsync(priorityPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(priorityPatchRes.PriorityID, Is.EqualTo(priorityPatchReq.PriorityID));
             Assert.That(priorityPatchRes.PriorityID, Is.EqualTo(priorityCreateRes.PriorityID));
             Assert.That(priorityPatchRes.Name, Is.EqualTo(priorityPatchReq.Name));
 
@@ -88,8 +89,9 @@ namespace JiwaAPITests.ServiceManager
                     DeadLine = originalDefaultPriority.DeadLine
                 };
 
-                _ = await Client.PatchAsync(restoreDefaultPriorityReq);
+                var restoreDefaultPriorityReqRes = await Client.PatchAsync(restoreDefaultPriorityReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+                Assert.That(restoreDefaultPriorityReqRes.PriorityID, Is.EqualTo(restoreDefaultPriorityReq.PriorityID));
             }
 
             // Delete the created service manager priority.
@@ -126,4 +128,5 @@ namespace JiwaAPITests.ServiceManager
         #endregion
     }
 }
+
 

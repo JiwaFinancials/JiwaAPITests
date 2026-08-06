@@ -54,6 +54,7 @@ namespace JiwaAPITests.Debtors
 
             DebtorGroup groupPATCHRes = await Client.PatchAsync(groupPATCHReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(groupPATCHRes.GroupID, Is.EqualTo(groupPATCHReq.GroupID));
             Assert.That(groupPATCHRes.Description, Is.EqualTo(groupPATCHReq.Description));
 
             // Delete the group
@@ -83,4 +84,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

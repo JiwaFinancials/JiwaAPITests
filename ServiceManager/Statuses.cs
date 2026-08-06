@@ -62,6 +62,7 @@ namespace JiwaAPITests.ServiceManager
 
             ServiceManagerStatus statusPatchRes = await Client.PatchAsync(statusPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(statusPatchRes.StatusID, Is.EqualTo(statusPatchReq.StatusID));
             Assert.That(statusPatchRes.StatusID, Is.EqualTo(statusCreateRes.StatusID));
             Assert.That(statusPatchRes.Name, Is.EqualTo(statusPatchReq.Name));
 
@@ -82,8 +83,9 @@ namespace JiwaAPITests.ServiceManager
                     IsDefault = true
                 };
 
-                _ = await Client.PatchAsync(restoreDefaultStatusReq);
+                var restoreDefaultStatusReqRes = await Client.PatchAsync(restoreDefaultStatusReq);
                 Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+                Assert.That(restoreDefaultStatusReqRes.StatusID, Is.EqualTo(restoreDefaultStatusReq.StatusID));
             }
 
             // Delete the created service manager status.
@@ -120,4 +122,5 @@ namespace JiwaAPITests.ServiceManager
         #endregion
     }
 }
+
 

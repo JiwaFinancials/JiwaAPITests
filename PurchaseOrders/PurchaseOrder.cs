@@ -48,6 +48,7 @@ namespace JiwaAPITests.PurchaseOrders
 
             PurchaseOrderDto purchaseOrderPatchRes = await Client.PatchAsync(purchaseOrderPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(purchaseOrderPatchRes.PurchaseOrderID, Is.EqualTo(purchaseOrderPatchReq.PurchaseOrderID));
             Assert.That(purchaseOrderPatchRes.PurchaseOrderID, Is.EqualTo(purchaseOrderCreateRes.PurchaseOrderID));
             Assert.That(purchaseOrderPatchRes.Reference, Is.EqualTo(purchaseOrderPatchReq.Reference));
 
@@ -198,4 +199,5 @@ namespace JiwaAPITests.PurchaseOrders
         }
     }
 }
+
 

@@ -89,6 +89,7 @@ namespace JiwaAPITests.SalesOrders
             };
             JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrder salesOrderPatchRes =  await Client.PatchAsync(salesOrderPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(salesOrderPatchRes.InvoiceID, Is.EqualTo(salesOrderPatchReq.InvoiceID));
             Assert.That(salesOrderPatchRes.Lines.Count, Is.EqualTo(2));
             Assert.That(salesOrderPatchRes.Lines[1].DiscountedPrice, Is.EqualTo(salesOrderPatchReq.Lines[0].DiscountedPrice));
 
@@ -103,6 +104,7 @@ namespace JiwaAPITests.SalesOrders
             };
             JiwaFinancials.Jiwa.JiwaServiceModel.SalesOrders.SalesOrderLine salesOrderLinePatchRes = await Client.PatchAsync(salesOrderLinePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(salesOrderLinePatchRes.InvoiceLineID, Is.EqualTo(salesOrderLinePatchReq.InvoiceLineID));
             Assert.That(salesOrderLinePatchRes.DiscountedPrice, Is.EqualTo(salesOrderLinePatchReq.DiscountedPrice));            
 
             // Remove the second sales order line
@@ -452,4 +454,5 @@ namespace JiwaAPITests.SalesOrders
         #endregion
     }
 }
+
 

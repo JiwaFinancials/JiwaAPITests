@@ -45,6 +45,7 @@ namespace JiwaAPITests.Shipments
 
             DocumentType documentTypePatchRes = await Client.PatchAsync(documentTypePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(documentTypePatchRes.DocumentTypeID, Is.EqualTo(documentTypePatchReq.DocumentTypeID));
             Assert.That(documentTypePatchRes.DocumentTypeID, Is.EqualTo(documentTypeCreateRes.DocumentTypeID));
             Assert.That(documentTypePatchRes.Description, Is.EqualTo(documentTypePatchReq.Description));
 
@@ -84,3 +85,4 @@ namespace JiwaAPITests.Shipments
         #endregion
     }
 }
+

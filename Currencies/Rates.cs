@@ -80,6 +80,7 @@ namespace JiwaAPITests.Currencies
 
             CurrencyRate ratePatchRes = await Client.PatchAsync(ratePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(ratePatchRes.RateID, Is.EqualTo(ratePatchReq.RateID));
             Assert.That(ratePatchRes.RateID, Is.EqualTo(rateCreateRes.RateID));
             Assert.That(ratePatchRes.TransactionRate, Is.EqualTo(ratePatchReq.TransactionRate));
 
@@ -117,4 +118,5 @@ namespace JiwaAPITests.Currencies
         #endregion
     }
 }
+
 

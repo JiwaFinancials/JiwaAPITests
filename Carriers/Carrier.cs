@@ -47,6 +47,7 @@ namespace JiwaAPITests.Carriers
 
             JiwaFinancials.Jiwa.JiwaServiceModel.Carriers.Carrier carrierPatchRes = await Client.PatchAsync(carrierPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(carrierPatchRes.CarrierID, Is.EqualTo(carrierPatchReq.CarrierID));
             Assert.That(carrierPatchRes.CarrierID, Is.EqualTo(carrierCreateRes.CarrierID));
             Assert.That(carrierPatchRes.CarrierName, Is.EqualTo(carrierPatchReq.CarrierName));
 
@@ -75,4 +76,5 @@ namespace JiwaAPITests.Carriers
         #endregion
     }
 }
+
 

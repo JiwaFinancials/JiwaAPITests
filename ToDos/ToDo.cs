@@ -46,6 +46,7 @@ namespace JiwaAPITests.ToDos
 
             ToDoDto toDoPatchRes = await Client.PatchAsync(toDoPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(toDoPatchRes.ToDoID, Is.EqualTo(toDoPatchReq.ToDoID));
             Assert.That(toDoPatchRes.ToDoID, Is.EqualTo(toDoCreateRes.ToDoID));
             Assert.That(toDoPatchRes.Subject, Is.EqualTo(toDoPatchReq.Subject));
 
@@ -74,3 +75,4 @@ namespace JiwaAPITests.ToDos
         #endregion
     }
 }
+

@@ -112,6 +112,7 @@ namespace JiwaAPITests.ToDos
 
             CollaborationDto collaborationPatchRes = await Client.PatchAsync(collaborationPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(collaborationPatchRes.CollID, Is.EqualTo(collaborationPatchReq.CollID));
             Assert.That(collaborationPatchRes.CollID, Is.EqualTo(collaborationCreateRes.CollID));
             Assert.That(collaborationPatchRes.NotificationText, Is.EqualTo(collaborationPatchReq.NotificationText));
 
@@ -150,3 +151,4 @@ namespace JiwaAPITests.ToDos
         #endregion
     }
 }
+

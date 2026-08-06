@@ -45,6 +45,7 @@ namespace JiwaAPITests.Debtors
             };
             DocumentType typePatchRes = await Client.PatchAsync(typePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(typePatchRes.DocumentTypeID, Is.EqualTo(typePatchReq.DocumentTypeID));
             Assert.That(typePatchRes.Description, Is.EqualTo(typePatchReq.Description));
 
             // Delete the document type
@@ -108,4 +109,5 @@ namespace JiwaAPITests.Debtors
         #endregion
     }
 }
+
 

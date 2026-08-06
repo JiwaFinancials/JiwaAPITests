@@ -57,6 +57,7 @@ namespace JiwaAPITests.EmailMessages
 
             JiwaFinancials.Jiwa.JiwaServiceModel.Email.EmailMessage patchRes = await Client.PatchAsync(patchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(patchRes.EmailMessageID, Is.EqualTo(patchReq.EmailMessageID));
             Assert.That(patchRes.EmailSubject, Is.EqualTo(patchReq.EmailSubject));
             Assert.That(patchRes.Status, Is.EqualTo(patchReq.Status));
 
@@ -162,6 +163,7 @@ namespace JiwaAPITests.EmailMessages
 
             Document attachmentPatchRes = await Client.PatchAsync(attachmentPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(attachmentPatchRes.DocumentID, Is.EqualTo(attachmentPatchReq.AttachmentID));
             Assert.That(attachmentPatchRes.DocumentID, Is.EqualTo(attachmentCreateRes.DocumentID));
             Assert.That(attachmentPatchRes.Description, Is.EqualTo(attachmentPatchReq.Description));
 
@@ -250,6 +252,7 @@ namespace JiwaAPITests.EmailMessages
 
             DocumentType attachmentTypePatchRes = await Client.PatchAsync(attachmentTypePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(attachmentTypePatchRes.DocumentTypeID, Is.EqualTo(attachmentTypePatchReq.AttachmentTypeID));
             Assert.That(attachmentTypePatchRes.DocumentTypeID, Is.EqualTo(attachmentTypeCreateRes.DocumentTypeID));
             Assert.That(attachmentTypePatchRes.Description, Is.EqualTo(attachmentTypePatchReq.Description));
 
@@ -277,4 +280,5 @@ namespace JiwaAPITests.EmailMessages
         #endregion
     }
 }
+
 

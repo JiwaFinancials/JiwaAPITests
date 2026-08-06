@@ -132,6 +132,7 @@ namespace JiwaAPITests.SalesQuotes
             };
             SalesQuoteLineDto linePatchRes = await Client.PatchAsync(linePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(linePatchRes.QuoteLineID, Is.EqualTo(linePatchReq.QuoteLineID));
             Assert.That(linePatchRes.CommentLine, Is.True);
             Assert.That(linePatchRes.CommentText, Is.EqualTo(linePatchReq.CommentText));
 
@@ -161,4 +162,5 @@ namespace JiwaAPITests.SalesQuotes
         #endregion
     }
 }
+
 

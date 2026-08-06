@@ -92,6 +92,7 @@ namespace JiwaAPITests.WorkOrders
 
             WorkOrderOutputDto outputPatchRes = await Client.PatchAsync(outputPatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(outputPatchRes.OutputID, Is.EqualTo(outputPatchReq.OutputID));
             Assert.That(outputPatchRes.OutputID, Is.EqualTo(outputCreateRes.OutputID));
             Assert.That(outputPatchRes.Quantity, Is.EqualTo(outputPatchReq.Quantity));
             Assert.That(outputPatchRes.IsRatio, Is.EqualTo(outputPatchReq.IsRatio));
@@ -129,4 +130,5 @@ namespace JiwaAPITests.WorkOrders
         #endregion
     }
 }
+
 
