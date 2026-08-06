@@ -167,6 +167,74 @@ namespace JiwaAPITests.SalesQuotes
             });
             Assert.That(ex.StatusCode, Is.EqualTo(404));
         }
+
+        [Test]
+        public async Task SalesQuote_PATCH_AddsCommentLine()
+        {
+            // Create an item
+            InventoryPOSTRequest itemCreateReq = new InventoryPOSTRequest()
+            {
+                PartNo = RandomString(5),
+                Description = "Patch comment line item",
+                DefaultPrice = 125.67M
+            };
+            InventoryItem itemCreateRes = await Client.PostAsync(itemCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+
+            // Create a debtor
+            DebtorPOSTRequest accountCreateReq = new DebtorPOSTRequest()
+            {
+                AccountNo = RandomString(5),
+                Name = "Patch comment line debtor"
+            };
+            Debtor accountCreateRes = await Client.PostAsync(accountCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+
+            // Create a sales quote with one inventory line
+            SalesQuotePOSTRequest salesQuoteCreateReq = new SalesQuotePOSTRequest()
+            {
+                DebtorAccountNo = accountCreateReq.AccountNo,
+                InvoiceInitDate = DateTime.Today.Date,
+                Lines = new List<JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuoteLine>()
+                {
+                    new JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuoteLine()
+                    {
+                        InventoryID = itemCreateRes.InventoryID,
+                        QuantityOrdered = 1
+                    }
+                }
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuote salesQuoteCreateRes = await Client.PostAsync(salesQuoteCreateReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.Created));
+            Assert.That(salesQuoteCreateRes.QuoteID, Is.Not.Null);
+
+            // Patch quote by appending a comment line
+            SalesQuotePATCHRequest salesQuotePatchReq = new SalesQuotePATCHRequest()
+            {
+                QuoteID = salesQuoteCreateRes.QuoteID,
+                Lines = new List<JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuoteLine>()
+                {
+                    new JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuoteLine()
+                    {
+                        CommentLine = true,
+                        CommentText = "Added via PATCH"
+                    }
+                }
+            };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuote salesQuotePatchRes = await Client.PatchAsync(salesQuotePatchReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(salesQuotePatchRes.Lines.Count, Is.EqualTo(2));
+            Assert.That(salesQuotePatchRes.Lines[1].CommentLine, Is.True);
+            Assert.That(salesQuotePatchRes.Lines[1].CommentText, Is.EqualTo(salesQuotePatchReq.Lines[0].CommentText));
+
+            // Read quote to verify the comment line was saved
+            SalesQuoteGETRequest salesQuoteGetReq = new SalesQuoteGETRequest() { QuoteID = salesQuoteCreateRes.QuoteID };
+            JiwaFinancials.Jiwa.JiwaServiceModel.SalesQuotes.SalesQuote salesQuoteGetRes = await Client.GetAsync(salesQuoteGetReq);
+            Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
+            Assert.That(salesQuoteGetRes.Lines.Count, Is.EqualTo(2));
+            Assert.That(salesQuoteGetRes.Lines[1].CommentLine, Is.True);
+            Assert.That(salesQuoteGetRes.Lines[1].CommentText, Is.EqualTo(salesQuotePatchReq.Lines[0].CommentText));
+        }
         #endregion
 
         #region "{MakeOrder}"
