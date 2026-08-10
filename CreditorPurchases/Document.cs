@@ -62,7 +62,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Append a document to the creditor purchase
             CreditorPurchaseDocumentPOSTRequest documentCreateReq = new CreditorPurchaseDocumentPOSTRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 Description = "Creditor Purchase Document " + RandomString(8),
                 PhysicalFileName = "CreditorPurchaseDocument.txt",
                 FileBinary = Encoding.UTF8.GetBytes("Creditor purchase document content"),
@@ -77,7 +77,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Read all creditor purchase documents and ensure the created document is returned
             CreditorPurchaseDocumentsGETManyRequest documentsGetManyReq = new CreditorPurchaseDocumentsGETManyRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID
+                BatchID = purchaseCreateRes.BatchID
             };
 
             List<CreditorPurchaseDocumentDto> documentsGetManyRes = await Client.GetAsync(documentsGetManyReq);
@@ -87,7 +87,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Read the created creditor purchase document using the DocumentID
             CreditorPurchaseDocumentGETRequest documentGetReq = new CreditorPurchaseDocumentGETRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 DocumentID = documentCreateRes.DocumentID
             };
 
@@ -99,7 +99,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Update the creditor purchase document
             CreditorPurchaseDocumentPATCHRequest documentPatchReq = new CreditorPurchaseDocumentPATCHRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 DocumentID = documentCreateRes.DocumentID,
                 Description = "Updated Creditor Purchase Document " + RandomString(6)
             };
@@ -118,7 +118,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Remove the created creditor purchase document
             CreditorPurchaseDocumentDELETERequest documentDeleteReq = new CreditorPurchaseDocumentDELETERequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 DocumentID = documentCreateRes.DocumentID
             };
 
@@ -140,7 +140,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Remove the created creditor purchase
             CreditorPurchaseDELETERequest purchaseDeleteReq = new CreditorPurchaseDELETERequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID
+                BatchID = purchaseCreateRes.BatchID
             };
 
             await Client.DeleteAsync(purchaseDeleteReq);

@@ -56,10 +56,10 @@ namespace JiwaAPITests.CreditorPurchases
             Assert.That(purchaseCreateRes.TransLines.Count, Is.EqualTo(1));
             Assert.That(purchaseCreateRes.TransLines[0].CreditorAccountNo, Is.EqualTo(purchaseCreateReq.TransLines[0].CreditorAccountNo));
 
-            // Read the created creditor purchase using the CreditorPurchaseID
+            // Read the created creditor purchase using the BatchID
             CreditorPurchaseGETRequest purchaseGetReq = new CreditorPurchaseGETRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID
+                BatchID = purchaseCreateRes.BatchID
             };
 
             CreditorBatchTrans purchaseGetRes = await Client.GetAsync(purchaseGetReq);
@@ -70,19 +70,19 @@ namespace JiwaAPITests.CreditorPurchases
             // Update the creditor purchase
             CreditorPurchasePATCHRequest purchasePatchReq = new CreditorPurchasePATCHRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 Description = "Updated Creditor Purchase Test"
             };
 
             CreditorBatchTrans purchasePatchRes = await Client.PatchAsync(purchasePatchReq);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
-            Assert.That(purchasePatchRes.BatchID, Is.EqualTo(purchasePatchReq.CreditorPurchaseID));
+            Assert.That(purchasePatchRes.BatchID, Is.EqualTo(purchasePatchReq.BatchID));
             Assert.That(purchasePatchRes.Description, Is.EqualTo(purchasePatchReq.Description));
 
             // Remove the created creditor purchase
             CreditorPurchaseDELETERequest purchaseDeleteReq = new CreditorPurchaseDELETERequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID
+                BatchID = purchaseCreateRes.BatchID
             };
 
             await Client.DeleteAsync(purchaseDeleteReq);
@@ -120,7 +120,7 @@ namespace JiwaAPITests.CreditorPurchases
             //Activate the creditor purchase 
             CreditorPurchaseACTIVATERequest purchaseActivateReq = new CreditorPurchaseACTIVATERequest()
             {
-                CreditorPurchaseID = purchaseForActivateRes.BatchID
+                BatchID = purchaseForActivateRes.BatchID
             };
 
             CreditorBatchTrans purchaseActivateRes = await Client.PostAsync(purchaseActivateReq);
@@ -174,10 +174,10 @@ namespace JiwaAPITests.CreditorPurchases
             Assert.That(purchaseCreateRes.TransLines.Count, Is.EqualTo(1));
             Assert.That(purchaseCreateRes.TransLines[0].CreditorAccountNo, Is.EqualTo(purchaseCreateReq.TransLines[0].CreditorAccountNo));
 
-            // Read the created creditor purchase line using the CreditorPurchaseID and LineID
+            // Read the created creditor purchase line using the BatchID and LineID
             CreditorPurchaseLineGETRequest purchaseLineGetReq = new CreditorPurchaseLineGETRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 LineID = purchaseCreateRes.TransLines[0].CRBatchTranLineID
             };
 
@@ -186,10 +186,10 @@ namespace JiwaAPITests.CreditorPurchases
             Assert.That(purchaseLineGetRes.CRBatchTranLineID, Is.EqualTo(purchaseCreateRes.TransLines[0].CRBatchTranLineID));
             Assert.That(purchaseLineGetRes.CreditorAccountNo, Is.EqualTo(purchaseCreateReq.TransLines[0].CreditorAccountNo));
 
-            // Read the creditor purchase lines using the CreditorPurchaseID
+            // Read the creditor purchase lines using the BatchID
             CreditorPurchaseLinesGETManyRequest purchaseLinesGetManyReq = new CreditorPurchaseLinesGETManyRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID
+                BatchID = purchaseCreateRes.BatchID
             };
 
             List<CRBatchTranLine> purchaseLinesGetManyRes = await Client.GetAsync(purchaseLinesGetManyReq);
@@ -200,7 +200,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Add a creditor purchase line
             CreditorPurchaseLinePOSTRequest purchaseLineCreateReq = new CreditorPurchaseLinePOSTRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 RemitNo = RandomString(8),
                 CreditorAccountNo = creditorCreateReq.AccountNo,
                 HomeTransAmount = 234.56M,
@@ -224,7 +224,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Update the appended creditor purchase line
             CreditorPurchaseLinePATCHRequest purchaseLinePatchReq = new CreditorPurchaseLinePATCHRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 LineID = purchaseLineCreateRes.CRBatchTranLineID,
                 HomeTransAmount = 345.67M,
                 SupplierTransAmount = 345.67M,
@@ -241,7 +241,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Get the patched creditor purchase line and ensure it matches what we patched
             purchaseLineGetReq = new CreditorPurchaseLineGETRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 LineID = purchaseLineCreateRes.CRBatchTranLineID
             };
 
@@ -254,7 +254,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Remove the appended creditor purchase line
             CreditorPurchaseLineDELETERequest purchaseLineDeleteReq = new CreditorPurchaseLineDELETERequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 LineID = purchaseLineCreateRes.CRBatchTranLineID
             };
 

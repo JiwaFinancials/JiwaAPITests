@@ -172,7 +172,7 @@ namespace JiwaAPITests.AutoQueries
         public async Task v_Jiwa_CreditorPurchases_GET()
         {
             // Retrieve creditor purchase header records
-            AutoQueryv_Jiwa_CreditorPurchasesRouteQuery req = new AutoQueryv_Jiwa_CreditorPurchasesRouteQuery();
+            v_Jiwa_CreditorPurchasesQuery req = new v_Jiwa_CreditorPurchasesQuery();
             QueryResponse<v_Jiwa_CreditorPurchases> res = await Client.GetAsync(req);
             Assert.That(LastHttpStatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
             Assert.That(res, Is.Not.Null);

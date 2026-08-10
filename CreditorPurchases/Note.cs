@@ -62,7 +62,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Append a note to the creditor purchase
             CreditorPurchaseNotePOSTRequest noteCreateReq = new CreditorPurchaseNotePOSTRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 NoteText = "Creditor Purchase Note " + RandomString(12),
                 NoteType = new CreditorPurchaseNoteTypeDto() { NoteTypeID = noteTypesGetManyRes[0].NoteTypeID }
             };
@@ -75,7 +75,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Read all creditor purchase notes and ensure the created note is returned
             CreditorPurchaseNotesGETManyRequest notesGetManyReq = new CreditorPurchaseNotesGETManyRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID
+                BatchID = purchaseCreateRes.BatchID
             };
 
             List<CreditorPurchaseNoteDto> notesGetManyRes = await Client.GetAsync(notesGetManyReq);
@@ -85,7 +85,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Read the created creditor purchase note using the NoteID
             CreditorPurchaseNoteGETRequest noteGetReq = new CreditorPurchaseNoteGETRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 NoteID = noteCreateRes.NoteID
             };
 
@@ -97,7 +97,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Update the creditor purchase note
             CreditorPurchaseNotePATCHRequest notePatchReq = new CreditorPurchaseNotePATCHRequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 NoteID = noteCreateRes.NoteID,
                 NoteText = "Updated Creditor Purchase Note " + RandomString(8)
             };
@@ -116,7 +116,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Remove the created creditor purchase note
             CreditorPurchaseNoteDELETERequest noteDeleteReq = new CreditorPurchaseNoteDELETERequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID,
+                BatchID = purchaseCreateRes.BatchID,
                 NoteID = noteCreateRes.NoteID
             };
 
@@ -138,7 +138,7 @@ namespace JiwaAPITests.CreditorPurchases
             // Remove the created creditor purchase
             CreditorPurchaseDELETERequest purchaseDeleteReq = new CreditorPurchaseDELETERequest()
             {
-                CreditorPurchaseID = purchaseCreateRes.BatchID
+                BatchID = purchaseCreateRes.BatchID
             };
 
             await Client.DeleteAsync(purchaseDeleteReq);
